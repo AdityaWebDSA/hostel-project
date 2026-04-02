@@ -1,0 +1,120 @@
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Forces body to be at least as tall as the screen */
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+.navbar{
+    height: 5 rem;
+    background-color: white;
+
+}
+.fa-house{
+    color: #102C57;
+    font-size: 2rem;
+}
+.nav-link{
+    color: #333333 !important;
+}
+/* footer */
+.container {
+    flex: 1; 
+}
+.f-info{
+    text-align: center;
+    display: flex;
+    background-color: #333333;
+    color: white;
+    height: 8rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto;
+}
+.f-info-links , .f-info-socials, .f-info-brand{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.f-info-socials i{
+    font-size: 1.2rem;
+    margin-right: 1rem;
+}
+.f-info-links a {
+    text-decoration: none;
+    color: #ffffff;
+}
+.f-info-links a:hover{
+    text-decoration: underline;
+    color: #00e1ff;
+}
+/* Cards Styling */
+.listing-card{
+    border: none !important;
+    margin-bottom: 2rem;
+}
+.card-img-top{
+    border-radius: 1rem !important;
+    width: 100% !important;
+    object-fit: cover !important;
+
+}
+.card-body{
+    padding: 0;
+}
+.card-text p{
+    font-weight: 400 !important;
+}
+/* Index Cards CSS / Card Effect*/
+.listing-link{
+    text-decoration: none;
+}
+.card-img-overlay{
+    opacity: 0;
+}
+.card-img-overlay:hover{
+    opacity: 0.2;
+    background-color: white;
+}
+/* Save Page */
+.add-button{
+    background-color: #102C57!important;
+    border: none !important;
+    color: white !important;
+}
+
+/* Edit Page */
+.edit-button{
+    background-color: #102C57!important;
+    border: none !important;
+    color: white !important;
+}
+
+
+/* Show Page */
+.show-img{
+    height: 30vh;
+
+}
+.delete-button{
+    background-color: #2A7F85 !important;
+    border: none !important;
+    color: white !important;
+}
+
+
+.flash-alert {
+    position: fixed !important;  /* Pulls it completely out of the page layout */
+    top: 80px;                   /* Adjust this if it hides behind your navbar */
+    right: 20px;                 /* Pins it to the right side */
+    z-index: 9999;               /* Forces it to stay on top of ALL other content */
+    min-width: 300px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Adds a nice professional drop shadow */
+}

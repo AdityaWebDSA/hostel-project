@@ -1,0 +1,83 @@
+/* Section Heading */
+.page-heading {
+    color: #0C2240;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    border-left: 5px solid #1D7373; /* Teal accent */
+    padding-left: 15px;
+}
+
+/* White Form Card */
+.form-container {
+    background-color: #ffffff;
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(12, 34, 64, 0.1); /* Subtle Navy shadow */
+}
+
+/* Labels */
+.form-label {
+    color: #0C2240;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* Input Styles */
+.custom-input {
+    background-color: #F2F2F2 !important; /* Light Grey background */
+    border: 1px solid #ced4da !important;
+    border-radius: 8px !important;
+    padding: 0.75rem !important;
+    color: #0C2240 !important;
+}
+
+.custom-input:focus {
+    border-color: #1D7373 !important;
+    box-shadow: 0 0 0 0.25rem rgba(29, 115, 115, 0.15) !important;
+}
+
+/* Custom Placeholder Color */
+.custom-input::placeholder {
+    color: #BF8C4E !important; /* Brass tone */
+    opacity: 0.7;
+}
+
+/* Primary Action Button (Create) */
+.add-btn {
+    background-color: #1D7373 !important; /* Teal */
+    color: #F2F2F2 !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    border: none !important;
+    transition: all 0.3s ease !important;
+}
+
+.add-btn:hover {
+    background-color: #0C2240 !important; /* Navy */
+    color: #BF964B !important; /* Gold text */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(29, 115, 115, 0.2);
+}
+
+/* Cancel Button */
+.btn-outline-secondary {
+    border-color: #ced4da !important;
+    color: #6c757d !important;
+    border-radius: 8px !important;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #F2F2F2 !important;
+    color: #0C2240 !important;
+}
+
+/* Mobile Tweaks */
+@media (max-width: 768px) {
+    .col-8 {
+        width: 100%;
+        margin-left: 0;
+    }
+    .form-container {
+        padding: 1.5rem;
+    }
+}

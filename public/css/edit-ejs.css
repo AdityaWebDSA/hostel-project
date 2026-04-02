@@ -1,0 +1,73 @@
+/* Heading */
+.page-heading {
+    color: #0C2240;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    border-left: 5px solid #1D7373;
+    padding-left: 15px;
+}
+
+/* Form Container */
+.form-container {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(12, 34, 64, 0.08);
+}
+
+/* Labels */
+.form-label {
+    color: #0C2240;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.small-label {
+    font-size: 0.85rem;
+    color: #BF8C4E; /* Brass tone */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Input Fields */
+.custom-input {
+    background-color: #F2F2F2 !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 8px !important;
+    padding: 0.7rem !important;
+    color: #0C2240 !important;
+}
+
+.custom-input:focus {
+    border-color: #1D7373 !important;
+    box-shadow: 0 0 0 0.25rem rgba(29, 115, 115, 0.15) !important;
+}
+
+/* Image Preview */
+.image-preview-wrapper img {
+    height: 180px;
+    width: 100%;
+    object-fit: cover;
+    border: 2px solid #F2F2F2;
+}
+
+/* Save Button */
+.edit-btn {
+    background-color: #1D7373 !important;
+    color: #F2F2F2 !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+}
+
+.edit-btn:hover {
+    background-color: #0C2240 !important;
+    color: #BF964B !important; /* Gold text on navy hover */
+    transform: translateY(-2px);
+}
+
+/* Cancel Button */
+.btn-outline-secondary:hover {
+    background-color: #F2F2F2 !important;
+    color: #0C2240 !important;
+}

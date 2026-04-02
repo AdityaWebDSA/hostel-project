@@ -1,0 +1,403 @@
+const sampleListings = [
+  // --- ORIGINAL LISTINGS (Fixed Images) ---
+  {
+    title: "Sai Boys Hostel",
+    description: "Affordable shared rooms available just 500m from Bharati Vidyapeeth main gate. Includes 24/7 water and high-speed Wi-Fi.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 2500,
+    location: "Chitranagari, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Green Valley Student Stay",
+    description: "Spacious double occupancy rooms with attached washrooms. Quiet environment perfect for engineering students.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1596276020587-8044fe049813?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 3500,
+    location: "Morewadi, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Royal PG for Men",
+    description: "Premium PG with daily housekeeping and mess facility included. Located near the bus stop for easy commute.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1510798831971-661eb04b3739?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 4500,
+    location: "R.K. Nagar, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Sunshine Hostel (Single Room)",
+    description: "Private single rooms for students who need focus. Walking distance to college library and canteen.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 5000,
+    location: "Chitranagari, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Vidyapeeth Student Home",
+    description: "Budget-friendly cot-basis accommodation. Large common area and secure parking for bikes.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 1800,
+    location: "Kandgaon Road, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Modern Youth Hostel",
+    description: "Newly constructed building with RO water purifier, solar heater, and CCTV security.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 3200,
+    location: "Morewadi, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Chhatrapati Bhavan",
+    description: "Traditional hostel environment with strict study hours. Good for serious students preparing for exams.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1629140727571-9b5c6f6267b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 2200,
+    location: "Near Shivaji University, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Techies Hub Listing",
+    description: "Designed for engineering students. High-speed internet included in rent. 2 mins from college back gate.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1540518614846-7eded433c457?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 3000,
+    location: "Chitranagari, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Comfort Zone PG",
+    description: "A home away from home. Includes breakfast and dinner. Very close to gym and local market.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1505693314120-0d443867891c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 4200,
+    location: "Pachgaon, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Scholar's Inn",
+    description: "Quiet single rooms with table and chair provided. 24 hours electricity backup.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1560185127-6a6d68b64659?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 2800,
+    location: "Morewadi, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Friends Circle Hostel",
+    description: "Shared 3-bed rooms, very economical. Great community of students from various branches.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1536349788264-1b816db3cc13?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 1500,
+    location: "Kandgaon, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Elite Student Living",
+    description: "Luxurious PG with AC option available. Attached balcony and personal cupboard.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1616594039964-40891a909718?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 6000,
+    location: "R.K. Nagar, Kolhapur",
+    country: "India",
+  },
+
+  // --- NEW LISTINGS (Added to increase data) ---
+  {
+    title: "Galaxy Boys Hostel",
+    description: "Newly painted rooms with good ventilation. 5 mins walk from college. Tiffin service available.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1596276020587-8044fe049813?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 2700,
+    location: "Chitranagari, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Sunrise Residency",
+    description: "Premium student accommodation with gym access and study hall. Single and double sharing available.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 5500,
+    location: "Morewadi, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Matrix Student Hub",
+    description: "Tech-friendly environment with unlimited high-speed fiber internet. Best for CS/IT students.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1554995207-c18c203602cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 3100,
+    location: "R.K. Nagar, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Nature View Hostel",
+    description: "Located in a peaceful area with garden view. Home-made food provided twice a day.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1512918760532-3ed64bc8066e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 2400,
+    location: "Kandgaon Road, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Pioneer Boys PG",
+    description: "Close to Shivaji University and Bharati Vidyapeeth. No curfew times. Bike parking included.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 2000,
+    location: "Shivaji University Road, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Urban Nest",
+    description: "Modern interiors with cleaning service every alternate day. Washing machine facility available.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 3800,
+    location: "Morewadi, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Blue Sky Dorms",
+    description: "Cheapest option for students. Bunk beds with individual lockers. Common TV room.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 1200,
+    location: "Kandgaon, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Engineering Heights",
+    description: "Exclusive for engineering students. Group study tables and whiteboard in every room.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 3300,
+    location: "Chitranagari, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Cozy Corner PG",
+    description: "Small PG with only 4 rooms. Very homely atmosphere. Owner lives on ground floor.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1484154218962-a1c002085d2f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 2900,
+    location: "Pachgaon, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Silver Oak Residency",
+    description: "Premium rooms with balcony. Solar hot water 24/7. 2 minutes from bus stop.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1611892440504-42a792e24d32?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 4800,
+    location: "R.K. Nagar, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Spartan Student Living",
+    description: "Focus on fitness and study. In-house gym equipment and healthy mess food options.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1596178065887-1198b6148b2b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 3600,
+    location: "Morewadi, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Happy Home Hostel",
+    description: "Friendly environment. Annual events and festivals celebrated. Good for first-year students.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 2100,
+    location: "Chitranagari, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Metro Student Lodge",
+    description: "Located in the main market area. Easy access to stationery shops and restaurants.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 2600,
+    location: "R.K. Nagar, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Dream Stay PG",
+    description: "Luxury PG with AC and attached TV. Biometric entry for extra security.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 7000,
+    location: "Morewadi, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Campus View Hostel",
+    description: "Directly opposite the college gate. Save time on travel. Library facility included.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 3000,
+    location: "Chitranagari, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "White House PG",
+    description: "Clean and hygienic rooms. Daily cleaning included. RO water cooler on every floor.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 2800,
+    location: "Kandgaon, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Maratha Boys Hostel",
+    description: "Famous for its mess food (Kolhapuri Thali). Spacious rooms and big playground nearby.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 2300,
+    location: "Pachgaon, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Focus Study Point PG",
+    description: "Strictly for students preparing for GATE/GRE. Complete silence zone maintained.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 3400,
+    location: "Morewadi, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Relax Inn",
+    description: "Comfortable beds and spacious cupboards. Nice terrace for evening relaxation.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1540518614846-7eded433c457?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 2600,
+    location: "Chitranagari, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Golden Era Hostel",
+    description: "Oldest and most trusted hostel in the area. Experienced warden and safe environment.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1560185007-cde436f6a4d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 1900,
+    location: "R.K. Nagar, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Tech Villa",
+    description: "Modern villa converted into student PG. Huge hall and kitchen access for self-cooking.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1501183638710-841dd1904471?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 3500,
+    location: "Morewadi, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Simple Living PG",
+    description: "Basic amenities at lowest cost. Good for students on a tight budget.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1536349788264-1b816db3cc13?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 1600,
+    location: "Kandgaon Road, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "Success Point Hostel",
+    description: "Many rank holders have stayed here. Positive vibe and competitive atmosphere.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 2900,
+    location: "Chitranagari, Kolhapur",
+    country: "India",
+  },
+  {
+    title: "River View Residency",
+    description: "Slightly away from noise, very peaceful. 10 mins bike ride to college.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1510798831971-661eb04b3739?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
+    },
+    price: 2200,
+    location: "Pachgaon, Kolhapur",
+    country: "India",
+  },
+];
+
+module.exports = { data: sampleListings };

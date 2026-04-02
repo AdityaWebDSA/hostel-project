@@ -1,0 +1,62 @@
+<% layout("/layouts/boilerplate") %>
+<link rel="stylesheet" href="/css/new-ejs.css">
+
+<div class="row mt-4 mb-5">
+    <div class="col-8 offset-2">
+        <h3 class="page-heading">Create a New Listing</h3>
+        
+        <div class="form-container">
+            <form method="POST" action="/listings" class="needs-validation" novalidate enctype="multipart/form-data">
+
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <input name="listing[title]" placeholder="Enter a catchy title" type="text" class="form-control custom-input" required> 
+                    <div class="valid-feedback">Title looks good!</div>
+                    <div class="invalid-feedback">Title is Required</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea name="listing[description]" placeholder="Describe the place, rules, and amenities..." class="form-control custom-input" rows="4" required></textarea>
+                    <div class="invalid-feedback">Please enter a short description</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="image" class="form-label">Upload Listing Image</label>
+                    <input name="listing[image]" type="file" class="form-control custom-input" required>
+                    <div class="invalid-feedback">A listing needs a photo!</div>
+                </div>
+
+                <div class="row">
+                    <div class="mb-3 col-md-4">
+                        <label for="price" class="form-label">Price (₹)</label>
+                        <input name="listing[price]" placeholder="1200" type="number" class="form-control custom-input" required>
+                        <div class="invalid-feedback">Price should be valid</div>
+                    </div>
+                    
+                    <div class="mb-3 col-md-8">
+                        <label for="country" class="form-label">Country</label>
+                        <input name="listing[country]" placeholder="India" type="text" class="form-control custom-input" required>
+                        <div class="invalid-feedback">Country name should be valid</div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="landmark" class="form-label">Exact Landmark / Street</label>
+                    <input name="listing[landmark]" placeholder="e.g., Near Bharati Vidyapeeth College" type="text" class="form-control custom-input">
+                </div>
+
+                <div class="mb-3">
+                    <label for="location" class="form-label">City/Location</label>
+                    <input name="listing[location]" placeholder="Kolhapur, Maharashtra" type="text" class="form-control custom-input" required>
+                    <div class="invalid-feedback">Location should be valid</div>
+                </div>
+           
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-4">
+                    <button class="btn add-btn px-5 py-2">Create Listing</button>
+                    <a href="/listings" class="btn btn-outline-secondary px-4 py-2">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

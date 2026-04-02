@@ -1,0 +1,142 @@
+/* General Colors & Typography */
+body {
+    background-color: #F2F2F2; /* Light Gray from your palette */
+}
+
+.listing-header {
+    color: #0C2240; /* Deep Blue */
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+/* Image & Card */
+.show-img {
+    height: 50vh;
+    object-fit: cover;
+    border-radius: 1.5rem !important;
+    box-shadow: 0 10px 30px rgba(12, 34, 64, 0.15);
+}
+
+.owner-tag {
+    font-size: 1.1rem;
+    color: #1D7373; /* Teal */
+}
+
+.description-text {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: #444;
+}
+
+/* Price & Location Box */
+.price-location-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 1rem 1.5rem;
+    border-radius: 1rem;
+    border-left: 5px solid #BF964B; /* Gold Border */
+}
+
+.price-tag {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0C2240;
+    margin-bottom: 0;
+}
+
+.price-tag small {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 400;
+}
+
+.loc-text {
+    color: #1D7373;
+    font-weight: 500;
+    margin-bottom: 0;
+}
+
+/* Buttons */
+.btns-row {
+    display: flex;
+    margin-bottom: 2rem;
+}
+
+.btn-edit {
+    background-color: #0C2240 !important;
+    color: white !important;
+    border-radius: 0.5rem;
+    padding: 0.6rem 1.5rem;
+    transition: 0.3s;
+}
+
+.btn-edit:hover {
+    background-color: #1D7373 !important;
+}
+
+.btn-delete {
+    background-color: #d9534f !important;
+    color: white !important;
+    border-radius: 0.5rem;
+    padding: 0.6rem 1.5rem;
+}
+
+.btn-submit {
+    background-color: #BF964B !important;
+    color: white !important;
+    border: none;
+    padding: 0.6rem 2rem;
+    font-weight: 600;
+}
+
+/* Map */
+.map-container {
+    height: 400px;
+    width: 100%;
+    border-radius: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border: 2px solid #fff;
+}
+
+/* Reviews */
+.section-title {
+    color: #0C2240;
+    font-weight: 600;
+    margin-top: 1rem;
+}
+
+.review-card {
+    border: none !important;
+    border-radius: 1rem !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    background-color: #fff;
+    transition: 0.3s;
+}
+
+.review-card:hover {
+    transform: translateY(-5px);
+}
+
+.review-author {
+    color: #1D7373;
+    font-weight: 700;
+}
+
+.review-text {
+    color: #555;
+    font-style: italic;
+}
+
+/* Form Styling */
+.custom-input {
+    border-radius: 0.8rem;
+    border: 1px solid #ced4da;
+    padding: 1rem;
+}
+
+.custom-input:focus {
+    border-color: #1D7373;
+    box-shadow: 0 0 0 0.2rem rgba(29, 115, 115, 0.25);
+}
