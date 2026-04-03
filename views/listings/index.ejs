@@ -1,70 +1,109 @@
 <% layout("/layouts/boilerplate")%>
 <link rel="stylesheet" href="/css/index-ejs.css">
-<body>
-    <div id="filters">
-    <div class="filter">
-        <i class="fa-solid fa-building"></i>
-        <p>Hostels & PGs</p>
-    </div>
-    <div class="filter">
-        <i class="fa-solid fa-key"></i>
-        <p>Independent Rooms</p>
-    </div>
-    <div class="filter">
-        <i class="fa-solid fa-graduation-cap"></i>
-        <p>Near Campus</p>
-    </div>
-    <div class="filter">
-        <i class="fa-solid fa-book-open-reader"></i>
-        <p>Libraries & Study</p>
-    </div>
-    <div class="filter">
-        <i class="fa-solid fa-print"></i>
-        <p>Xerox & Stationery</p>
-    </div>
-    <div class="filter">
-        <i class="fa-solid fa-utensils"></i>
-        <p>Mess & Tiffins</p>
-    </div>
-    <div class="filter">
-        <i class="fa-solid fa-shirt"></i>
-        <p>Laundry & Clean</p>
-    </div>
-    <div class="filter">
-        <i class="fa-solid fa-dumbbell"></i>
-        <p>Gym & Fitness</p>
-    </div>
-    <div class="filter">
-        <i class="fa-solid fa-kit-medical"></i>
-        <p>Clinics & Medical</p>
-    </div>
-    <div class="filter">
-        <i class="fa-solid fa-bus"></i>
-        <p>Bus Stops</p>
-    </div>
-    <div class="filter">
-        <i class="fa-solid fa-mug-hot"></i>
-        <p>Cafes & Chai</p>
-    </div>
-</div>
 
-    <div class="row row-cols-xxl-4 row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
+<div class="index-container">
+    <div class="filters-wrapper d-flex align-items-center justify-content-between py-3">
+        <div id="filters">
+            <div class="filter active">
+                <i class="fa-solid fa-building"></i>
+                <p>Hostels & PGs</p>
+            </div>
+            <div class="filter">
+                <i class="fa-solid fa-key"></i>
+                <p>Independent Rooms</p>
+            </div>
+            <div class="filter">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <p>Near Campus</p>
+            </div>
+            <div class="filter">
+                <i class="fa-solid fa-book-open-reader"></i>
+                <p>Libraries & Study</p>
+            </div>
+            <div class="filter">
+                <i class="fa-solid fa-print"></i>
+                <p>Xerox & Stationery</p>
+            </div>
+            <div class="filter">
+                <i class="fa-solid fa-utensils"></i>
+                <p>Mess & Tiffins</p>
+            </div>
+            <div class="filter">
+                <i class="fa-solid fa-shirt"></i>
+                <p>Laundry & Clean</p>
+            </div>
+            <div class="filter">
+                <i class="fa-solid fa-dumbbell"></i>
+                <p>Gym & Fitness</p>
+            </div>
+            <div class="filter">
+                <i class="fa-solid fa-kit-medical"></i>
+                <p>Clinics & Medical</p>
+            </div>
+            <div class="filter">
+                <i class="fa-solid fa-bus"></i>
+                <p>Bus Stops</p>
+            </div>
+            <div class="filter">
+                <i class="fa-solid fa-mug-hot"></i>
+                <p>Cafes & Chai</p>
+            </div>
+        </div>
+
+        <!-- <div class="tax-toggle d-none d-md-flex align-items-center ms-3">
+            <div class="form-check-reverse form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                <label class="form-check-label" for="flexSwitchCheckDefault">Display total with taxes</label>
+            </div>
+        </div> -->
+    </div>
+
+    <div class="result-info d-flex justify-content-between align-items-center mb-4 px-1">
+        <h6 class="text-muted fw-normal">Showing <%= allListings.length %> available places</h6>
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown">
+                Sort by: Recommended
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Price: Low to High</a></li>
+                <li><a class="dropdown-item" href="#">Price: High to Low</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row row-cols-xxl-4 row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
         <% for(let listing of allListings) { %>
-            <a href="/listings/<%= listing._id %>" class="listing-link">
-                <div class="card col listing-card border-0">
-                    <div class="img-container">
-                        <img src="<%=listing.image.url %>" class="card-img-top" alt="listing_image">
-                        <div class="card-img-overlay"></div>
+            <div class="col listing-col">
+                <a href="/listings/<%= listing._id %>" class="listing-link">
+                    <div class="card listing-card border-0">
+                        <div class="img-container">
+                            <img src="<%=listing.image.url %>" class="card-img-top" alt="listing_image">
+                            
+                            <div class="card-img-overlay p-2">
+                                <span class="badge bg-teal-brand px-2 py-1">New</span>
+                                <% if(listing.price < 5000) { %>
+                                    <span class="badge bg-gold-brand ms-1 px-2 py-1">Best Value</span>
+                                <% } %>
+                                <div class="wishlist-icon">
+                                    <i class="fa-regular fa-heart"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body px-1">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <span class="listing-title"><b><%= listing.title %></b></span>
+                                <span class="text-muted small"><i class="fa-solid fa-star text-warning"></i> 4.5</span>
+                            </div>
+                            <p class="card-text">
+                                <span class="listing-price">&#x20B9; <%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %></span> 
+                                <span class="per-month">/ month</span>
+                                <i class="tax-info text-muted small d-none">+ 18% GST</i>
+                            </p>
+                        </div>
                     </div>
-                    <div class="card-body px-1">
-                        <p class="card-text">
-                            <span class="listing-title"><b><%= listing.title %></b></span> <br>
-                            <span class="listing-price">&#x20B9; <%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %></span> 
-                            <span class="per-month">/ month</span>
-                        </p>
-                    </div>
-                </div>
-            </a>
+                </a>
+            </div>
         <% } %>
     </div>
-</body>
+</div>

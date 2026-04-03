@@ -3,57 +3,49 @@
   <div class="container-fluid px-2 px-md-5 d-flex align-items-center">
     
     <a class="navbar-brand d-flex align-items-center" href="/listings">
-      <div class="brand-logo">
-        <i class="fa-solid fa-house-chimney"></i>
-      </div>
+      <div class="brand-logo"><i class="fa-solid fa-house-chimney"></i></div>
       <span class="brand-text d-none d-lg-inline ms-2">UniNest</span>
     </a>
 
     <div class="navbar-nav mx-auto search-container">
       <form class="d-flex search-form" role="search">
-        <input class="form-control search-input" type="search" placeholder="Search PGs, mess, or stationery..." aria-label="Search">
+        <input class="form-control search-input" type="search" placeholder="Search..." aria-label="Search">
         <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
       </form>
     </div>
 
     <div class="navbar-nav ms-auto align-items-center flex-row">
       
-      <a class="nav-link nav-hover d-none d-md-flex align-items-center me-2" href="/listings">
-        <i class="fa-solid fa-compass"></i>
-        <span class="ms-1 d-none d-xl-inline">Explore</span>
-      </a>
-
-      <a class="nav-link add-listing-btn me-2 me-md-3" href="/listings/new">
-        <i class="fa-solid fa-plus-circle"></i>
-        <span class="ms-1 d-none d-sm-inline">Add</span>
-      </a>
+      <% if(currUser) { %>
+        <a class="nav-link add-listing-btn me-2 me-md-3" href="/listings/new">
+          <i class="fa-solid fa-plus-circle"></i>
+          <span class="ms-1 d-none d-sm-inline">Add Listing</span>
+        </a>
+      <% } %>
       
       <div class="nav-divider d-none d-md-block"></div>
 
-      <% if(!locals.currUser) { %>
+      <% if(!currUser) { %>
         <a class="nav-link auth-link d-none d-sm-inline ms-1" href="/signup">Sign up</a>
-        
         <a class="nav-link auth-link-bold ms-1 p-1 p-md-2" href="/login">
           <span class="d-none d-sm-inline">Log in</span>
           <i class="fa-solid fa-right-to-bracket d-inline d-sm-none"></i>
         </a>
       <% } %>
 
-      <% if(locals.currUser) { %> 
+      <% if(currUser) { %> 
         <div class="nav-item dropdown ms-1">
           <a class="nav-link dropdown-toggle user-profile-toggle p-1 p-md-2" href="#" role="button" data-bs-toggle="dropdown">
              <i class="fa-regular fa-circle-user"></i>
-             <span class="d-none d-lg-inline ms-1"><%= locals.currUser.username %></span>
+             <span class="d-none d-lg-inline ms-1"><%= currUser.username %></span>
           </a>
           <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
             <li><a class="dropdown-item py-2" href="/listings/mylisting"><i class="fa-solid fa-list-ul me-2"></i> My Listings</a></li>
-            <li><a class="dropdown-item py-2" href="#"><i class="fa-solid fa-heart me-2"></i> Wishlist</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item py-2 text-danger" href="/logout"><i class="fa-solid fa-right-from-bracket me-2"></i> Log out</a></li>
           </ul>
         </div>
       <% } %>
     </div>
-      
   </div>
 </nav>
