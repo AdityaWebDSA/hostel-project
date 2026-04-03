@@ -73,6 +73,8 @@ const sessionOptions = {
         expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
         maxAge: 7 * 24 * 60 * 60 * 1000,
         httpOnly: true,
+        // Added: Ensures cookies work over HTTPS on Render
+        secure: process.env.NODE_ENV === "production", 
     },
 };
 
@@ -97,28 +99,19 @@ app.use((req, res, next) => {
 
 // --- ROUTES ---
 
-// 1. Root Route Redirect (FIXES 404 ON HOMEPAGE)
+// 1. Root Route Redirect - (Place this ABOVE other routes)
 app.get("/", (req, res) => {
     res.redirect("/listings");
 });
 
-// 2. Demo User Route
-app.get("/demouser", wrapAsync(async (req, res) => {
-    let fakeUser = new User({
-        email: "student2@gmail.com",
-        username: "delta-student-2"
-    });
-    let registeredUser = await User.register(fakeUser, "helloworld");
-    res.send(registeredUser);
-}));
-
-// 3. Resource Routes
+// 2. Resource Routes
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 
 // --- ERROR HANDLING ---
 
+// app.all("*") catches everything that didn't match the routes above
 app.all("*", (req, res, next) => {
     next(new ExpressError(404, "Page not Found!"));
 });
