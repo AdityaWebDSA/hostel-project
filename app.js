@@ -9,7 +9,7 @@ const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const session = require("express-session");
-const MongoStore = require("connect-mongo"); // RIGHT - Remove the { }
+const MongoStore = require("connect-mongo"); 
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -91,11 +91,18 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req, res, next) => {
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
-    res.locals.currUser = req.user || null; // The '|| null' is the safety net
+    res.locals.currUser = req.user || null;
     next();
 });
 
-// Demo User Route
+// --- ROUTES ---
+
+// 1. Root Route Redirect (FIXES 404 ON HOMEPAGE)
+app.get("/", (req, res) => {
+    res.redirect("/listings");
+});
+
+// 2. Demo User Route
 app.get("/demouser", wrapAsync(async (req, res) => {
     let fakeUser = new User({
         email: "student2@gmail.com",
@@ -105,17 +112,17 @@ app.get("/demouser", wrapAsync(async (req, res) => {
     res.send(registeredUser);
 }));
 
-// Route Connections
+// 3. Resource Routes
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 
-// 404 Handler
-// This matches EVERY request that reaches this point
-app.use((req, res, next) => {
+// --- ERROR HANDLING ---
+
+app.all("*", (req, res, next) => {
     next(new ExpressError(404, "Page not Found!"));
 });
-// Global Error Handler
+
 app.use((err, req, res, next) => {
     let { statusCode = 500, message = "Something went wrong!" } = err;
     res.status(statusCode).render("error.ejs", { message, statusCode });
