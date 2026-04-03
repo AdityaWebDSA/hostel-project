@@ -112,10 +112,9 @@ app.use("/", userRouter);
 // --- ERROR HANDLING ---
 
 // app.all("*") catches everything that didn't match the routes above
-app.all("*", (req, res, next) => {
+app.all(/(.*)/, (req, res, next) => {
     next(new ExpressError(404, "Page not Found!"));
 });
-
 app.use((err, req, res, next) => {
     let { statusCode = 500, message = "Something went wrong!" } = err;
     res.status(statusCode).render("error.ejs", { message, statusCode });
