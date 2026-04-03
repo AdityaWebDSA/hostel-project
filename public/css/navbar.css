@@ -1,151 +1,303 @@
 /* --- Main Navigation Bar --- */
+
 .main-nav {
+
     height: 4.5rem;
+
     background-color: rgba(255, 255, 255, 0.95) !important;
+
     backdrop-filter: blur(10px); /* Glassmorphism effect */
+
     box-shadow: 0 2px 15px rgba(12, 34, 64, 0.08);
+
     transition: all 0.3s ease;
+
     z-index: 1000;
+
 }
+
+
 
 /* --- Brand / Logo Section --- */
+
 .brand-logo {
+
     width: 38px;
+
     height: 38px;
+
     background: #1D7373; /* Teal */
+
     color: #F2F2F2;
+
     border-radius: 10px;
+
     display: flex;
+
     align-items: center;
+
     justify-content: center;
+
     font-size: 1.2rem;
+
     transition: transform 0.3s ease;
+
 }
+
+
 
 .navbar-brand:hover .brand-logo {
+
     transform: rotate(-10deg) scale(1.1);
+
     background: #0C2240; /* Navy on hover */
+
 }
+
+
 
 .brand-text {
+
     font-weight: 800;
+
     font-size: 1.4rem;
+
     color: #0C2240 !important;
+
     letter-spacing: -0.8px;
+
 }
+
+
 
 /* --- Centered Search Bar --- */
+
 .search-container {
+
     max-width: 500px;
+
     width: 100%;
+
 }
+
+
 
 .search-form {
+
     background: #F2F2F2;
+
     border: 1px solid rgba(12, 34, 64, 0.1);
+
     border-radius: 50px;
+
     padding: 4px;
+
     display: flex;
+
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
 }
+
+
 
 .search-form:focus-within {
+
     background: #fff;
+
     border-color: #1D7373;
+
     box-shadow: 0 4px 12px rgba(29, 115, 115, 0.15);
+
     transform: translateY(-1px);
+
 }
+
+
 
 .search-input {
+
     border: none !important;
+
     background: transparent !important;
+
     box-shadow: none !important;
+
     padding: 0 1.2rem;
+
     color: #0C2240;
+
     font-weight: 500;
+
+    width: 20rem;
+
 }
+
+
 
 .search-btn {
+
     background: #1D7373 !important;
+
     color: white !important;
+
     border-radius: 50% !important;
+
     width: 35px;
+
     height: 35px;
+
     display: flex;
+
     align-items: center;
+
     justify-content: center;
+
     transition: 0.2s;
+
 }
+
+
 
 .search-btn:hover {
+
     background: #BF964B !important; /* Gold on hover */
+
     transform: scale(1.05);
+
 }
+
+
 
 /* --- Nav Links & Buttons --- */
+
 .nav-link {
+
     color: #0C2240 !important;
+
     font-weight: 600;
+
     font-size: 0.9rem;
+
     padding: 0.5rem 1rem !important;
+
     transition: 0.2s;
+
 }
+
+
 
 .nav-hover:hover {
+
     color: #1D7373 !important;
+
 }
+
+
 
 /* "Add Listing" Premium Button */
+
 .add-listing-btn {
+
     background: rgba(29, 115, 115, 0.1);
+
     color: #1D7373 !important;
+
     border-radius: 50px;
+
     padding: 0.5rem 1.2rem !important;
+
     border: 1px solid transparent;
+
 }
+
+
 
 .add-listing-btn:hover {
+
     background: #1D7373;
+
     color: #F2F2F2 !important;
+
 }
+
+
 
 /* --- User Profile Dropdown --- */
+
 .user-profile-toggle {
+
     background: #F2F2F2;
+
     border-radius: 50px;
+
     padding: 0.4rem 1rem !important;
+
     display: flex;
+
     align-items: center;
+
     border: 1px solid rgba(12, 34, 64, 0.05);
+
 }
+
+
 
 .user-profile-toggle:hover {
+
     border-color: #BF964B; /* Gold border */
+
 }
+
+
 
 .dropdown-menu {
+
     border-radius: 12px !important;
+
     margin-top: 10px !important;
+
     padding: 0.5rem !important;
+
 }
+
+
 
 .dropdown-item:hover {
+
     background-color: #F2F2F2 !important;
+
     color: #1D7373 !important;
+
     border-radius: 8px;
+
 }
+
+
 
 /* --- Visual Divider --- */
+
 .nav-divider {
+
     width: 1px;
+
     height: 24px;
+
     background: rgba(12, 34, 64, 0.1);
+
     margin: 0 10px;
+
 }
 
+
+
 /* --- Mobile Responsiveness --- */
+
 @media (max-width: 768px) {
+
     .main-nav { height: auto; padding: 0.8rem 0; }
+
     .search-container { margin: 1rem 0; order: 3; }
+
     .nav-divider { display: none; }
+
 }

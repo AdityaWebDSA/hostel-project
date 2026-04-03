@@ -15,18 +15,36 @@
 
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       
+      <div class="navbar-nav me-auto align-items-center">
+        <a class="nav-link nav-hover ms-md-3" href="/listings">
+          <i class="fa-solid fa-compass me-1"></i>Explore
+        </a>
+        <a class="nav-link nav-hover" href="#">
+          <i class="fa-solid fa-utensils me-1"></i>Mess & Tiffins
+        </a>
+        <div class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle nav-hover" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="fa-solid fa-gears me-1"></i>Services
+          </a>
+          <ul class="dropdown-menu shadow-sm border-0">
+            <li><a class="dropdown-item" href="#"><i class="fa-solid fa-print me-2"></i>Xerox & Stationery</a></li>
+            <li><a class="dropdown-item" href="#"><i class="fa-solid fa-kit-medical me-2"></i>Medical Clinics</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#"><i class="fa-solid fa-circle-info me-2"></i>About UniNest</a></li>
+          </ul>
+        </div>
+      </div>
+
       <div class="navbar-nav mx-auto search-container">
         <form class="d-flex search-form" role="search">
-          <input class="form-control search-input" type="search" placeholder="Search hostels, PGs..." aria-label="Search">
+          <input class="form-control search-input" type="search" placeholder="Search hostels, PGs, or services..." aria-label="Search">
           <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
         </form>
       </div>
 
       <div class="navbar-nav ms-auto align-items-center">
-        <a class="nav-link nav-hover me-2" href="/listings">Explore</a>
-        
         <a class="nav-link add-listing-btn me-3" href="/listings/new">
-          <i class="fa-solid fa-plus-circle me-1"></i> Add Listing
+          <i class="fa-solid fa-plus-circle me-1"></i>Add Listing
         </a>
         
         <div class="nav-divider d-none d-md-block"></div>
