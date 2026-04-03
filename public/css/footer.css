@@ -1,0 +1,146 @@
+/* --- Main Footer Container --- */
+.footer {
+    background-color: #0C2240; /* Your Deep Navy */
+    color: #F2F2F2; /* Light Grey text */
+    padding-top: 4rem;
+    padding-bottom: 2rem;
+    border-top: 4px solid #1D7373; /* Teal Accent Line */
+}
+
+/* --- Brand Section --- */
+.footer-logo {
+    width: 40px;
+    height: 40px;
+    background: #1D7373; /* Teal */
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.footer-brand-text {
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: #F2F2F2;
+    letter-spacing: -0.5px;
+}
+
+.footer-description {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: rgba(242, 242, 242, 0.7);
+    margin-top: 1rem;
+}
+
+/* --- Social Icons --- */
+.f-info-socials {
+    display: flex;
+    gap: 1.2rem;
+    margin-top: 1.5rem;
+}
+
+.f-info-socials a {
+    color: #F2F2F2;
+    font-size: 1.3rem;
+    transition: all 0.3s ease;
+}
+
+.f-info-socials a:hover {
+    color: #BF964B; /* Gold Hover */
+    transform: translateY(-3px);
+}
+
+/* --- Footer Headings & Links --- */
+.footer-heading {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #BF964B; /* Your Gold */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.footer-links li {
+    margin-bottom: 0.8rem;
+}
+
+.footer-links a {
+    color: rgba(242, 242, 242, 0.8);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: 0.2s;
+}
+
+.footer-links a:hover {
+    color: #1D7373; /* Teal Hover */
+    padding-left: 5px; /* Subtle slide effect */
+}
+
+/* --- Newsletter Box --- */
+.footer-newsletter .form-control {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 8px;
+}
+.footer-newsletter .form-control:placeholder-shown {
+    color: white;
+}
+
+.footer-newsletter .form-control:focus {
+    background: rgba(62, 19, 19, 0.1);
+    border-color: #1D7373;
+    box-shadow: none;
+}
+
+.footer-btn {
+    background-color: #1D7373;
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+    border: none;
+    transition: 0.3s;
+}
+
+.footer-btn:hover {
+    background-color: #BF964B; /* Gold */
+    color: #0C2240;
+}
+
+/* --- Bottom Bar --- */
+.footer-divider {
+    border-top: 1px solid rgba(242, 242, 242, 0.1);
+}
+
+.f-info-brand {
+    font-size: 0.85rem;
+    color: rgba(242, 242, 242, 0.5);
+}
+
+.f-info-links a {
+    color: rgba(242, 242, 242, 0.6);
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+.f-info-links a:hover {
+    color: #F2F2F2;
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 768px) {
+    .footer {
+        text-align: center;
+    }
+    .footer-brand {
+        justify-content: center;
+    }
+    .f-info-socials {
+        justify-content: center;
+    }
+    .footer-description {
+        padding-right: 0 !important;
+    }
+}

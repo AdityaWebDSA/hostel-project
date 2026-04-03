@@ -1,303 +1,211 @@
 /* --- Main Navigation Bar --- */
-
 .main-nav {
-
     height: 4.5rem;
-
     background-color: rgba(255, 255, 255, 0.95) !important;
-
-    backdrop-filter: blur(10px); /* Glassmorphism effect */
-
+    backdrop-filter: blur(10px);
     box-shadow: 0 2px 15px rgba(12, 34, 64, 0.08);
-
     transition: all 0.3s ease;
-
     z-index: 1000;
-
+    display: flex;
+    align-items: center;
 }
-
-
 
 /* --- Brand / Logo Section --- */
-
 .brand-logo {
-
     width: 38px;
-
     height: 38px;
-
-    background: #1D7373; /* Teal */
-
+    background: #1D7373;
     color: #F2F2F2;
-
     border-radius: 10px;
-
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
     font-size: 1.2rem;
-
     transition: transform 0.3s ease;
-
 }
-
-
 
 .navbar-brand:hover .brand-logo {
-
     transform: rotate(-10deg) scale(1.1);
-
-    background: #0C2240; /* Navy on hover */
-
+    background: #0C2240;
 }
-
-
 
 .brand-text {
-
     font-weight: 800;
-
     font-size: 1.4rem;
-
     color: #0C2240 !important;
-
     letter-spacing: -0.8px;
-
 }
 
-
-
-/* --- Centered Search Bar --- */
-
+/* --- Centered Fluid Search Bar --- */
 .search-container {
-
-    max-width: 500px;
-
-    width: 100%;
-
+    flex: 1; /* Allows it to shrink and grow dynamically */
+    max-width: 800px; /* Increased from 500px for desktop */
+    min-width: 150px; /* Prevents it from disappearing on mobile */
+    margin: 0 1rem;
 }
-
-
 
 .search-form {
-
     background: #F2F2F2;
-
     border: 1px solid rgba(12, 34, 64, 0.1);
-
     border-radius: 50px;
-
     padding: 4px;
-
     display: flex;
-
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
 }
-
-
 
 .search-form:focus-within {
-
     background: #fff;
-
     border-color: #1D7373;
-
     box-shadow: 0 4px 12px rgba(29, 115, 115, 0.15);
-
-    transform: translateY(-1px);
-
 }
-
-
 
 .search-input {
-
     border: none !important;
-
     background: transparent !important;
-
     box-shadow: none !important;
-
-    padding: 0 1.2rem;
-
+    padding: 0 1rem;
     color: #0C2240;
-
     font-weight: 500;
-
-    width: 20rem;
-
+    width: 25rem !important; /* Overwrites the fixed 20rem to be fluid */
+    font-size: 0.9rem;
 }
-
-
 
 .search-btn {
-
     background: #1D7373 !important;
-
     color: white !important;
-
     border-radius: 50% !important;
-
     width: 35px;
-
     height: 35px;
-
+    min-width: 35px; /* Ensures button doesn't shrink */
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
     transition: 0.2s;
-
+    border: none;
 }
-
-
-
-.search-btn:hover {
-
-    background: #BF964B !important; /* Gold on hover */
-
-    transform: scale(1.05);
-
-}
-
-
 
 /* --- Nav Links & Buttons --- */
-
 .nav-link {
-
     color: #0C2240 !important;
-
     font-weight: 600;
-
-    font-size: 0.9rem;
-
-    padding: 0.5rem 1rem !important;
-
+    font-size: 0.85rem; /* Slightly smaller for mobile fit */
+    padding: 0.4rem 0.6rem !important;
     transition: 0.2s;
-
 }
-
-
-
-.nav-hover:hover {
-
-    color: #1D7373 !important;
-
-}
-
-
-
-/* "Add Listing" Premium Button */
 
 .add-listing-btn {
-
     background: rgba(29, 115, 115, 0.1);
-
     color: #1D7373 !important;
-
     border-radius: 50px;
-
-    padding: 0.5rem 1.2rem !important;
-
-    border: 1px solid transparent;
-
-}
-
-
-
-.add-listing-btn:hover {
-
-    background: #1D7373;
-
-    color: #F2F2F2 !important;
-
-}
-
-
-
-/* --- User Profile Dropdown --- */
-
-.user-profile-toggle {
-
-    background: #F2F2F2;
-
-    border-radius: 50px;
-
     padding: 0.4rem 1rem !important;
-
-    display: flex;
-
-    align-items: center;
-
-    border: 1px solid rgba(12, 34, 64, 0.05);
-
+    border: 1px solid transparent;
+    white-space: nowrap; /* Prevents text from wrapping */
 }
 
-
-
-.user-profile-toggle:hover {
-
-    border-color: #BF964B; /* Gold border */
-
+/* --- Mobile Fixes (The "No Dropdown" Logic) --- */
+/* --- Desktop & Tablet (Large Screens) --- */
+@media (min-width: 992px) {
+    .search-container {
+        flex: 1;
+        max-width: 600px; /* Stronger presence on desktop */
+    }
 }
 
-
-
-.dropdown-menu {
-
-    border-radius: 12px !important;
-
-    margin-top: 10px !important;
-
-    padding: 0.5rem !important;
-
+/* --- Small Laptops / Large Tablets (991px to 769px) --- */
+@media (max-width: 991px) {
+    .brand-text {
+        font-size: 1.2rem;
+    }
+    .search-container {
+        max-width: 350px;
+        margin: 0 0.8rem;
+    }
+    .nav-link {
+        padding: 0.5rem 0.6rem !important;
+        font-size: 0.85rem;
+    }
 }
 
-
-
-.dropdown-item:hover {
-
-    background-color: #F2F2F2 !important;
-
-    color: #1D7373 !important;
-
-    border-radius: 8px;
-
-}
-
-
-
-/* --- Visual Divider --- */
-
-.nav-divider {
-
-    width: 1px;
-
-    height: 24px;
-
-    background: rgba(12, 34, 64, 0.1);
-
-    margin: 0 10px;
-
-}
-
-
-
-/* --- Mobile Responsiveness --- */
-
+/* --- Mobile Device Core Logic (No Dropdown) --- */
 @media (max-width: 768px) {
+    .main-nav {
+        height: 3.8rem; /* Slightly shorter to save vertical space */
+        padding: 0.2rem 0;
+    }
 
-    .main-nav { height: auto; padding: 0.8rem 0; }
+    .container-fluid {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
 
-    .search-container { margin: 1rem 0; order: 3; }
+    /* 1. Shrink the Brand */
+    .brand-logo {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+    .brand-text {
+        display: none; /* Only show the house icon on mobile */
+    }
 
-    .nav-divider { display: none; }
+    /* 2. Make Search Fluid & Small */
+    .search-container {
+        margin: 0 0.4rem;
+        flex: 1; /* Forces search to take all remaining space */
+        min-width: 80px;
+    }
+    .search-form {
+        padding: 2px;
+    }
+    .search-input {
+        padding: 0 0.5rem;
+        font-size: 0.75rem;
+    }
+    .search-input::placeholder {
+        color: transparent; /* Hides placeholder to prevent text overlap */
+    }
+    .search-btn {
+        width: 30px;
+        height: 30px;
+        min-width: 30px;
+    }
 
+    /* 3. Scale down the Action Buttons */
+    .nav-link {
+        padding: 0.2rem 0.4rem !important;
+        font-size: 0.75rem;
+    }
+
+    .add-listing-btn {
+        padding: 0.3rem 0.6rem !important;
+    }
+
+    /* Hide specific text labels to ensure row fit */
+    .auth-link-bold span, 
+    .add-listing-btn span,
+    .user-profile-toggle span {
+        display: none !important; 
+    }
+
+    /* Force icons to stay centered and visible */
+    .fa-plus-circle, 
+    .fa-right-to-bracket, 
+    .fa-circle-user {
+        font-size: 1.1rem;
+        margin: 0 !important;
+    }
+
+    .nav-divider {
+        display: none;
+    }
+}
+
+/* --- Extra Small Devices (Under 400px) --- */
+@media (max-width: 400px) {
+    .search-container {
+        margin: 0 0.2rem;
+    }
+    .nav-link {
+        padding: 0.1rem 0.3rem !important;
+    }
 }
