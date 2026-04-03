@@ -9,7 +9,7 @@ const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const session = require("express-session");
-const { MongoStore } = require('connect-mongo');
+const MongoStore = require("connect-mongo"); // RIGHT - Remove the { }
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -25,6 +25,7 @@ const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 
 const dbUrl = process.env.ATLASDB_URL;
+console.log("Database URL Check:", dbUrl ? "URL Found" : "URL MISSING!");
 
 // Database Connection
 main()
@@ -58,7 +59,6 @@ const store = MongoStore.create({
     },
     touchAfter: 24 * 3600,
 });
-
 store.on("error", (err) => {
     console.log("ERROR in MONGO SESSION STORE", err);
 });
