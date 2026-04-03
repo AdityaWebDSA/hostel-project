@@ -1,9 +1,12 @@
 <link rel="stylesheet" href="/css/navbar.css">
-<nav class="navbar navbar-expand-md bg-white border-bottom sticky-top">
+<nav class="navbar navbar-expand-md bg-white border-bottom sticky-top main-nav">
   <div class="container-fluid px-md-5">
+    
     <a class="navbar-brand d-flex align-items-center" href="/listings">
-      <i class="fa-solid fa-house me-2"></i>
-      <span class="brand-text">UniNest</span>
+      <div class="brand-logo">
+        <i class="fa-solid fa-house-chimney"></i>
+      </div>
+      <span class="brand-text ms-2">UniNest</span>
     </a>
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
@@ -11,44 +14,44 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-link nav-hover" href="/listings">Explore</a>
+      
+      <div class="navbar-nav mx-auto search-container">
+        <form class="d-flex search-form" role="search">
+          <input class="form-control search-input" type="search" placeholder="Search hostels, PGs..." aria-label="Search">
+          <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </form>
       </div>
-<div class="navbar-nav ms-auto align-items-center">
-  <a class="nav-link add-listing-link me-3" href="/listings/new">Add New Listing</a>
-  
-  <% if(!locals.currUser) { %>
-    <a class="nav-link fw-bold text-dark" href="/signup">Sign up</a>
-    <a class="nav-link fw-bold text-dark" href="/login">Log in</a>
-  <% } %>
 
-  <% if(locals.currUser) { %> 
-    <div class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle fw-bold" href="#" role="button" data-bs-toggle="dropdown">
-          <%= locals.currUser.username %>
-      </a>
-      <ul class="dropdown-menu dropdown-menu-end">
-        <li><a class="dropdown-item" href="/listings/mylisting">My Listings</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item text-danger" href="/logout">Log out</a></li>
-      </ul>
-    </div>
-  <% } %>  
-</div>
+      <div class="navbar-nav ms-auto align-items-center">
+        <a class="nav-link nav-hover me-2" href="/listings">Explore</a>
+        
+        <a class="nav-link add-listing-btn me-3" href="/listings/new">
+          <i class="fa-solid fa-plus-circle me-1"></i> Add Listing
+        </a>
+        
+        <div class="nav-divider d-none d-md-block"></div>
 
-        <% if(currUser) { %> 
-          <div class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle fw-bold" href="#" role="button" data-bs-toggle="dropdown">
-               User
+        <% if(!locals.currUser) { %>
+          <a class="nav-link auth-link ms-2" href="/signup">Sign up</a>
+          <a class="nav-link auth-link-bold ms-2" href="/login">Log in</a>
+        <% } %>
+
+        <% if(locals.currUser) { %> 
+          <div class="nav-item dropdown ms-2">
+            <a class="nav-link dropdown-toggle user-profile-toggle" href="#" role="button" data-bs-toggle="dropdown">
+               <i class="fa-regular fa-circle-user me-1"></i>
+               <%= locals.currUser.username %>
             </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="/listings/mylisting">My Listings</a></li>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+              <li><a class="dropdown-item py-2" href="/listings/mylisting"><i class="fa-solid fa-list-ul me-2"></i> My Listings</a></li>
+              <li><a class="dropdown-item py-2" href="#"><i class="fa-solid fa-heart me-2"></i> Wishlist</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item text-danger" href="/logout">Log out</a></li>
+              <li><a class="dropdown-item py-2 text-danger" href="/logout"><i class="fa-solid fa-right-from-bracket me-2"></i> Log out</a></li>
             </ul>
           </div>
-        <% } %>  
+        <% } %>
       </div>
+      
     </div>
   </div>
 </nav>

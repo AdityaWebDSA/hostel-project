@@ -1,9 +1,9 @@
 /* --- Filters Section (Horizontal Fix) --- */
 #filters {
-    display: flex !important; /* Forces horizontal alignment */
-    flex-direction: row;      /* Ensures they stay in a line */
-    flex-wrap: nowrap;        /* Keeps them from breaking to a new line on desktop */
-    overflow-x: auto;         /* Allows side-scrolling if there are too many icons */
+    display: flex !important;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
     align-items: center;
     gap: 2rem;
     padding: 1.2rem 1rem;
@@ -12,28 +12,27 @@
     margin-top: 1rem;
     margin-bottom: 2rem;
     box-shadow: 0 4px 12px rgba(12, 34, 64, 0.05);
-    scrollbar-width: none;    /* Hides scrollbar on Firefox */
+    scrollbar-width: none;
 }
 
-/* Hide scrollbar for Chrome/Safari */
 #filters::-webkit-scrollbar {
     display: none;
 }
 
 .filter {
     text-align: center;
-    min-width: 100px;         /* Ensures text doesn't squish */
+    min-width: 100px;
     opacity: 0.7;
     cursor: pointer;
     transition: all 0.3s ease;
-    color: #0C2240;           /* Your Deep Blue */
+    color: #0C2240;
     border-bottom: 3px solid transparent;
 }
 
 .filter i {
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
-    display: block;           /* Centers the icon above text */
+    display: block;
 }
 
 .filter p {
@@ -42,12 +41,11 @@
     margin: 0;
 }
 
-/* Hover State using your Teal and Gold */
-.filter:hover {
+.filter:hover, .filter.active {
     opacity: 1;
-    color: #1D7373;           /* Your Teal */
+    color: #1D7373;
     transform: translateY(-3px);
-    border-bottom: 3px solid #BF964B; /* Your Gold */
+    border-bottom: 3px solid #BF964B;
 }
 
 /* --- Index Page Listing Cards --- */
@@ -58,22 +56,27 @@
 .listing-card {
     border: none !important;
     background-color: transparent !important;
-    margin-bottom: 2.5rem;
-    transition: transform 0.2s ease;
+    margin-bottom: 2rem; /* Balanced spacing */
+    transition: transform 0.2s ease-in-out;
 }
 
+.listing-card:hover {
+    transform: translateY(-5px); /* Lift the whole card slightly */
+}
+
+/* --- The Image Fix --- */
 .img-container {
     position: relative;
     overflow: hidden;
     border-radius: 1.2rem;
-    height: 18rem;
+    height: 16rem; /* Fixed height for uniformity */
     box-shadow: 0 8px 20px rgba(12, 34, 64, 0.1);
 }
 
 .listing-card img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: cover; /* Prevents stretching */
     transition: transform 0.5s ease;
 }
 
@@ -81,29 +84,46 @@
     transform: scale(1.1);
 }
 
-/* Typography using your palette */
+/* --- The Grid Alignment Fix (Card Body) --- */
+.card-body {
+    height: 5rem; 
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 0.5rem 0; /* Tighten up spacing */
+}
+
 .listing-title {
-    color: #0C2240;           /* Deep Blue */
-    font-size: 1.15rem;
+    color: #0C2240;
+    font-size: 1.1rem;
     font-weight: 700;
-    display: block;
-    margin-top: 0.8rem;
+    margin-bottom: 0.2rem;
+    transition: color 0.2s ease;
+    
+    /* Truncate text after 1 line */
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
+}
+
+.listing-card:hover .listing-title {
+    color: #1D7373;
 }
 
 .listing-price {
-    color: #1D7373;           /* Teal */
+    color: #1D7373;
     font-weight: 800;
     font-size: 1.2rem;
 }
 
-/* Fixed /Month Color */
 .per-month {
-    color: rgba(29, 115, 115, 0.7); /* Teal with 70% opacity for a subtle look */
+    color: rgba(29, 115, 115, 0.7);
     font-size: 0.9rem;
     font-weight: 500;
-    margin-left: 2px;
 }
 
-.listing-card:hover .listing-title {
-    color: #1D7373;           /* Turns title teal on hover */
+.card-text {
+    margin-bottom: 0;
 }
