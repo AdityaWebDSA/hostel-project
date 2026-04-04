@@ -2,17 +2,40 @@
 <nav class="navbar navbar-expand bg-white border-bottom sticky-top main-nav">
   <div class="container-fluid px-2 px-md-5 d-flex align-items-center">
     
-    <a class="navbar-brand d-flex align-items-center" href="/listings">
-      <div class="brand-logo"><i class="fa-solid fa-house-chimney"></i></div>
-      <span class="brand-text d-none d-lg-inline ms-2">UniNest</span>
-    </a>
+   <a class="navbar-brand d-flex align-items-center me-2 me-md-4" href="/listings">
+
+    <div class="brand-logo">
+
+        <img src="/ui_material/main_logo.png" alt="Logo">
+
+    </div>
+
+    <span class="brand-text d-none d-lg-inline ms-2">UniNest</span></a>
+
+    <div class="d-flex align-items-center me-auto primary-links">
+      <a class="nav-link custom-nav-link" href="/listings">
+        <i class="fa-solid fa-house-user"></i>
+        <span class="ms-1 d-none d-md-inline">Home</span>
+      </a>
+      
+      <% if(currUser) { %>
+        <a class="nav-link custom-nav-link" href="/bookings">
+          <i class="fa-solid fa-calendar-check"></i>
+          <span class="ms-1 d-none d-md-inline">My Bookings</span>
+        </a>
+      <% } %>
+    </div>
 
     <div class="navbar-nav mx-auto search-container">
-      <form class="d-flex search-form" role="search">
-        <input class="form-control search-input" type="search" placeholder="Search..." aria-label="Search">
+      <form class="d-flex search-form" role="search" action="/listings/search" method="GET">
+        <input name="q" class="form-control search-input" type="search" placeholder="Search..." aria-label="Search">
         <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
       </form>
     </div>
+
+    <div class="navbar-nav ms-auto align-items-center flex-row">
+
+ 
 
     <div class="navbar-nav ms-auto align-items-center flex-row">
       

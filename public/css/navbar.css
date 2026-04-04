@@ -11,6 +11,7 @@
 }
 
 /* --- Brand / Logo Section --- */
+/* --- Brand / Logo Section --- */
 .brand-logo {
     width: 38px;
     height: 38px;
@@ -20,22 +21,26 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
     transition: transform 0.3s ease;
+    /* ADD THESE TWO LINES */
+    overflow: hidden; 
+    padding: 3px; 
 }
 
-.navbar-brand:hover .brand-logo {
-    transform: rotate(-10deg) scale(1.1);
-    background: #0C2240;
+/* ADD THIS NEW BLOCK BELOW .brand-logo */
+.brand-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Ensures logo doesn't stretch */
+    display: block;
 }
-
-.brand-text {
-    font-weight: 800;
-    font-size: 1.4rem;
-    color: #0C2240 !important;
-    letter-spacing: -0.8px;
+/* Inside @media (max-width: 768px) */
+.brand-logo {
+    width: 32px;
+    height: 32px;
+    padding: 2px; /* Slightly less padding for the smaller mobile box */
+    background-color: #fff;
 }
-
 /* --- Centered Fluid Search Bar --- */
 .search-container {
     flex: 1; /* Allows it to shrink and grow dynamically */
