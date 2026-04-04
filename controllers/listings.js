@@ -105,31 +105,44 @@ module.exports.updateListing = async (req, res) => {
     }
     let { id } = req.params;
 
-    // 1. Update text fields first
-    let listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing });
+    // 1. Find the listing first (Don't use findByIdAndUpdate yet)
+    let listing = await Listing.findById(id);
+    if (!listing) {
+        req.flash("error", "Listing not found!");
+        return res.redirect("/listings");
+    }
 
-    // 2. Update Coordinates (Geocoding)
+    // 2. Update text fields manually
+    listing.title = req.body.listing.title;
+    listing.description = req.body.listing.description;
+    listing.location = req.body.listing.location;
+    listing.country = req.body.listing.country;
+    listing.price = req.body.listing.price;
+    listing.landmark = req.body.listing.landmark;
+
+    // 3. Update Coordinates
     const coords = await getCoordinates(req.body.listing);
     listing.geometry = { type: "Point", coordinates: coords };
 
-    // 3. ADD NEW IMAGES (Append logic)
+    // 4. ADD NEW IMAGES (The part that was failing)
     if (req.files && req.files.length > 0) {
         let newImages = req.files.map(f => ({ 
             url: f.path, 
             filename: f.filename 
         }));
-        listing.image.push(...newImages);
+        listing.image.push(...newImages); // This now works perfectly on the 'listing' instance
     }
 
-    // 4. DELETE SELECTED IMAGES (The new part)
+    // 5. SAVE ALL CHANGES (Text + New Images + Geocoding)
+    await listing.save();
+
+    // 6. DELETE SELECTED IMAGES (Do this LAST)
     if (req.body.deleteImages) {
-        // Use MongoDB's $pull operator to remove images whose filenames match the selected ones
         await listing.updateOne({ 
             $pull: { image: { filename: { $in: req.body.deleteImages } } } 
         });
     }
 
-    await listing.save();
     req.flash("success", "Listing Updated!");
     res.redirect(`/listings/${id}`);
 };

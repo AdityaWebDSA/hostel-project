@@ -21,11 +21,17 @@ router.route("/")
 router.get("/new", isLoggedIn, listingController.renderNewForm);
 
 // Show, Update, and Delete Routes
+// ✅ FIX: Changed upload.single to upload.array to match your multi-image logic
 router.route("/:id")
     .get(wrapAsync(listingController.showListing))
-    .put(isLoggedIn, isOwner, upload.single('listing[image]'),validateListing,wrapAsync(listingController.updateListing))
+    .put(
+        isLoggedIn, 
+        isOwner, 
+        upload.array('listing[image]'), // Fixed this from .single to .array
+        validateListing, 
+        wrapAsync(listingController.updateListing)
+    )
     .delete(isLoggedIn, isOwner, wrapAsync(listingController.destroyListing));
-
 // Edit Route
 router.get("/:id/edit", isLoggedIn, isOwner, wrapAsync(listingController.renderEditForm));
 
