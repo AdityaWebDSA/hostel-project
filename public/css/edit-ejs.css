@@ -89,3 +89,46 @@
     font-size: 0.7rem;
     opacity: 0.8;
 }
+
+/*this css to delete icon button of the existed image delete icon*/
+.edit-img-container {
+    position: relative;
+    aspect-ratio: 1/1;
+}
+
+.delete-overlay {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    z-index: 10;
+}
+
+.delete-checkbox {
+    display: none; /* Hide the actual box */
+}
+
+.delete-icon-label {
+    background: rgba(255, 255, 255, 0.8);
+    color: #dc3545; /* Red color */
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
+}
+
+/* When the hidden checkbox is checked, change the icon style */
+.delete-checkbox:checked + .delete-icon-label {
+    background: #dc3545;
+    color: white;
+    transform: scale(1.1);
+}
+
+.delete-checkbox:checked ~ img {
+    filter: grayscale(1) opacity(0.5); /* Visual feedback that it's being deleted */
+    border: 2px solid #dc3545;
+}

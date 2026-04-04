@@ -19,17 +19,22 @@
                     <div class="invalid-feedback">Please enter a short description</div>
                 </div>
 
-                <div class="mb-3">
-    <label class="form-label">Current Images</label>
-    <div class="row row-cols-md-4 row-cols-2 g-2 mb-3">
+              <div class="mb-3">
+    <label class="form-label">Current Images (Select to Delete)</label>
+    <div class="row row-cols-md-4 row-cols-2 g-3 mb-3">
         <% if (listing.image && listing.image.length > 0) { %>
             <% listing.image.forEach((img, index) => { %>
                 <div class="col">
-                    <div class="edit-img-preview position-relative">
+                    <div class="edit-img-container">
                         <img src="<%= img.url.replace('/upload', '/upload/w_200,h_200,c_fill') %>" 
-                             class="img-thumbnail rounded-3" 
-                             alt="listing_img">
-                        <span class="badge bg-dark position-absolute top-0 start-0 m-1">#<%= index + 1 %></span>
+                             class="img-thumbnail rounded-3" alt="listing_img">
+                        
+                        <div class="delete-overlay">
+                            <input type="checkbox" name="deleteImages[]" value="<%= img.filename %>" id="del-<%= index %>" class="delete-checkbox">
+                            <label for="del-<%= index %>" class="delete-icon-label">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </label>
+                        </div>
                     </div>
                 </div>
             <% }) %>
@@ -38,9 +43,8 @@
     
     <label for="image" class="form-label">Add More Images</label>
     <input name="listing[image]" type="file" class="form-control custom-input" multiple>
-    <small class="text-muted">Uploading new images will replace the current ones in your current setup.</small>
+    <small class="text-muted">Click the trash icon to mark an image for removal.</small>
 </div>
-
                 <div class="row">
                     <div class="mb-3 col-md-4">
                         <label for="price" class="form-label">Price (₹)</label>

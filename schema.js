@@ -7,20 +7,19 @@ module.exports.listingSchema = Joi.object({
         location: Joi.string().required(),
         country: Joi.string().required(),
         price: Joi.number().required().min(0),
-        // ✅ FIX 1: Add landmark to the Joi schema
         landmark: Joi.string().allow("", null), 
-        
-        // ✅ FIX 2: Ensure image is validated as an array
         image: Joi.array().items(
             Joi.object({
                 url: Joi.string().allow("", null),
                 filename: Joi.string().allow("", null)
             })
-        ).allow(null)
-    }).required()
+        ).allow(null, ""), 
+    }).required(),
+
+    // ✅ ADD THIS LINE: This allows the array of filenames marked for deletion
+    deleteImages: Joi.array() 
 });
 
-// Review schema remains the same
 module.exports.reviewSchema = Joi.object({
     review: Joi.object({
         rating: Joi.number().required().min(1).max(5),

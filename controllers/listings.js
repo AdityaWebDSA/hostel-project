@@ -100,34 +100,39 @@ module.exports.renderEditForm = async (req, res) => {
   res.render("listings/edit.ejs", { listing, originalImageUrl });
 }
 module.exports.updateListing = async (req, res) => {
-    if(!req.body.listing){
-        throw new ExpressError(400, "Send valid data for listings"); 
-    }  
+    if (!req.body.listing) {
+        throw new ExpressError(400, "Send valid data for listings");
+    }
     let { id } = req.params;
-    
-    // We don't update images inside findByIdAndUpdate yet
+
+    // 1. Update text fields first
     let listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing });
 
-    // --- Update Coordinates ---
+    // 2. Update Coordinates (Geocoding)
     const coords = await getCoordinates(req.body.listing);
     listing.geometry = { type: "Point", coordinates: coords };
 
-    // --- MULTIPLE IMAGES UPDATE LOGIC ---
+    // 3. ADD NEW IMAGES (Append logic)
     if (req.files && req.files.length > 0) {
-        // Option A: Replace all old images with new ones
-        listing.image = req.files.map(f => ({ 
+        let newImages = req.files.map(f => ({ 
             url: f.path, 
             filename: f.filename 
         }));
-        
-        // Note: If you want to APPEND instead of REPLACE, 
-        // use: listing.image.push(...newImages);
+        listing.image.push(...newImages);
     }
-    
+
+    // 4. DELETE SELECTED IMAGES (The new part)
+    if (req.body.deleteImages) {
+        // Use MongoDB's $pull operator to remove images whose filenames match the selected ones
+        await listing.updateOne({ 
+            $pull: { image: { filename: { $in: req.body.deleteImages } } } 
+        });
+    }
+
     await listing.save();
-    req.flash("success", "Listing Updated!"); 
+    req.flash("success", "Listing Updated!");
     res.redirect(`/listings/${id}`);
-}
+};
 module.exports.destroyListing = async (req, res) => {
   let { id } = req.params;
   await Listing.findByIdAndDelete(id);
