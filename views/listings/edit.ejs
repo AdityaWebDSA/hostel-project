@@ -19,19 +19,27 @@
                     <div class="invalid-feedback">Please enter a short description</div>
                 </div>
 
-                <div class="row mb-4 align-items-center">
-                    <div class="col-md-5">
-                        <p class="form-label small-label">Current Listing Image</p>
-                        <div class="image-preview-wrapper">
-                            <img src="<%= originalImageUrl %>" alt="Current Image" class="img-fluid rounded shadow-sm border">
-                        </div>
-                    </div>
-                    <div class="col-md-7">
-                        <label for="image" class="form-label">Change Image (Optional)</label>
-                        <input name="listing[image]" type="file" class="form-control custom-input">
-                        <small class="text-muted">Keep blank to maintain the current photo.</small>
+                <div class="mb-3">
+    <label class="form-label">Current Images</label>
+    <div class="row row-cols-md-4 row-cols-2 g-2 mb-3">
+        <% if (listing.image && listing.image.length > 0) { %>
+            <% listing.image.forEach((img, index) => { %>
+                <div class="col">
+                    <div class="edit-img-preview position-relative">
+                        <img src="<%= img.url.replace('/upload', '/upload/w_200,h_200,c_fill') %>" 
+                             class="img-thumbnail rounded-3" 
+                             alt="listing_img">
+                        <span class="badge bg-dark position-absolute top-0 start-0 m-1">#<%= index + 1 %></span>
                     </div>
                 </div>
+            <% }) %>
+        <% } %>
+    </div>
+    
+    <label for="image" class="form-label">Add More Images</label>
+    <input name="listing[image]" type="file" class="form-control custom-input" multiple>
+    <small class="text-muted">Uploading new images will replace the current ones in your current setup.</small>
+</div>
 
                 <div class="row">
                     <div class="mb-3 col-md-4">

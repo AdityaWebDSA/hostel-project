@@ -71,3 +71,21 @@
     background-color: #F2F2F2 !important;
     color: #0C2240 !important;
 }
+
+/*testing*/
+.edit-img-preview {
+    aspect-ratio: 1/1;
+    overflow: hidden;
+}
+
+.edit-img-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 2px solid #e9ecef;
+}
+
+.edit-img-preview .badge {
+    font-size: 0.7rem;
+    opacity: 0.8;
+}

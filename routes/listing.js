@@ -15,7 +15,7 @@ const upload = multer({ storage });
 router.route("/")
     .get(wrapAsync(listingController.index))
     // ✅ FIX 2: Swapped the order. Multer parses the form FIRST, then Joi validates it.
-    .post(isLoggedIn, upload.single('listing[image]'), validateListing, wrapAsync(listingController.createListing));
+    .post(isLoggedIn, upload.array('listing[image]', 5), validateListing, wrapAsync(listingController.createListing));
 
 // New Route (Must stay ABOVE /:id so Express doesn't think "new" is an ID)
 router.get("/new", isLoggedIn, listingController.renderNewForm);
