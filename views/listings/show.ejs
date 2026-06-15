@@ -2,48 +2,73 @@
 <link rel="stylesheet" href="/css/show-ejs.css">
 
 <div class="show-page-wrapper">
-   <div class="bento-gallery-wrapper mb-4">
-    <div class="bento-grid">
-        <div class="bento-item main-img">
-    <% if (listing.image && listing.image.length > 0) { %>
-        <img src="<%= listing.image[0].url %>" id="mainDisplayImg" alt="Main Image">
-    <% } else { %>
-        <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267" id="mainDisplayImg" alt="Default Image">
-    <% } %>
-</div>
 
-        <div class="side-grid">
-    <% for(let i = 1; i < 5; i++) { %>
-        <div class="bento-item small-img">
-            <% if (listing.image && listing.image[i]) { %>
-                <img src="<%= listing.image[i].url %>" onclick="swapImage(this.src)" class="clickable-thumb" alt="Room View">
-            <% } else { %>
-                <div class="img-placeholder d-flex align-items-center justify-content-center">
-                    <i class="fa-solid fa-camera text-muted"></i>
-                </div>
-            <% } %>
-            
-            <% if (listing.image && i === 4 && listing.image.length > 5) { %>
-                <div class="show-all-overlay">
-                    <span>+<%= listing.image.length - 5 %> Photos</span>
-                </div>
-            <% } %>
-        </div>
-    <% } %>
-</div>
+    <div class="container pt-3">
+        <a href="/listings" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to listings</a>
     </div>
-</div>
 
-    <div class="container mt-5">
+    <div class="bento-gallery-wrapper mb-4">
+        <div class="bento-grid">
+            <div class="bento-item main-img">
+                <% if (listing.image && listing.image.length > 0) { %>
+                    <img src="<%= listing.image[0].url %>" id="mainDisplayImg" alt="Main Image">
+                <% } else { %>
+                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267" id="mainDisplayImg" alt="Default Image">
+                <% } %>
+            </div>
+
+            <div class="side-grid">
+                <% for(let i = 1; i < 5; i++) { %>
+                    <div class="bento-item small-img">
+                        <% if (listing.image && listing.image[i]) { %>
+                            <img src="<%= listing.image[i].url %>" onclick="swapImage(this.src)" class="clickable-thumb" alt="Room View">
+                        <% } else { %>
+                            <div class="img-placeholder d-flex align-items-center justify-content-center">
+                                <i class="fa-solid fa-camera text-muted"></i>
+                            </div>
+                        <% } %>
+
+                        <% if (listing.image && i === 4 && listing.image.length > 5) { %>
+                            <div class="show-all-overlay">
+                                <span>+<%= listing.image.length - 5 %> Photos</span>
+                            </div>
+                        <% } %>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+
+        <div class="listing-header mb-4">
+            <h2 class="listing-show-title"><%= listing.title %></h2>
+            <p class="listing-show-location">
+                <i class="fa-solid fa-location-dot"></i>
+                <%= listing.landmark ? listing.landmark + ", " : "" %><%= listing.location %><%= listing.country ? ", " + listing.country : "" %>
+            </p>
+        </div>
+
+        <% if (listing.category && listing.category.length > 0) { %>
+            <div class="category-pills-show mb-4">
+                <% listing.category.forEach(catKey => {
+                    const cat = CATEGORIES.find(c => c.key === catKey);
+                    if (cat) { %>
+                        <span class="category-pill-lg"><i class="<%= cat.icon %>"></i> <%= cat.label %></span>
+                    <% }
+                }) %>
+            </div>
+        <% } %>
+
         <div class="row gx-lg-5">
             <div class="col-lg-8">
                 <div class="host-info-card d-flex align-items-center p-3 mb-4">
                     <div class="user-avatar">
-                        <i class="fa-solid fa-user-tie"></i>
+                        <%= listing.owner && listing.owner.username ? listing.owner.username.charAt(0).toUpperCase() : "?" %>
                     </div>
                     <div class="ms-3">
-                        <h5 class="mb-0">Hosted by <%= listing.owner.username %></h5>
-                        <small class="text-muted">Verified Property Owner</small>
+                        <h6 class="mb-0 host-name">Hosted by <%= listing.owner ? listing.owner.username : "Unknown" %></h6>
+                        <small class="text-muted">Verified Owner</small>
                     </div>
                 </div>
 
@@ -53,17 +78,17 @@
                 </div>
 
                 <div class="amenities-grid mb-5">
-                    <h4 class="section-label">Amenities</h4>
+                    <h4 class="section-label">What to expect</h4>
                     <div class="row g-3">
-                        <div class="col-6 col-md-4"><i class="fa-solid fa-wifi me-2 text-teal"></i> High-speed Wi-Fi</div>
-                        <div class="col-6 col-md-4"><i class="fa-solid fa-bolt me-2 text-teal"></i> 24/7 Power Backup</div>
-                        <div class="col-6 col-md-4"><i class="fa-solid fa-bucket me-2 text-teal"></i> Daily Cleaning</div>
-                        <div class="col-6 col-md-4"><i class="fa-solid fa-shield-halved me-2 text-teal"></i> CCTV Security</div>
-                        <div class="col-6 col-md-4"><i class="fa-solid fa-faucet me-2 text-teal"></i> RO Water</div>
+                        <div class="col-6 col-md-4 amenity-item"><i class="fa-solid fa-wifi"></i> High-speed Wi-Fi</div>
+                        <div class="col-6 col-md-4 amenity-item"><i class="fa-solid fa-bolt"></i> 24/7 Power Backup</div>
+                        <div class="col-6 col-md-4 amenity-item"><i class="fa-solid fa-broom"></i> Daily Cleaning</div>
+                        <div class="col-6 col-md-4 amenity-item"><i class="fa-solid fa-shield-halved"></i> CCTV Security</div>
+                        <div class="col-6 col-md-4 amenity-item"><i class="fa-solid fa-faucet"></i> RO Water</div>
                     </div>
                 </div>
 
-                <% if(currUser && currUser._id.equals(listing.owner._id)) { %>
+                <% if(currUser && listing.owner && currUser._id.equals(listing.owner._id)) { %>
                     <div class="owner-actions p-4 rounded-4 d-flex gap-3">
                         <a href="/listings/<%= listing._id %>/edit" class="btn btn-edit-premium flex-grow-1">
                             <i class="fa-solid fa-sliders me-2"></i>Manage Listing
@@ -81,35 +106,88 @@
                 <div class="booking-card sticky-top shadow-lg">
                     <div class="price-header d-flex justify-content-between align-items-center">
                         <div>
-                            <span class="price-big">&#x20B9;<%= listing.price.toLocaleString("en-IN") %></span>
+                            <span class="price-big">&#x20B9;<%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %></span>
                             <span class="text-muted">/month</span>
                         </div>
                         <div class="rating-badge">
-                            <i class="fa-solid fa-star"></i> 4.8
+                            <i class="fa-solid fa-star"></i>
+                            <% if (reviewCount > 0) { %>
+                                <%= avgRating %> <span class="review-count">(<%= reviewCount %>)</span>
+                            <% } else { %>
+                                New
+                            <% } %>
                         </div>
                     </div>
                     <hr>
                     <div class="booking-details mb-4">
-                        <p class="mb-1"><i class="fa-solid fa-check text-success me-2"></i>Instalment option available</p>
-                        <p class="mb-0"><i class="fa-solid fa-check text-success me-2"></i>Refundable deposit</p>
+                        <p class="mb-1"><i class="fa-solid fa-check"></i>Instalment option available</p>
+                        <p class="mb-0"><i class="fa-solid fa-check"></i>Refundable deposit</p>
                     </div>
-                    <button class="btn btn-book-now w-100 mb-3 py-3">Book Now</button>
-                    <p class="text-center small text-muted">You won't be charged yet</p>
+                    <button type="button" class="btn btn-book-now w-100 mb-3 py-3" id="bookNowBtn">Book Now</button>
+                    <p class="text-center small text-muted mb-0">You won't be charged yet</p>
                 </div>
             </div>
         </div>
 
         <div class="row mt-5 pt-5 border-top">
-            <div class="col-12 mb-5">
+            <div class="col-12 mb-4">
                 <h4 class="section-label mb-4">Where you'll be staying</h4>
+            </div>
+
+            <div class="col-lg-5 mb-4 mb-lg-0">
+                <div class="location-info-card">
+                    <h6 class="location-card-title"><i class="fa-solid fa-location-dot"></i> Address</h6>
+                    <p class="location-address">
+                        <%= listing.landmark ? listing.landmark + ", " : "" %><%= listing.location %><%= listing.country ? ", " + listing.country : "" %>
+                    </p>
+
+                    <% if (listing.geometry && listing.geometry.coordinates) { %>
+                        <a href="https://www.google.com/maps/dir/?api=1&destination=<%= listing.geometry.coordinates[1] %>,<%= listing.geometry.coordinates[0] %>"
+                           target="_blank" rel="noopener" class="contact-action-btn directions-btn">
+                            <i class="fa-solid fa-diamond-turn-right"></i> Get Directions
+                        </a>
+                    <% } %>
+
+                    <hr class="my-4">
+
+                    <h6 class="location-card-title"><i class="fa-solid fa-address-card"></i> Contact</h6>
+
+                    <% if (listing.contactNumber || listing.contactEmail) { %>
+                        <div class="contact-actions">
+                            <% if (listing.contactNumber) { %>
+                                <a href="tel:<%= listing.contactNumber %>" class="contact-action-btn">
+                                    <i class="fa-solid fa-phone"></i> Call <%= listing.contactNumber %>
+                                </a>
+                                <a href="https://wa.me/<%= listing.contactNumber.replace(/[^0-9]/g, '') %>" target="_blank" rel="noopener" class="contact-action-btn whatsapp-btn">
+                                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                                </a>
+                            <% } %>
+                            <% if (listing.contactEmail) { %>
+                                <a href="mailto:<%= listing.contactEmail %>" class="contact-action-btn email-btn">
+                                    <i class="fa-solid fa-envelope"></i> Email
+                                </a>
+                            <% } %>
+                        </div>
+                    <% } else { %>
+                        <p class="text-muted small mb-0">The owner hasn't added contact details yet.</p>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
                 <div id="map" class="map-premium"></div>
             </div>
 
             <div class="col-12">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="section-label">Reviews (<%= listing.reviews.length %>)</h4>
+                    <h4 class="section-label">
+                        Reviews (<%= listing.reviews.length %>)
+                        <% if (reviewCount > 0) { %>
+                            <span class="reviews-avg"><i class="fa-solid fa-star"></i> <%= avgRating %></span>
+                        <% } %>
+                    </h4>
                     <% if(currUser) { %>
-                        <button class="btn btn-book-now mb-3 " data-bs-toggle="collapse" data-bs-target="#reviewForm">
+                        <button class="btn btn-outline-teal rounded-pill" data-bs-toggle="collapse" data-bs-target="#reviewForm">
                             Write a Review
                         </button>
                     <% } %>
@@ -147,6 +225,12 @@
                     </div>
                 </div>
 
+                <% if (listing.reviews.length === 0) { %>
+                    <div class="no-reviews-yet">
+                        <i class="fa-regular fa-comment-dots"></i>
+                        <p class="mb-0">No reviews yet. Be the first to share your experience!</p>
+                    </div>
+                <% } else { %>
                 <div class="row g-4">
                     <% for(let review of listing.reviews) { %>
                         <div class="col-md-6">
@@ -156,7 +240,7 @@
                                     <p class="starability-result" data-rating="<%= review.rating %>"></p>
                                 </div>
                                 <p class="review-text">"<%= review.comment %>"</p>
-                                
+
                                 <% if(currUser && currUser._id.equals(review.author._id)) { %>
                                     <form method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
                                         <button class="btn btn-sm btn-outline-danger border-0 mt-2">
@@ -168,25 +252,39 @@
                         </div>
                     <% } %>
                 </div>
+                <% } %>
             </div>
         </div>
     </div>
 </div>
-<!-- /*this is try*/ -->
+
+<!-- Booking placeholder toast -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+  <div id="bookingToast" class="toast align-items-center text-white border-0 booking-toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        <i class="fa-solid fa-circle-info me-2"></i>Online booking is coming soon — please contact the owner directly for now.
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
 
 <script>
     function swapImage(newSrc) {
         const mainImg = document.getElementById('mainDisplayImg');
-        
-        // 1. Add a quick "fade out" effect
         mainImg.style.opacity = '0.4';
-        
-        // 2. Change the source
         setTimeout(() => {
             mainImg.src = newSrc;
             mainImg.style.opacity = '1';
         }, 150);
     }
+
+    document.getElementById('bookNowBtn')?.addEventListener('click', () => {
+        const toastEl = document.getElementById('bookingToast');
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+    });
 </script>
 <script>
     const mapKey = "<%= process.env.LOCATION_IQ_KEY %>";

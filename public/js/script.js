@@ -36,3 +36,17 @@ window.addEventListener('pageshow', (event) => {
     });
   }
 });
+
+// Category group validation: at least one checkbox must be checked
+document.querySelectorAll('.category-group').forEach(group => {
+  const checkboxes = group.querySelectorAll('.category-checkbox');
+  const validityInput = group.querySelector('.category-validity');
+
+  function updateValidity() {
+    const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+    validityInput.value = anyChecked ? "ok" : "";
+  }
+
+  checkboxes.forEach(cb => cb.addEventListener('change', updateValidity));
+  updateValidity();
+});

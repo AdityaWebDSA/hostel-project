@@ -4,62 +4,29 @@
 <div class="index-container">
     <div class="filters-wrapper d-flex align-items-center justify-content-between py-3">
         <div id="filters">
-            <div class="filter active">
-                <i class="fa-solid fa-building"></i>
-                <p>Hostels & PGs</p>
-            </div>
-            <div class="filter">
-                <i class="fa-solid fa-key"></i>
-                <p>Independent Rooms</p>
-            </div>
-            <div class="filter">
-                <i class="fa-solid fa-graduation-cap"></i>
-                <p>Near Campus</p>
-            </div>
-            <div class="filter">
-                <i class="fa-solid fa-book-open-reader"></i>
-                <p>Libraries & Study</p>
-            </div>
-            <div class="filter">
-                <i class="fa-solid fa-print"></i>
-                <p>Xerox & Stationery</p>
-            </div>
-            <div class="filter">
-                <i class="fa-solid fa-utensils"></i>
-                <p>Mess & Tiffins</p>
-            </div>
-            <div class="filter">
-                <i class="fa-solid fa-shirt"></i>
-                <p>Laundry & Clean</p>
-            </div>
-            <div class="filter">
-                <i class="fa-solid fa-dumbbell"></i>
-                <p>Gym & Fitness</p>
-            </div>
-            <div class="filter">
-                <i class="fa-solid fa-kit-medical"></i>
-                <p>Clinics & Medical</p>
-            </div>
-            <div class="filter">
-                <i class="fa-solid fa-bus"></i>
-                <p>Bus Stops</p>
-            </div>
-            <div class="filter">
-                <i class="fa-solid fa-mug-hot"></i>
-                <p>Cafes & Chai</p>
-            </div>
+            <a href="/listings" class="filter <%= !currentCategory ? 'active' : '' %>">
+                <i class="fa-solid fa-layer-group"></i>
+                <p>All</p>
+            </a>
+            <% CATEGORIES.forEach(cat => { %>
+                <a href="/listings?category=<%= cat.key %>" class="filter <%= currentCategory === cat.key ? 'active' : '' %>">
+                    <i class="<%= cat.icon %>"></i>
+                    <p><%= cat.label %></p>
+                </a>
+            <% }) %>
         </div>
-
-        <!-- <div class="tax-toggle d-none d-md-flex align-items-center ms-3">
-            <div class="form-check-reverse form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
-                <label class="form-check-label" for="flexSwitchCheckDefault">Display total with taxes</label>
-            </div>
-        </div> -->
     </div>
 
     <div class="result-info d-flex justify-content-between align-items-center mb-4 px-1">
-        <h6 class="text-muted fw-normal">Showing <%= allListings.length %> available places</h6>
+        <h6 class="text-muted fw-normal">
+            Showing <%= allListings.length %> available place<%= allListings.length === 1 ? '' : 's' %>
+            <% if (currentCategory) {
+                const activeCat = CATEGORIES.find(c => c.key === currentCategory);
+            %>
+                for "<%= activeCat ? activeCat.label : currentCategory %>"
+                <a href="/listings" class="ms-2 clear-filter-link"><i class="fa-solid fa-xmark"></i> Clear</a>
+            <% } %>
+        </h6>
         <div class="dropdown">
             <button class="btn btn-sm btn-outline-secondary dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown">
                 Sort by: Recommended
@@ -71,6 +38,13 @@
         </div>
     </div>
 
+    <% if (allListings.length === 0) { %>
+        <div class="empty-state">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <h5>No listings found in this category yet</h5>
+            <p class="mb-0"><a href="/listings">View all listings</a> or check back soon.</p>
+        </div>
+    <% } else { %>
     <div class="row row-cols-xxl-4 row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
         <% for(let listing of allListings) { %>
             <div class="col listing-col">
@@ -104,10 +78,21 @@
                                 <span class="per-month">/ month</span>
                                 <i class="tax-info text-muted small d-none">+ 18% GST</i>
                             </p>
+                            <% if (listing.category && listing.category.length > 0) { %>
+                                <div class="category-pills">
+                                    <% listing.category.forEach(catKey => {
+                                        const cat = CATEGORIES.find(c => c.key === catKey);
+                                        if (cat) { %>
+                                            <span class="category-pill"><i class="<%= cat.icon %>"></i> <%= cat.label %></span>
+                                        <% } 
+                                    }) %>
+                                </div>
+                            <% } %>
                         </div>
                     </div>
                 </a>
             </div>
         <% } %>
     </div>
+    <% } %>
 </div>

@@ -19,6 +19,24 @@
                     <div class="invalid-feedback">Please enter a short description</div>
                 </div>
 
+                <div class="mb-3 category-group">
+                    <label class="form-label">What does this place offer? <span class="text-muted small">(select all that apply)</span></label>
+                    <div class="category-grid">
+                        <% CATEGORIES.forEach(cat => { %>
+                            <div class="category-option">
+                                <input type="checkbox" name="listing[category][]" value="<%= cat.key %>" id="cat-<%= cat.key %>" class="category-checkbox"
+                                    <%= (listing.category && listing.category.includes(cat.key)) ? "checked" : "" %>>
+                                <label for="cat-<%= cat.key %>" class="category-label">
+                                    <i class="<%= cat.icon %>"></i>
+                                    <span><%= cat.label %></span>
+                                </label>
+                            </div>
+                        <% }) %>
+                    </div>
+                    <input type="text" class="form-control category-validity" required>
+                    <div class="invalid-feedback">Please select at least one category</div>
+                </div>
+
               <div class="mb-3">
     <label class="form-label">Current Images (Select to Delete)</label>
     <div class="row row-cols-md-4 row-cols-2 g-3 mb-3">
@@ -69,7 +87,19 @@
                     <input name="listing[location]" value="<%= listing.location %>" type="text" class="form-control custom-input" required>
                     <div class="invalid-feedback">Location should be valid</div>
                 </div>
-                
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label for="contactNumber" class="form-label">Contact Number</label>
+                        <input name="listing[contactNumber]" value="<%= listing.contactNumber || '' %>" placeholder="e.g., 9876543210" type="tel" class="form-control custom-input" pattern="[0-9+\-\s]{7,15}">
+                        <div class="invalid-feedback">Enter a valid phone number (7-15 digits)</div>
+                        <small class="text-muted">Shown to visitors so they can contact you directly.</small>
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label for="contactEmail" class="form-label">Contact Email</label>
+                        <input name="listing[contactEmail]" value="<%= listing.contactEmail || '' %>" placeholder="owner@example.com" type="email" class="form-control custom-input">
+                        <div class="invalid-feedback">Enter a valid email address</div>
+                    </div>
+                </div>
                 <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-4">
                     <button class="btn edit-btn px-5 py-2">Update Listing</button>
                     <a href="/listings/<%= listing._id %>" class="btn btn-outline-secondary px-4 py-2">Cancel</a>

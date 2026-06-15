@@ -33,12 +33,16 @@ async function getCoordinates(listingData) {
 }
 
 module.exports.index = async (req, res) => {
-  const allListings = await Listing.find({});
-  res.render("listings/index.ejs", { allListings });
+  const { category } = req.query;
+  const filter = category ? { category: category } : {};
+  const allListings = await Listing.find(filter);
+  const CATEGORIES = require("../utils/categories");
+  res.render("listings/index.ejs", { allListings, CATEGORIES, currentCategory: category || null });
 };
 
 module.exports.renderNewForm = (req, res) => {
-  res.render("listings/new.ejs");
+  const CATEGORIES = require("../utils/categories");
+  res.render("listings/new.ejs", { CATEGORIES });
 }
 
 module.exports.showListing = async (req, res) => {
@@ -52,9 +56,18 @@ module.exports.showListing = async (req, res) => {
     req.flash("error", "Listing you requested does not exist!"); 
     return res.redirect("/"); 
   } 
-  res.render("listings/show.ejs", { listing });
-}
 
+  const CATEGORIES = require("../utils/categories");
+
+  let avgRating = 0;
+  const reviewCount = listing.reviews.length;
+  if (reviewCount > 0) {
+    const total = listing.reviews.reduce((sum, r) => sum + r.rating, 0);
+    avgRating = (total / reviewCount).toFixed(1);
+  }
+
+  res.render("listings/show.ejs", { listing, CATEGORIES, avgRating, reviewCount });
+}
 module.exports.createListing = async (req, res, next) => {
     if(!req.body.listing){
         throw new ExpressError(400, "Send valid data for listings"); 
@@ -97,7 +110,8 @@ module.exports.renderEditForm = async (req, res) => {
       originalImageUrl = originalImageUrl.replace("/upload", "/upload/w_250");
   }
 
-  res.render("listings/edit.ejs", { listing, originalImageUrl });
+ const CATEGORIES = require("../utils/categories");
+  res.render("listings/edit.ejs", { listing, originalImageUrl, CATEGORIES });
 }
 module.exports.updateListing = async (req, res) => {
     if (!req.body.listing) {
@@ -113,13 +127,16 @@ module.exports.updateListing = async (req, res) => {
     }
 
     // 2. Update text fields manually
+   // 2. Update text fields manually
     listing.title = req.body.listing.title;
     listing.description = req.body.listing.description;
     listing.location = req.body.listing.location;
     listing.country = req.body.listing.country;
     listing.price = req.body.listing.price;
     listing.landmark = req.body.listing.landmark;
-
+    listing.category = req.body.listing.category;
+    listing.contactNumber = req.body.listing.contactNumber;
+    listing.contactEmail = req.body.listing.contactEmail;
     // 3. Update Coordinates
     const coords = await getCoordinates(req.body.listing);
     listing.geometry = { type: "Point", coordinates: coords };

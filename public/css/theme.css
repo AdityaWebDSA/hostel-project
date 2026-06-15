@@ -1,0 +1,29 @@
+:root {
+  /* Brand colors - constant across themes */
+  --color-primary:   #0e2245;
+  --color-secondary: #0a5460;
+  --color-accent:    #caa45e;
+  --color-tertiary:  #156d6d;
+  --color-white:     #ffffff;
+
+  /* Theme-aware tokens - LIGHT MODE (default) */
+  --bg-page:        #ffffff;
+  --bg-surface:     #ffffff;
+  --bg-navbar:      rgba(255, 255, 255, 0.95);
+  --color-bg-light: #f4f6f8;
+  --text-color:     #0e2245;
+  --color-text-muted: #5a6b7d;
+  --border-color:   rgba(14, 34, 69, 0.1);
+}
+
+
+/* Smooth transition when switching themes */
+body, .main-nav, .card, .f-info {
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+/* Make Bootstrap cards respect our theme */
+.card {
+  --bs-card-bg: var(--bg-surface);
+  --bs-card-color: var(--text-color);
+}

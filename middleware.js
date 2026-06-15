@@ -46,6 +46,19 @@ module.exports.validateListing = (req, res, next) => {
     }
 };
 
+// Add this function to middleware.js
+module.exports.normalizeCategory = (req, res, next) => {
+    if (req.body.listing) {
+        let cat = req.body.listing.category;
+        if (!cat) {
+            req.body.listing.category = [];
+        } else if (!Array.isArray(cat)) {
+            req.body.listing.category = [cat];
+        }
+    }
+    next();
+};
+
 module.exports.validateReview = (req, res, next) => {
     let { error } = reviewSchema.validate(req.body);
     if (error) {
