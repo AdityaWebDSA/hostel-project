@@ -1,0 +1,68 @@
+<% layout("/layouts/boilerplate")%>
+<link rel="stylesheet" href="/css/new-ejs.css">
+<link rel="stylesheet" href="/css/profile.css">
+
+<div class="row mt-4 mb-5">
+    <div class="col-8 offset-2">
+        <h3 class="page-heading">Edit Profile</h3>
+
+        <div class="form-container">
+            <form action="/profile?_method=PUT" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+
+                <div class="mb-4 text-center">
+                    <div class="profile-avatar-lg mx-auto mb-3" id="avatarPreviewWrap">
+                        <% if (user.avatar && user.avatar.url) { %>
+                            <img src="<%= user.avatar.url %>" id="avatarPreview" alt="">
+                        <% } else { %>
+                            <span id="avatarPreview"><%= user.username.charAt(0).toUpperCase() %></span>
+                        <% } %>
+                    </div>
+                    <label for="avatarInput" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                        <i class="fa-solid fa-camera me-1"></i> Change Photo
+                    </label>
+                    <input type="file" name="user[avatar]" id="avatarInput" accept="image/png, image/jpeg" class="d-none">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-control custom-input" value="<%= user.username %>" disabled>
+                    <small class="text-muted">Username can't be changed.</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="text" class="form-control custom-input" value="<%= user.email %>" disabled>
+                </div>
+
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone Number</label>
+                    <input type="tel" name="user[phone]" class="form-control custom-input" value="<%= user.phone || '' %>" placeholder="e.g., 9876543210">
+                </div>
+
+                <div class="mb-3">
+                    <label for="bio" class="form-label">Bio</label>
+                    <textarea name="user[bio]" class="form-control custom-input" rows="4" maxlength="300" placeholder="Tell others a bit about yourself..."><%= user.bio || '' %></textarea>
+                    <small class="text-muted">Max 300 characters.</small>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-4">
+                    <button class="btn add-btn px-5 py-2">Save Changes</button>
+                    <a href="/profile" class="btn btn-outline-secondary px-4 py-2">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('avatarInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            const wrap = document.getElementById('avatarPreviewWrap');
+            wrap.innerHTML = `<img src="${ev.target.result}" id="avatarPreview" alt="">`;
+        };
+        reader.readAsDataURL(file);
+    });
+</script>

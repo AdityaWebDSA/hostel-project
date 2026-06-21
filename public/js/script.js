@@ -50,3 +50,72 @@ document.querySelectorAll('.category-group').forEach(group => {
   checkboxes.forEach(cb => cb.addEventListener('change', updateValidity));
   updateValidity();
 });
+// Billing group validation
+document.querySelectorAll('.billing-group').forEach(group => {
+  const checkboxes = group.querySelectorAll('.billing-checkbox');
+  const validityInput = group.querySelector('.billing-validity');
+
+  function updateValidity() {
+    const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+    validityInput.value = anyChecked ? "ok" : "";
+  }
+
+  checkboxes.forEach(cb => cb.addEventListener('change', updateValidity));
+  updateValidity();
+});
+
+// Auto-suggest billing plans when categories change
+const CATEGORY_BILLING_MAP = {
+  "hostels-pgs":        ["monthly", "quarterly", "halfyearly", "yearly"],
+  "independent-rooms":  ["monthly", "quarterly", "halfyearly", "yearly"],
+  "near-campus":        ["monthly", "quarterly", "halfyearly", "yearly"],
+  "gym-fitness":        ["monthly", "quarterly", "halfyearly", "yearly"],
+  "mess-tiffins":       ["weekly", "monthly"],
+  "libraries-study":    ["monthly", "quarterly"],
+  "laundry-clean":      ["enquiry"],
+  "xerox-stationery":   ["enquiry"],
+  "cafes-chai":         ["enquiry"],
+  "bus-stops":          ["enquiry"],
+  "clinics-medical":    ["enquiry"],
+};
+
+const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+const billingCheckboxes = document.querySelectorAll('.billing-checkbox');
+
+function suggestBillingPlans() {
+  if (categoryCheckboxes.length === 0 || billingCheckboxes.length === 0) return;
+
+  // Collect selected categories
+  const selected = Array.from(categoryCheckboxes)
+    .filter(cb => cb.checked)
+    .map(cb => cb.value);
+
+  // Build union of suggested billing plans
+  const suggested = new Set();
+  selected.forEach(cat => {
+    const plans = CATEGORY_BILLING_MAP[cat] || ["enquiry"];
+    plans.forEach(p => suggested.add(p));
+  });
+
+  if (suggested.size === 0) return;
+
+  // Check suggested plans, uncheck ones no longer relevant
+  billingCheckboxes.forEach(cb => {
+    if (suggested.has(cb.value)) {
+      cb.checked = true;
+    } else {
+      cb.checked = false;
+    }
+    // Trigger validity update
+    cb.dispatchEvent(new Event('change'));
+  });
+}
+
+// Only auto-suggest on new listing form (not edit, where owner chose deliberately)
+if (document.querySelector('.category-checkbox') && document.getElementById('billingGrid')) {
+  // Only run auto-suggest if this looks like the new form (no existing data)
+  const isNewForm = !document.querySelector('.billing-checkbox:checked');
+  if (isNewForm) {
+    categoryCheckboxes.forEach(cb => cb.addEventListener('change', suggestBillingPlans));
+  }
+}

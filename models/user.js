@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-
-// ✅ THE FIX: Add .default to the very end of this line!
 const passportLocalMongoose = require("passport-local-mongoose").default;
 
 const userSchema = new Schema({
@@ -9,6 +7,27 @@ const userSchema = new Schema({
         type: String,
         required: true,
         unique: true
+    },
+    bio: {
+        type: String,
+        trim: true,
+        maxlength: 300,
+        default: "",
+    },
+    phone: {
+        type: String,
+        trim: true,
+        default: "",
+    },
+    avatar: {
+        url: {
+            type: String,
+            default: "",
+        },
+        filename: {
+            type: String,
+            default: "",
+        },
     },
 });
 

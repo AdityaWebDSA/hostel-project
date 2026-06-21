@@ -6,7 +6,6 @@ async function getCoordinates(listingData) {
     let baseLoc = `${listingData.location}, ${listingData.country}`;
     
     try {
-        // 1. If user provided a landmark, try for absolute pinpoint accuracy
         if (listingData.landmark) {
             let exactQuery = `${listingData.landmark}, ${baseLoc}`;
             let response = await fetch(`https://us1.locationiq.com/v1/search.php?key=${process.env.LOCATION_IQ_KEY}&q=${encodeURIComponent(exactQuery)}&format=json`);
@@ -17,7 +16,6 @@ async function getCoordinates(listingData) {
             }
         }
         
-        // 2. FALLBACK: If no landmark, or if API couldn't find the landmark, search just the city
         let response = await fetch(`https://us1.locationiq.com/v1/search.php?key=${process.env.LOCATION_IQ_KEY}&q=${encodeURIComponent(baseLoc)}&format=json`);
         let geoData = await response.json();
         
@@ -28,21 +26,195 @@ async function getCoordinates(listingData) {
         console.log("Geocoding Error:", err);
     }
     
-    // 3. ULTIMATE FALLBACK: Center of India if everything fails
     return [78.9629, 20.5937]; 
+}
+
+async function geocodeQuery(query) {
+    try {
+        let response = await fetch(`https://us1.locationiq.com/v1/search.php?key=${process.env.LOCATION_IQ_KEY}&q=${encodeURIComponent(query)}&format=json`);
+        let geoData = await response.json();
+        if (geoData && geoData.length > 0 && geoData[0].lat) {
+            return [parseFloat(geoData[0].lon), parseFloat(geoData[0].lat)];
+        }
+    } catch (err) {
+        console.log("Geocoding Error (search):", err);
+    }
+    return null;
+}
+
+// --- Sort & Price-range helpers (shared by index + search) ---
+
+const VALID_SORTS = ["recommended", "price_asc", "price_desc", "rating_desc", "newest"];
+
+function buildPriceFilter(req, baseFilter = {}) {
+    const { minPrice, maxPrice } = req.query;
+    const filter = { ...baseFilter };
+
+    const min = minPrice !== undefined && minPrice !== "" ? Number(minPrice) : null;
+    const max = maxPrice !== undefined && maxPrice !== "" ? Number(maxPrice) : null;
+
+    if ((min !== null && !isNaN(min)) || (max !== null && !isNaN(max))) {
+        filter.price = {};
+        if (min !== null && !isNaN(min)) filter.price.$gte = min;
+        if (max !== null && !isNaN(max)) filter.price.$lte = max;
+    }
+
+    return filter;
+}
+
+function getSortStage(sort) {
+    switch (sort) {
+        case "price_asc": return { price: 1 };
+        case "price_desc": return { price: -1 };
+        case "newest": return { _id: -1 };
+        // "rating_desc" is handled separately below since rating isn't a stored field
+        default: return null; // "recommended" / unset -> natural/default order
+    }
+}
+
+// Sorts an already-fetched array by average review rating, descending.
+// Listings with no reviews sort last.
+function sortByRating(listings) {
+    return [...listings].sort((a, b) => {
+        const avg = (l) => {
+            if (!l.reviews || l.reviews.length === 0) return -1;
+            const total = l.reviews.reduce((sum, r) => sum + (r.rating || 0), 0);
+            return total / l.reviews.length;
+        };
+        return avg(b) - avg(a);
+    });
 }
 
 module.exports.index = async (req, res) => {
   const { category } = req.query;
-  const filter = category ? { category: category } : {};
-  const allListings = await Listing.find(filter);
+  const sort = VALID_SORTS.includes(req.query.sort) ? req.query.sort : "recommended";
+
+  let filter = category ? { category: category } : {};
+  filter = buildPriceFilter(req, filter);
+
   const CATEGORIES = require("../utils/categories");
-  res.render("listings/index.ejs", { allListings, CATEGORIES, currentCategory: category || null });
+
+  let allListings;
+  if (sort === "rating_desc") {
+      // Need reviews populated to compute average rating
+      allListings = await Listing.find(filter).populate("reviews");
+      allListings = sortByRating(allListings);
+  } else {
+      const sortStage = getSortStage(sort);
+      let query = Listing.find(filter);
+      if (sortStage) query = query.sort(sortStage);
+      allListings = await query;
+  }
+
+  let savedIds = [];
+  if (req.user) {
+    const SavedListing = require("../models/savedListing.js");
+    const saved = await SavedListing.find({ user: req.user._id }).select("listing");
+    savedIds = saved.map(s => s.listing.toString());
+  }
+
+  res.render("listings/index.ejs", {
+      allListings,
+      CATEGORIES,
+      currentCategory: category || null,
+      savedIds,
+      currentSort: sort,
+      minPrice: req.query.minPrice || "",
+      maxPrice: req.query.maxPrice || "",
+  });
+};
+
+module.exports.searchListings = async (req, res) => {
+    const { q } = req.query;
+    const CATEGORIES = require("../utils/categories");
+    const sort = VALID_SORTS.includes(req.query.sort) ? req.query.sort : "recommended";
+
+    if (!q || !q.trim()) {
+        return res.redirect("/listings");
+    }
+
+    const query = q.trim();
+    const regex = new RegExp(query, "i");
+
+    let textFilter = buildPriceFilter(req, {
+        $or: [
+            { title: regex },
+            { location: regex },
+            { landmark: regex },
+            { country: regex },
+        ]
+    });
+
+    const textMatches = await Listing.find(textFilter);
+
+    let nearbyListings = [];
+    let searchCenter = null;
+    const coords = await geocodeQuery(query);
+    if (coords) {
+        searchCenter = coords;
+        let nearFilter = buildPriceFilter(req, {
+            geometry: {
+                $near: {
+                    $geometry: { type: "Point", coordinates: coords },
+                    $maxDistance: 5000
+                }
+            }
+        });
+        nearbyListings = await Listing.find(nearFilter);
+    }
+
+    const seen = new Set();
+    let allListings = [];
+    for (const l of [...textMatches, ...nearbyListings]) {
+        const idStr = l._id.toString();
+        if (!seen.has(idStr)) {
+            seen.add(idStr);
+            allListings.push(l);
+        }
+    }
+
+    // Apply sort to the merged in-memory result set
+    if (sort === "price_asc") {
+        allListings.sort((a, b) => (a.price || 0) - (b.price || 0));
+    } else if (sort === "price_desc") {
+        allListings.sort((a, b) => (b.price || 0) - (a.price || 0));
+    } else if (sort === "newest") {
+        allListings.sort((a, b) => b._id.toString().localeCompare(a._id.toString()));
+    } else if (sort === "rating_desc") {
+        const populated = await Listing.populate(allListings, { path: "reviews" });
+        allListings = sortByRating(populated);
+    }
+
+    let savedIds = [];
+    if (req.user) {
+        const SavedListing = require("../models/savedListing.js");
+        const saved = await SavedListing.find({ user: req.user._id }).select("listing");
+        savedIds = saved.map(s => s.listing.toString());
+    }
+
+    res.render("listings/index.ejs", {
+        allListings,
+        CATEGORIES,
+        currentCategory: null,
+        searchQuery: query,
+        searchCenter,
+        savedIds,
+        currentSort: sort,
+        minPrice: req.query.minPrice || "",
+        maxPrice: req.query.maxPrice || "",
+    });
+};
+
+module.exports.myListings = async (req, res) => {
+    const CATEGORIES = require("../utils/categories");
+    const listings = await Listing.find({ owner: req.user._id });
+    res.render("listings/my-listings.ejs", { listings, CATEGORIES });
 };
 
 module.exports.renderNewForm = (req, res) => {
   const CATEGORIES = require("../utils/categories");
-  res.render("listings/new.ejs", { CATEGORIES });
+  const { BILLING_PLANS, getPlansForCategories } = require("../utils/billingPlans");
+  res.render("listings/new.ejs", { CATEGORIES, BILLING_PLANS, getPlansForCategories });
 }
 
 module.exports.showListing = async (req, res) => {
@@ -66,8 +238,17 @@ module.exports.showListing = async (req, res) => {
     avgRating = (total / reviewCount).toFixed(1);
   }
 
-  res.render("listings/show.ejs", { listing, CATEGORIES, avgRating, reviewCount });
+  let isSaved = false;
+  if (req.user) {
+    const SavedListing = require("../models/savedListing.js");
+    const existing = await SavedListing.findOne({ user: req.user._id, listing: listing._id });
+    isSaved = !!existing;
+  }
+
+  const { BILLING_PLANS } = require("../utils/billingPlans");
+  res.render("listings/show.ejs", { listing, CATEGORIES, avgRating, reviewCount, isSaved, BILLING_PLANS });
 }
+
 module.exports.createListing = async (req, res, next) => {
     if(!req.body.listing){
         throw new ExpressError(400, "Send valid data for listings"); 
@@ -76,12 +257,9 @@ module.exports.createListing = async (req, res, next) => {
     const newListing = new Listing(req.body.listing);
     newListing.owner = req.user._id;
 
-    // --- Geocoding Logic ---
     const coords = await getCoordinates(req.body.listing);
     newListing.geometry = { type: "Point", coordinates: coords };
 
-    // --- MULTIPLE IMAGES LOGIC ---
-    // req.files (plural) is an array provided by multer
     if(req.files && req.files.length > 0) {
         newListing.image = req.files.map(f => ({ 
             url: f.path, 
@@ -103,31 +281,29 @@ module.exports.renderEditForm = async (req, res) => {
     return res.redirect("/listings");
   } 
 
-  // FIX: Access the first image in the array for the preview
   let originalImageUrl = "";
   if (listing.image && listing.image.length > 0) {
       originalImageUrl = listing.image[0].url;
       originalImageUrl = originalImageUrl.replace("/upload", "/upload/w_250");
   }
 
- const CATEGORIES = require("../utils/categories");
-  res.render("listings/edit.ejs", { listing, originalImageUrl, CATEGORIES });
+  const CATEGORIES = require("../utils/categories");
+  const { BILLING_PLANS } = require("../utils/billingPlans");
+  res.render("listings/edit.ejs", { listing, originalImageUrl, CATEGORIES, BILLING_PLANS });
 }
+
 module.exports.updateListing = async (req, res) => {
     if (!req.body.listing) {
         throw new ExpressError(400, "Send valid data for listings");
     }
     let { id } = req.params;
 
-    // 1. Find the listing first (Don't use findByIdAndUpdate yet)
     let listing = await Listing.findById(id);
     if (!listing) {
         req.flash("error", "Listing not found!");
         return res.redirect("/listings");
     }
 
-    // 2. Update text fields manually
-   // 2. Update text fields manually
     listing.title = req.body.listing.title;
     listing.description = req.body.listing.description;
     listing.location = req.body.listing.location;
@@ -135,25 +311,23 @@ module.exports.updateListing = async (req, res) => {
     listing.price = req.body.listing.price;
     listing.landmark = req.body.listing.landmark;
     listing.category = req.body.listing.category;
+    listing.billingPlans = req.body.listing.billingPlans;
     listing.contactNumber = req.body.listing.contactNumber;
     listing.contactEmail = req.body.listing.contactEmail;
-    // 3. Update Coordinates
+
     const coords = await getCoordinates(req.body.listing);
     listing.geometry = { type: "Point", coordinates: coords };
 
-    // 4. ADD NEW IMAGES (The part that was failing)
     if (req.files && req.files.length > 0) {
         let newImages = req.files.map(f => ({ 
             url: f.path, 
             filename: f.filename 
         }));
-        listing.image.push(...newImages); // This now works perfectly on the 'listing' instance
+        listing.image.push(...newImages);
     }
 
-    // 5. SAVE ALL CHANGES (Text + New Images + Geocoding)
     await listing.save();
 
-    // 6. DELETE SELECTED IMAGES (Do this LAST)
     if (req.body.deleteImages) {
         await listing.updateOne({ 
             $pull: { image: { filename: { $in: req.body.deleteImages } } } 
@@ -163,9 +337,10 @@ module.exports.updateListing = async (req, res) => {
     req.flash("success", "Listing Updated!");
     res.redirect(`/listings/${id}`);
 };
+
 module.exports.destroyListing = async (req, res) => {
   let { id } = req.params;
   await Listing.findByIdAndDelete(id);
   req.flash("success", "Listing Deleted!"); 
   res.redirect("/listings");
-}
+};

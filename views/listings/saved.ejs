@@ -1,0 +1,57 @@
+<% layout("/layouts/boilerplate")%>
+<link rel="stylesheet" href="/css/index-ejs.css">
+
+<div class="index-container">
+    <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+        <h3 class="page-heading mb-0"><i class="fa-solid fa-heart text-danger me-2"></i>Saved Listings</h3>
+    </div>
+
+    <% if (listings.length === 0) { %>
+        <div class="empty-state">
+            <i class="fa-regular fa-heart"></i>
+            <h5>No saved listings yet</h5>
+            <p class="mb-0"><a href="/listings">Browse listings</a> and tap the heart icon to save places you like.</p>
+        </div>
+    <% } else { %>
+    <div class="row row-cols-xxl-4 row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
+        <% for(let listing of listings) { %>
+            <div class="col listing-col">
+                <a href="/listings/<%= listing._id %>" class="listing-link">
+                    <div class="card listing-card border-0">
+                        <div class="img-container">
+                            <img src="<%= (listing.image && listing.image.length > 0) ? listing.image[0].url : 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267' %>"
+                                 class="card-img-top" alt="listing_image">
+                            <div class="card-img-overlay p-2">
+                                <button type="button" class="wishlist-icon save-btn" data-listing-id="<%= listing._id %>" onclick="event.preventDefault(); toggleSave(this);">
+                                    <i class="fa-solid fa-heart saved"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body px-1">
+                            <span class="listing-title"><b><%= listing.title %></b></span>
+                            <p class="card-text">
+                                <span class="listing-price">&#x20B9; <%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %></span>
+                                <span class="per-month">/ month</span>
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        <% } %>
+    </div>
+    <% } %>
+</div>
+
+<script>
+// On this page specifically, when un-saved, remove the card entirely instead of just changing the icon
+document.querySelectorAll('.save-btn').forEach(btn => {
+    btn.addEventListener('click', function handler() {
+        setTimeout(() => {
+            const icon = btn.querySelector('i');
+            if (icon.classList.contains('fa-regular')) {
+                btn.closest('.listing-col').remove();
+            }
+        }, 150);
+    });
+});
+</script>

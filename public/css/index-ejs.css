@@ -246,3 +246,76 @@
     font-weight: 600;
     text-decoration: none;
 }
+.search-results-banner {
+    background: var(--color-bg-light);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.7rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.search-results-banner i {
+    color: var(--color-secondary);
+    margin-right: 0.4rem;
+}
+
+.search-results-banner .text-muted {
+    font-weight: 400;
+    font-size: 0.85rem;
+}
+/* --- Wishlist save button --- */
+.save-btn {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.wishlist-icon .saved {
+    color: #ff385c;
+}
+
+/* --- Price range mini-form --- */
+.price-range-form {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    padding: 0.2rem 0.5rem;
+}
+
+.price-input {
+    width: 70px;
+    border: none;
+    background: transparent;
+    font-size: 0.8rem;
+    padding: 0.3rem 0.2rem;
+    color: var(--text-color);
+    outline: none;
+}
+
+.price-input::-webkit-outer-spin-button,
+.price-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.price-apply-btn {
+    background: var(--color-secondary);
+    color: white;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.7rem;
+    font-weight: 600;
+    border: none;
+}
+
+.price-apply-btn:hover {
+    background: var(--color-primary);
+    color: white;
+}
+
+.dropdown-item.active {
+    background-color: var(--color-secondary) !important;
+    color: white !important;
+}

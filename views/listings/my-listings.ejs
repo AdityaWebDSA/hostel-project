@@ -1,0 +1,64 @@
+<% layout("/layouts/boilerplate")%>
+<link rel="stylesheet" href="/css/index-ejs.css">
+<link rel="stylesheet" href="/css/my-listings.css">
+
+<div class="index-container">
+    <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+        <h3 class="page-heading mb-0">My Listings</h3>
+        <a href="/listings/new" class="btn add-btn px-4 rounded-pill">
+            <i class="fa-solid fa-plus me-1"></i> Add New
+        </a>
+    </div>
+
+    <% if (listings.length === 0) { %>
+        <div class="empty-state">
+            <i class="fa-solid fa-house-circle-exclamation"></i>
+            <h5>You haven't listed anything yet</h5>
+            <p class="mb-0"><a href="/listings/new">Create your first listing</a> to get started.</p>
+        </div>
+    <% } else { %>
+    <div class="row row-cols-xxl-4 row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
+        <% for(let listing of listings) { %>
+            <div class="col listing-col">
+                <div class="card listing-card border-0">
+                    <a href="/listings/<%= listing._id %>" class="listing-link">
+                        <div class="img-container">
+                            <img src="<%= (listing.image && listing.image.length > 0) ? listing.image[0].url : 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267' %>"
+                                 class="card-img-top" alt="listing_image">
+                        </div>
+                    </a>
+                    <div class="card-body px-1">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <span class="listing-title"><b><%= listing.title %></b></span>
+                        </div>
+                        <p class="card-text">
+                            <span class="listing-price">&#x20B9; <%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %></span>
+                            <span class="per-month">/ month</span>
+                        </p>
+                        <% if (listing.category && listing.category.length > 0) { %>
+                            <div class="category-pills mb-2">
+                                <% listing.category.forEach(catKey => {
+                                    const cat = CATEGORIES.find(c => c.key === catKey);
+                                    if (cat) { %>
+                                        <span class="category-pill"><i class="<%= cat.icon %>"></i> <%= cat.label %></span>
+                                    <% }
+                                }) %>
+                            </div>
+                        <% } %>
+                        <div class="my-listing-actions">
+                            <a href="/listings/<%= listing._id %>/edit" class="btn-manage edit-action">
+                                <i class="fa-solid fa-pen"></i> Edit
+                            </a>
+                            <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE" class="flex-grow-1" onsubmit="return confirm('Delete this listing? This cannot be undone.');">
+                                <button type="submit" class="btn-manage delete-action w-100">
+                                    <i class="fa-solid fa-trash-can"></i> Delete
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+    <% } %>
+</div>

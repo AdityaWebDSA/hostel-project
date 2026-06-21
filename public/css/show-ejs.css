@@ -520,3 +520,50 @@
 .email-btn:hover i {
     color: var(--color-primary);
 }
+/* --- Billing pills in booking card --- */
+.billing-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.billing-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.65rem;
+    border-radius: 50px;
+    background-color: rgba(202, 164, 94, 0.12);
+    color: var(--color-primary);
+    border: 1px solid rgba(202, 164, 94, 0.4);
+}
+
+.billing-pill i {
+    color: var(--color-accent);
+    font-size: 0.7rem;
+}
+/* --- Save to Wishlist button (show page) --- */
+.btn-save-listing {
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border-color);
+    color: var(--text-color);
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 0.65rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.btn-save-listing:hover {
+    border-color: #ff385c;
+    color: #ff385c;
+}
+
+.btn-save-listing i.saved {
+    color: #ff385c;
+}

@@ -49,11 +49,20 @@ module.exports.validateListing = (req, res, next) => {
 // Add this function to middleware.js
 module.exports.normalizeCategory = (req, res, next) => {
     if (req.body.listing) {
+        // Normalize category
         let cat = req.body.listing.category;
         if (!cat) {
             req.body.listing.category = [];
         } else if (!Array.isArray(cat)) {
             req.body.listing.category = [cat];
+        }
+
+        // Normalize billingPlans the same way
+        let plans = req.body.listing.billingPlans;
+        if (!plans) {
+            req.body.listing.billingPlans = [];
+        } else if (!Array.isArray(plans)) {
+            req.body.listing.billingPlans = [plans];
         }
     }
     next();

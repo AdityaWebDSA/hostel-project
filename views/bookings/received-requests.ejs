@@ -1,0 +1,64 @@
+<% layout("/layouts/boilerplate")%>
+<link rel="stylesheet" href="/css/bookings.css">
+
+<div class="index-container">
+    <h3 class="page-heading mb-4 mt-3">Booking Requests</h3>
+
+    <% if (bookings.length === 0) { %>
+        <div class="empty-state">
+            <i class="fa-solid fa-inbox"></i>
+            <h5>No booking requests received yet</h5>
+            <p class="mb-0">Requests for your listings will show up here.</p>
+        </div>
+    <% } else { %>
+        <div class="booking-list">
+            <% bookings.forEach(b => { 
+                const plan = BILLING_PLANS.find(p => p.key === b.billingPlan);
+            %>
+                <div class="booking-card-row status-<%= b.status %>">
+                    <div class="booking-img">
+                        <% if (b.listing && b.listing.image && b.listing.image[0]) { %>
+                            <img src="<%= b.listing.image[0].url %>" alt="">
+                        <% } else { %>
+                            <div class="booking-img-placeholder"><i class="fa-solid fa-house"></i></div>
+                        <% } %>
+                    </div>
+                    <div class="booking-info">
+                        <% if (b.listing) { %>
+                            <a href="/listings/<%= b.listing._id %>" class="booking-title"><%= b.listing.title %></a>
+                        <% } else { %>
+                            <span class="booking-title text-muted">Listing no longer available</span>
+                        <% } %>
+                        <p class="booking-meta">
+                            <i class="fa-solid fa-user"></i> From: <strong><%= b.tenant ? b.tenant.username : "Unknown" %></strong>
+                        </p>
+                        <p class="booking-meta">
+                            <i class="fa-solid fa-calendar-check"></i> <%= plan ? plan.label : b.billingPlan %>
+                            &nbsp;•&nbsp;
+                            <i class="fa-solid fa-calendar-day"></i> Move-in: <%= b.moveInDate.toDateString() %>
+                        </p>
+                        <% if (b.message) { %>
+                            <p class="booking-message">"<%= b.message %>"</p>
+                        <% } %>
+                        <p class="booking-price">&#x20B9;<%= b.priceAtRequest.toLocaleString("en-IN") %></p>
+                    </div>
+                    <div class="booking-status-actions">
+                        <span class="status-badge status-badge-<%= b.status %>"><%= b.status %></span>
+                        <% if (b.status === "pending") { %>
+                            <div class="d-flex gap-2">
+                                <form action="/bookings/<%= b._id %>/status" method="POST">
+                                    <input type="hidden" name="status" value="confirmed">
+                                    <button type="submit" class="btn-approve">Approve</button>
+                                </form>
+                                <form action="/bookings/<%= b._id %>/status" method="POST">
+                                    <input type="hidden" name="status" value="rejected">
+                                    <button type="submit" class="btn-reject">Decline</button>
+                                </form>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    <% } %>
+</div>

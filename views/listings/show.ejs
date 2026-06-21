@@ -120,11 +120,36 @@
                     </div>
                     <hr>
                     <div class="booking-details mb-4">
-                        <p class="mb-1"><i class="fa-solid fa-check"></i>Instalment option available</p>
-                        <p class="mb-0"><i class="fa-solid fa-check"></i>Refundable deposit</p>
+                        <p class="mb-2 fw-semibold" style="font-size:0.85rem; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:0.5px;">Available Plans</p>
+                        <% if (listing.billingPlans && listing.billingPlans.length > 0) { %>
+                            <div class="billing-pills">
+                                <% listing.billingPlans.forEach(planKey => {
+                                    const plan = BILLING_PLANS.find(p => p.key === planKey);
+                                    if (plan) { %>
+                                        <span class="billing-pill"><i class="fa-solid fa-calendar-check"></i> <%= plan.label %></span>
+                                    <% }
+                                }) %>
+                            </div>
+                        <% } %>
+                        <p class="mb-0 mt-3"><i class="fa-solid fa-check text-success me-1"></i>Refundable deposit</p>
                     </div>
-                    <button type="button" class="btn btn-book-now w-100 mb-3 py-3" id="bookNowBtn">Book Now</button>
-                    <p class="text-center small text-muted mb-0">You won't be charged yet</p>
+                    <% if (currUser) { %>
+                        <button type="button" class="btn btn-save-listing w-100 mb-2" data-listing-id="<%= listing._id %>" onclick="toggleSave(this)">
+                            <i class="<%= isSaved ? 'fa-solid fa-heart saved' : 'fa-regular fa-heart' %>"></i>
+                            <span><%= isSaved ? 'Saved' : 'Save to Wishlist' %></span>
+                        </button>
+
+                        <% if (!listing.owner._id.equals(currUser._id)) { %>
+                            <button type="button" class="btn btn-book-now w-100 mb-3 py-3" data-bs-toggle="modal" data-bs-target="#bookingModal">
+                                Request to Book
+                            </button>
+                            <p class="text-center small text-muted mb-0">You won't be charged yet</p>
+                        <% } else { %>
+                            <p class="text-center small text-muted mb-0 mt-2">This is your own listing</p>
+                        <% } %>
+                    <% } else { %>
+                        <a href="/login" class="btn btn-book-now w-100 mb-3 py-3 d-block text-center text-decoration-none">Log in to Book</a>
+                    <% } %>
                 </div>
             </div>
         </div>
@@ -258,17 +283,56 @@
     </div>
 </div>
 
-<!-- Booking placeholder toast -->
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
-  <div id="bookingToast" class="toast align-items-center text-white border-0 booking-toast" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="d-flex">
-      <div class="toast-body">
-        <i class="fa-solid fa-circle-info me-2"></i>Online booking is coming soon — please contact the owner directly for now.
+<!-- Booking Request Modal -->
+<% if (currUser && listing.owner && !listing.owner._id.equals(currUser._id)) { %>
+<div class="modal fade" id="bookingModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content booking-modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Request to Book</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      <form action="/bookings/listing/<%= listing._id %>" method="POST" class="needs-validation" novalidate>
+        <div class="modal-body">
+
+          <div class="mb-3">
+            <label class="form-label">Billing Plan</label>
+            <select name="booking[billingPlan]" class="form-select custom-input" required>
+              <option value="" disabled selected>Choose a plan</option>
+              <% if (listing.billingPlans && listing.billingPlans.length > 0) { %>
+                <% listing.billingPlans.forEach(planKey => {
+                    const plan = BILLING_PLANS.find(p => p.key === planKey);
+                    if (plan) { %>
+                      <option value="<%= plan.key %>"><%= plan.label %></option>
+                <% }
+                }) %>
+              <% } %>
+            </select>
+            <div class="invalid-feedback">Please choose a billing plan</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Preferred Move-in / Start Date</label>
+            <input type="date" name="booking[moveInDate]" class="form-control custom-input" required min="<%= new Date().toISOString().split('T')[0] %>">
+            <div class="invalid-feedback">Please select a date</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Message to Owner <span class="text-muted small">(optional)</span></label>
+            <textarea name="booking[message]" class="form-control custom-input" rows="3" maxlength="500" placeholder="e.g., Number of people, special requests..."></textarea>
+          </div>
+
+          <p class="small text-muted mb-0"><i class="fa-solid fa-circle-info me-1"></i>This sends a request — the owner will confirm or decline. No payment is taken now.</p>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-book-now rounded-pill px-4">Send Request</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
+<% } %>
 
 <script>
     function swapImage(newSrc) {
@@ -279,12 +343,6 @@
             mainImg.style.opacity = '1';
         }, 150);
     }
-
-    document.getElementById('bookNowBtn')?.addEventListener('click', () => {
-        const toastEl = document.getElementById('bookingToast');
-        const toast = new bootstrap.Toast(toastEl);
-        toast.show();
-    });
 </script>
 <script>
     const mapKey = "<%= process.env.LOCATION_IQ_KEY %>";

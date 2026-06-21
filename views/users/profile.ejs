@@ -1,0 +1,36 @@
+<% layout("/layouts/boilerplate")%>
+<link rel="stylesheet" href="/css/profile.css">
+
+<div class="index-container">
+    <div class="profile-header-card">
+        <div class="profile-avatar-lg">
+            <% if (user.avatar && user.avatar.url) { %>
+                <img src="<%= user.avatar.url %>" alt="<%= user.username %>">
+            <% } else { %>
+                <span><%= user.username.charAt(0).toUpperCase() %></span>
+            <% } %>
+        </div>
+        <div class="profile-header-info">
+            <h3><%= user.username %></h3>
+            <p class="text-muted mb-2"><i class="fa-solid fa-envelope"></i> <%= user.email %></p>
+            <% if (user.phone) { %>
+                <p class="text-muted mb-2"><i class="fa-solid fa-phone"></i> <%= user.phone %></p>
+            <% } %>
+            <p class="profile-bio"><%= user.bio || "No bio added yet." %></p>
+        </div>
+        <a href="/profile/edit" class="btn edit-btn px-4 align-self-start">
+            <i class="fa-solid fa-pen me-1"></i> Edit Profile
+        </a>
+    </div>
+
+    <div class="profile-stats-row">
+        <div class="profile-stat-card">
+            <span class="stat-number"><%= listingCount %></span>
+            <span class="stat-label">Listings</span>
+        </div>
+        <a href="/listings/mylisting" class="profile-stat-link">View My Listings <i class="fa-solid fa-arrow-right"></i></a>
+        <a href="/saved" class="profile-stat-link">View Saved Listings <i class="fa-solid fa-arrow-right"></i></a>
+        <a href="/bookings" class="profile-stat-link">View My Bookings <i class="fa-solid fa-arrow-right"></i></a>
+        <a href="/bookings/received" class="profile-stat-link">View Booking Requests <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+</div>

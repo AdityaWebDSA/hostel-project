@@ -1,15 +1,48 @@
 <% layout("/layouts/boilerplate")%>
 <link rel="stylesheet" href="/css/index-ejs.css">
 
+<%
+  // Helper to build a query string that preserves existing filters while changing one param
+  function buildUrl(overrides) {
+    const params = new URLSearchParams();
+    if (typeof currentCategory !== 'undefined' && currentCategory) params.set('category', currentCategory);
+    if (typeof searchQuery !== 'undefined' && searchQuery) params.set('q', searchQuery);
+    if (typeof minPrice !== 'undefined' && minPrice) params.set('minPrice', minPrice);
+    if (typeof maxPrice !== 'undefined' && maxPrice) params.set('maxPrice', maxPrice);
+    if (typeof currentSort !== 'undefined' && currentSort) params.set('sort', currentSort);
+
+    Object.keys(overrides).forEach(key => {
+      if (overrides[key] === null || overrides[key] === '') {
+        params.delete(key);
+      } else {
+        params.set(key, overrides[key]);
+      }
+    });
+
+    const base = (typeof searchQuery !== 'undefined' && searchQuery) ? '/listings/search' : '/listings';
+    const qs = params.toString();
+    return qs ? `${base}?${qs}` : base;
+  }
+
+  const sortLabels = {
+    recommended: "Recommended",
+    price_asc: "Price: Low to High",
+    price_desc: "Price: High to Low",
+    rating_desc: "Top Rated",
+    newest: "Newest First",
+  };
+  const activeSort = (typeof currentSort !== 'undefined' && currentSort) ? currentSort : "recommended";
+%>
+
 <div class="index-container">
     <div class="filters-wrapper d-flex align-items-center justify-content-between py-3">
         <div id="filters">
-            <a href="/listings" class="filter <%= !currentCategory ? 'active' : '' %>">
+            <a href="<%= buildUrl({ category: null }) %>" class="filter <%= !currentCategory ? 'active' : '' %>">
                 <i class="fa-solid fa-layer-group"></i>
                 <p>All</p>
             </a>
             <% CATEGORIES.forEach(cat => { %>
-                <a href="/listings?category=<%= cat.key %>" class="filter <%= currentCategory === cat.key ? 'active' : '' %>">
+                <a href="<%= buildUrl({ category: cat.key }) %>" class="filter <%= currentCategory === cat.key ? 'active' : '' %>">
                     <i class="<%= cat.icon %>"></i>
                     <p><%= cat.label %></p>
                 </a>
@@ -17,32 +50,59 @@
         </div>
     </div>
 
-    <div class="result-info d-flex justify-content-between align-items-center mb-4 px-1">
-        <h6 class="text-muted fw-normal">
+    <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+        <div class="search-results-banner mb-3">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            Showing results for "<%= searchQuery %>"
+            <% if (searchCenter) { %><span class="text-muted">— including nearby places</span><% } %>
+            <a href="/listings" class="ms-2 clear-filter-link"><i class="fa-solid fa-xmark"></i> Clear</a>
+        </div>
+    <% } %>
+
+    <div class="result-info d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3 px-1">
+        <h6 class="text-muted fw-normal mb-0">
             Showing <%= allListings.length %> available place<%= allListings.length === 1 ? '' : 's' %>
             <% if (currentCategory) {
                 const activeCat = CATEGORIES.find(c => c.key === currentCategory);
             %>
                 for "<%= activeCat ? activeCat.label : currentCategory %>"
-                <a href="/listings" class="ms-2 clear-filter-link"><i class="fa-solid fa-xmark"></i> Clear</a>
+            <% } %>
+            <% if (currentCategory || minPrice || maxPrice) { %>
+                <a href="<%= (typeof searchQuery !== 'undefined' && searchQuery) ? '/listings/search?q=' + encodeURIComponent(searchQuery) : '/listings' %>" class="ms-2 clear-filter-link"><i class="fa-solid fa-xmark"></i> Clear filters</a>
             <% } %>
         </h6>
-        <div class="dropdown">
-            <button class="btn btn-sm btn-outline-secondary dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown">
-                Sort by: Recommended
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Price: Low to High</a></li>
-                <li><a class="dropdown-item" href="#">Price: High to Low</a></li>
-            </ul>
+
+        <div class="d-flex align-items-center gap-2">
+            <!-- Price range mini-form -->
+            <form method="GET" action="<%= (typeof searchQuery !== 'undefined' && searchQuery) ? '/listings/search' : '/listings' %>" class="price-range-form d-flex align-items-center gap-1">
+                <% if (typeof searchQuery !== 'undefined' && searchQuery) { %><input type="hidden" name="q" value="<%= searchQuery %>"><% } %>
+                <% if (currentCategory) { %><input type="hidden" name="category" value="<%= currentCategory %>"><% } %>
+                <% if (currentSort) { %><input type="hidden" name="sort" value="<%= currentSort %>"><% } %>
+                <input type="number" name="minPrice" value="<%= minPrice %>" placeholder="Min ₹" class="price-input" min="0">
+                <span class="text-muted small">–</span>
+                <input type="number" name="maxPrice" value="<%= maxPrice %>" placeholder="Max ₹" class="price-input" min="0">
+                <button type="submit" class="btn btn-sm price-apply-btn">Go</button>
+            </form>
+
+            <!-- Sort dropdown -->
+            <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown">
+                    Sort by: <%= sortLabels[activeSort] %>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <% Object.keys(sortLabels).forEach(key => { %>
+                        <li><a class="dropdown-item <%= activeSort === key ? 'active' : '' %>" href="<%= buildUrl({ sort: key === 'recommended' ? null : key }) %>"><%= sortLabels[key] %></a></li>
+                    <% }) %>
+                </ul>
+            </div>
         </div>
     </div>
 
     <% if (allListings.length === 0) { %>
         <div class="empty-state">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <h5>No listings found in this category yet</h5>
-            <p class="mb-0"><a href="/listings">View all listings</a> or check back soon.</p>
+            <h5>No listings match these filters</h5>
+            <p class="mb-0"><a href="/listings">View all listings</a> or try a different price range.</p>
         </div>
     <% } else { %>
     <div class="row row-cols-xxl-4 row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
@@ -62,9 +122,15 @@
             <span class="badge bg-gold-brand ms-1 px-2 py-1">Best Value</span>
         <% } %>
         
-        <div class="wishlist-icon">
-            <i class="fa-regular fa-heart"></i>
-        </div>
+       <% if (currUser) { %>
+            <button type="button" class="wishlist-icon save-btn" data-listing-id="<%= listing._id %>" onclick="event.preventDefault(); toggleSave(this);">
+                <i class="<%= (typeof savedIds !== 'undefined' && savedIds.includes(listing._id.toString())) ? 'fa-solid fa-heart saved' : 'fa-regular fa-heart' %>"></i>
+            </button>
+        <% } else { %>
+            <a href="/login" class="wishlist-icon" onclick="event.stopPropagation();">
+                <i class="fa-regular fa-heart"></i>
+            </a>
+        <% } %>
     </div>
 </div>
                         

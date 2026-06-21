@@ -1,0 +1,45 @@
+<% layout("/layouts/boilerplate")%>
+<link rel="stylesheet" href="/css/bookings.css">
+<link rel="stylesheet" href="/css/notifications.css">
+
+<div class="index-container">
+    <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+        <h3 class="page-heading mb-0">Notifications</h3>
+        <% if (notifications.some(n => !n.read)) { %>
+            <form action="/notifications/mark-all-read" method="POST">
+                <button type="submit" class="btn btn-outline-secondary btn-sm rounded-pill px-3">Mark all as read</button>
+            </form>
+        <% } %>
+    </div>
+
+    <% if (notifications.length === 0) { %>
+        <div class="empty-state">
+            <i class="fa-regular fa-bell"></i>
+            <h5>No notifications yet</h5>
+            <p class="mb-0">You'll see updates about reviews and bookings here.</p>
+        </div>
+    <% } else { %>
+        <div class="notification-list">
+            <% notifications.forEach(n => { %>
+                <form action="/notifications/<%= n._id %>/read" method="POST" class="notification-form">
+                    <button type="submit" class="notification-item <%= n.read ? '' : 'unread' %>">
+                        <div class="notification-icon">
+                            <% if (n.type === 'new_review') { %>
+                                <i class="fa-solid fa-star"></i>
+                            <% } else if (n.type === 'booking_request') { %>
+                                <i class="fa-solid fa-calendar-plus"></i>
+                            <% } else { %>
+                                <i class="fa-solid fa-calendar-check"></i>
+                            <% } %>
+                        </div>
+                        <div class="notification-text">
+                            <p><%= n.message %></p>
+                            <small><%= n.createdAt.toLocaleString() %></small>
+                        </div>
+                        <% if (!n.read) { %><span class="unread-dot"></span><% } %>
+                    </button>
+                </form>
+            <% }) %>
+        </div>
+    <% } %>
+</div>

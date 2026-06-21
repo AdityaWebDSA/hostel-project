@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
-const review = require("./review");
 const Schema = mongoose.Schema;
 const Review = require("./review.js");
 const CATEGORIES = require("../utils/categories");
+const { BILLING_PLANS } = require("../utils/billingPlans");
 
 const listingSchema = new Schema({
     title: {
@@ -40,12 +40,16 @@ const listingSchema = new Schema({
             required: true
         }
     },
-    // A single listing can serve multiple purposes (e.g. a shop that does
-    // both Xerox & Stationery AND Cafes & Chai), so this is an array.
     category: {
         type: [String],
         enum: CATEGORIES.map(c => c.key),
         default: [],
+    },
+    // Owner sets which billing plans their listing accepts
+    billingPlans: {
+        type: [String],
+        enum: BILLING_PLANS.map(p => p.key),
+        default: ["monthly"],
     },
     reviews: [
         {
@@ -58,6 +62,8 @@ const listingSchema = new Schema({
         ref: "User",
     },
 });
+
+listingSchema.index({ geometry: "2dsphere" });
 
 listingSchema.post("findOneAndDelete", async (listing) => {
     if (listing) {

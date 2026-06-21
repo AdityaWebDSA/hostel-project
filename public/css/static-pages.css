@@ -1,0 +1,92 @@
+.static-page {
+    padding-top: 1.5rem;
+    padding-bottom: 3rem;
+    max-width: 800px;
+}
+
+.static-lead {
+    font-size: 1.05rem;
+    color: var(--color-text-muted);
+    margin-bottom: 2rem;
+}
+
+.about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.about-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.about-card i {
+    font-size: 1.8rem;
+    color: var(--color-secondary);
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.about-card h5 {
+    color: var(--text-color);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.about-card p {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.faq-item {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+}
+
+.faq-item summary {
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--text-color);
+    list-style: none;
+}
+
+.faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.faq-item summary::before {
+    content: "+";
+    color: var(--color-secondary);
+    font-weight: 800;
+    margin-right: 0.6rem;
+}
+
+.faq-item[open] summary::before {
+    content: "−";
+}
+
+.faq-item p {
+    color: var(--color-text-muted);
+    margin: 0.75rem 0 0;
+}
+
+.static-footer-note {
+    margin-top: 2rem;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    text-align: center;
+}

@@ -15,7 +15,17 @@ const storage = new CloudinaryStorage({
   },
 });
 
+const avatarStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'uninest_avatars',
+    allowedFormats: ["png","jpg","jpeg"],
+    transformation: [{ width: 300, height: 300, crop: "fill", gravity: "face" }],
+  },
+});
+
 module.exports={
     cloudinary,
     storage,
+    avatarStorage,
 };

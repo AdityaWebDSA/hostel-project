@@ -34,7 +34,23 @@
                         <% }) %>
                     </div>
                     <input type="text" class="form-control category-validity" required>
-                    <div class="invalid-feedback">Please select at least one category</div>
+                    <div class="invalid-feedback">Please select at least one category <div class="mb-3 billing-group" id="billingPlansSection">
+                    <label class="form-label">Accepted Billing Plans</label>
+                    <div class="billing-grid" id="billingGrid">
+                        <% BILLING_PLANS.forEach(plan => { %>
+                            <div class="billing-option">
+                                <input type="checkbox" name="listing[billingPlans][]" value="<%= plan.key %>" id="plan-<%= plan.key %>" class="billing-checkbox"
+                                    <%= (listing.billingPlans && listing.billingPlans.includes(plan.key)) ? 'checked' : '' %>>
+                                <label for="plan-<%= plan.key %>" class="billing-label">
+                                    <i class="fa-solid fa-calendar-check"></i>
+                                    <span><%= plan.label %></span>
+                                </label>
+                            </div>
+                        <% }) %>
+                    </div>
+                    <input type="text" class="form-control billing-validity" required>
+                    <div class="invalid-feedback">Please select at least one billing plan</div>
+                </div></div>
                 </div>
 
               <div class="mb-3">

@@ -35,7 +35,26 @@
                         <% }) %>
                     </div>
                     <input type="text" class="form-control category-validity" required>
-                    <div class="invalid-feedback">Please select at least one category</div>
+                    <div class="invalid-feedback">Please select at least one category
+                        <div class="mb-3 billing-group" id="billingPlansSection">
+                    <label class="form-label">Accepted Billing Plans <span class="text-muted small">(auto-suggested based on categories)</span></label>
+                    <div class="billing-grid" id="billingGrid">
+                        <% BILLING_PLANS.forEach(plan => { %>
+                            <div class="billing-option">
+                                <input type="checkbox" name="listing[billingPlans][]" value="<%= plan.key %>" id="plan-<%= plan.key %>" class="billing-checkbox"
+                                    <%= plan.key === 'monthly' ? 'checked' : '' %>>
+                                <label for="plan-<%= plan.key %>" class="billing-label">
+                                    <i class="fa-solid fa-calendar-check"></i>
+                                    <span><%= plan.label %></span>
+                                </label>
+                            </div>
+                        <% }) %>
+                    </div>
+                    <input type="text" class="form-control billing-validity" required>
+                    <div class="invalid-feedback">Please select at least one billing plan</div>
+                    <small class="text-muted mt-1 d-block">Tip: selecting categories above will auto-suggest the right plans.</small>
+                </div>
+                    </div>
                 </div>
 
                 <div class="mb-3">

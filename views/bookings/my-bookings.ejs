@@ -1,0 +1,100 @@
+<% layout("/layouts/boilerplate")%>
+<link rel="stylesheet" href="/css/bookings.css">
+
+<div class="index-container">
+    <h3 class="page-heading mb-4 mt-3">
+        <%= role === "owner" ? "Booking Requests Received" : "My Bookings" %>
+    </h3>
+
+    <% if (bookings.length === 0) { %>
+        <div class="empty-state">
+            <i class="fa-solid fa-calendar-xmark"></i>
+            <h5><%= role === "owner" ? "No booking requests received yet" : "No booking requests yet" %></h5>
+            <p class="mb-0">
+                <% if (role === "owner") { %>
+                    Requests for your listings will show up here.
+                <% } else { %>
+                    <a href="/listings">Browse listings</a> to send your first request.
+                <% } %>
+            </p>
+        </div>
+    <% } else { %>
+        <div class="booking-list">
+            <% bookings.forEach(b => {
+                const plan = BILLING_PLANS.find(p => p.key === b.billingPlan);
+            %>
+                <div class="booking-card-row status-<%= b.status %>">
+                    <div class="booking-img">
+                        <% if (b.listing && b.listing.image && b.listing.image[0]) { %>
+                            <img src="<%= b.listing.image[0].url %>" alt="">
+                        <% } else { %>
+                            <div class="booking-img-placeholder"><i class="fa-solid fa-house"></i></div>
+                        <% } %>
+                    </div>
+
+                    <div class="booking-info">
+                        <% if (b.listing) { %>
+                            <a href="/listings/<%= b.listing._id %>" class="booking-title"><%= b.listing.title %></a>
+                            <p class="booking-meta"><i class="fa-solid fa-location-dot"></i> <%= b.listing.location %></p>
+                        <% } else { %>
+                            <span class="booking-title text-muted">Listing no longer available</span>
+                        <% } %>
+
+                        <p class="booking-meta">
+                            <i class="fa-solid fa-calendar-check"></i> <%= plan ? plan.label : b.billingPlan %>
+                            &nbsp;•&nbsp;
+                            <i class="fa-solid fa-calendar-day"></i> Move-in: <%= b.moveInDate.toDateString() %>
+                        </p>
+
+                        <% if (role === "owner" && b.tenant) { %>
+                            <p class="booking-meta"><i class="fa-solid fa-user"></i> From: <strong><%= b.tenant.username %></strong></p>
+                            <% if (b.tenant.phone) { %>
+                                <p class="booking-meta"><i class="fa-solid fa-phone"></i> <%= b.tenant.phone %></p>
+                            <% } %>
+                            <% if (b.tenant.email) { %>
+                                <p class="booking-meta"><i class="fa-solid fa-envelope"></i> <%= b.tenant.email %></p>
+                            <% } %>
+                        <% } %>
+
+                        <% if (role === "tenant" && b.owner) { %>
+                            <p class="booking-meta"><i class="fa-solid fa-user-tie"></i> Owner: <%= b.owner.username %></p>
+                        <% } %>
+
+                        <% if (b.message) { %>
+                            <p class="booking-message">"<%= b.message %>"</p>
+                        <% } %>
+
+                        <p class="booking-price">&#x20B9;<%= b.priceAtRequest ? b.priceAtRequest.toLocaleString("en-IN") : "N/A" %></p>
+                    </div>
+
+                    <div class="booking-status-actions">
+                        <span class="status-badge status-badge-<%= b.status %>"><%= b.status %></span>
+
+                        <% if (role === "owner" && b.status === "pending") { %>
+                            <div class="d-flex gap-2">
+                                <form action="/bookings/<%= b._id %>/respond" method="POST">
+                                    <input type="hidden" name="action" value="confirm">
+                                    <button type="submit" class="btn-approve">Approve</button>
+                                </form>
+                                <form action="/bookings/<%= b._id %>/respond" method="POST">
+                                    <input type="hidden" name="action" value="reject">
+                                    <button type="submit" class="btn-reject">Decline</button>
+                                </form>
+                            </div>
+                        <% } %>
+
+                        <% if (role === "tenant" && (b.status === "pending" || b.status === "confirmed")) { %>
+                            <form action="/bookings/<%= b._id %>/cancel" method="POST" onsubmit="return confirm('Cancel this booking request?');">
+                                <button type="submit" class="btn-cancel-booking">Cancel</button>
+                            </form>
+                        <% } %>
+
+                        <% if (role === "owner" && b.status === "confirmed" && b.tenant) { %>
+                            <a href="tel:<%= b.tenant.phone %>" class="btn-contact-tenant"><i class="fa-solid fa-phone"></i> Call Tenant</a>
+                        <% } %>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    <% } %>
+</div>

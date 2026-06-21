@@ -21,8 +21,10 @@ router.route("/")
         wrapAsync(listingController.createListing)
     );
 
-// New Route (Must stay ABOVE /:id so Express doesn't think "new" is an ID)
+// These must stay ABOVE /:id so Express doesn't treat "new"/"search"/"mylisting" as an ID
 router.get("/new", isLoggedIn, listingController.renderNewForm);
+router.get("/search", wrapAsync(listingController.searchListings));
+router.get("/mylisting", isLoggedIn, wrapAsync(listingController.myListings));
 
 // Show, Update, and Delete Routes
 router.route("/:id")

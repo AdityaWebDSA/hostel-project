@@ -90,10 +90,17 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 // Global Locals Middleware
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
     res.locals.currUser = req.user || null;
+
+    if (req.user) {
+        const Notification = require("./models/notification.js");
+        res.locals.unreadNotifCount = await Notification.countDocuments({ user: req.user._id, read: false });
+    } else {
+        res.locals.unreadNotifCount = 0;
+    }
     next();
 });
 
@@ -106,9 +113,18 @@ app.get("/", (req, res) => {
 
 // 2. Resource Routes
 app.use("/listings", listingRouter);
+const savedRouter = require("./routes/saved.js");
+app.use("/saved", savedRouter);
+const bookingRouter = require("./routes/bookings.js");
+app.use("/bookings", bookingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
-
+const profileRouter = require("./routes/profile.js");
+app.use("/profile", profileRouter);
+const notificationRouter = require("./routes/notifications.js");
+app.use("/notifications", notificationRouter);
+const staticRouter = require("./routes/static.js");
+app.use("/", staticRouter);
 // --- ERROR HANDLING ---
 
 // app.all("*") catches everything that didn't match the routes above
