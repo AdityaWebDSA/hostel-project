@@ -25,8 +25,8 @@
             %>
                 <div class="booking-card-row status-<%= b.status %>">
                     <div class="booking-img">
-                        <% if (b.listing && b.listing.image && b.listing.image[0]) { %>
-                            <img src="<%= b.listing.image[0].url %>" alt="">
+                       <% if (b.listing && b.listing.image && b.listing.image[0]) { %>
+                            <img src="<%= smallThumb(b.listing.image[0].url) %>" alt="" loading="lazy">
                         <% } else { %>
                             <div class="booking-img-placeholder"><i class="fa-solid fa-house"></i></div>
                         <% } %>

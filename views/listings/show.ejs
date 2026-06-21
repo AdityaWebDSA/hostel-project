@@ -11,7 +11,7 @@
         <div class="bento-grid">
             <div class="bento-item main-img">
                 <% if (listing.image && listing.image.length > 0) { %>
-                    <img src="<%= listing.image[0].url %>" id="mainDisplayImg" alt="Main Image">
+                    <img src="<%= detailImage(listing.image[0].url) %>" id="mainDisplayImg" alt="Main Image">
                 <% } else { %>
                     <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267" id="mainDisplayImg" alt="Default Image">
                 <% } %>
@@ -21,7 +21,7 @@
                 <% for(let i = 1; i < 5; i++) { %>
                     <div class="bento-item small-img">
                         <% if (listing.image && listing.image[i]) { %>
-                            <img src="<%= listing.image[i].url %>" onclick="swapImage(this.src)" class="clickable-thumb" alt="Room View">
+                            <img src="<%= smallThumb(listing.image[i].url) %>" data-full="<%= detailImage(listing.image[i].url) %>" onclick="swapImage(this.dataset.full)" class="clickable-thumb" alt="Room View">
                         <% } else { %>
                             <div class="img-placeholder d-flex align-items-center justify-content-center">
                                 <i class="fa-solid fa-camera text-muted"></i>

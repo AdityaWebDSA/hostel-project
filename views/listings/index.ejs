@@ -1,6 +1,5 @@
 <% layout("/layouts/boilerplate")%>
 <link rel="stylesheet" href="/css/index-ejs.css">
-
 <%
   // Helper to build a query string that preserves existing filters while changing one param
   function buildUrl(overrides) {
@@ -10,6 +9,7 @@
     if (typeof minPrice !== 'undefined' && minPrice) params.set('minPrice', minPrice);
     if (typeof maxPrice !== 'undefined' && maxPrice) params.set('maxPrice', maxPrice);
     if (typeof currentSort !== 'undefined' && currentSort) params.set('sort', currentSort);
+    if (typeof currentPage !== 'undefined' && currentPage > 1) params.set('page', currentPage);
 
     Object.keys(overrides).forEach(key => {
       if (overrides[key] === null || overrides[key] === '') {
@@ -37,12 +37,12 @@
 <div class="index-container">
     <div class="filters-wrapper d-flex align-items-center justify-content-between py-3">
         <div id="filters">
-            <a href="<%= buildUrl({ category: null }) %>" class="filter <%= !currentCategory ? 'active' : '' %>">
+            <a href="<%= buildUrl({ category: null, page: null }) %>" class="filter <%= !currentCategory ? 'active' : '' %>">
                 <i class="fa-solid fa-layer-group"></i>
                 <p>All</p>
             </a>
             <% CATEGORIES.forEach(cat => { %>
-                <a href="<%= buildUrl({ category: cat.key }) %>" class="filter <%= currentCategory === cat.key ? 'active' : '' %>">
+                <a href="<%= buildUrl({ category: cat.key, page: null }) %>" class="filter <%= currentCategory === cat.key ? 'active' : '' %>">
                     <i class="<%= cat.icon %>"></i>
                     <p><%= cat.label %></p>
                 </a>
@@ -73,7 +73,6 @@
         </h6>
 
         <div class="d-flex align-items-center gap-2">
-            <!-- Price range mini-form -->
             <form method="GET" action="<%= (typeof searchQuery !== 'undefined' && searchQuery) ? '/listings/search' : '/listings' %>" class="price-range-form d-flex align-items-center gap-1">
                 <% if (typeof searchQuery !== 'undefined' && searchQuery) { %><input type="hidden" name="q" value="<%= searchQuery %>"><% } %>
                 <% if (currentCategory) { %><input type="hidden" name="category" value="<%= currentCategory %>"><% } %>
@@ -84,14 +83,13 @@
                 <button type="submit" class="btn btn-sm price-apply-btn">Go</button>
             </form>
 
-            <!-- Sort dropdown -->
             <div class="dropdown">
                 <button class="btn btn-sm btn-outline-secondary dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown">
                     Sort by: <%= sortLabels[activeSort] %>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <% Object.keys(sortLabels).forEach(key => { %>
-                        <li><a class="dropdown-item <%= activeSort === key ? 'active' : '' %>" href="<%= buildUrl({ sort: key === 'recommended' ? null : key }) %>"><%= sortLabels[key] %></a></li>
+                        <li><a class="dropdown-item <%= activeSort === key ? 'active' : '' %>" href="<%= buildUrl({ sort: key === 'recommended' ? null : key, page: null }) %>"><%= sortLabels[key] %></a></li>
                     <% }) %>
                 </ul>
             </div>
@@ -111,9 +109,10 @@
                 <a href="/listings/<%= listing._id %>" class="listing-link">
                     <div class="card listing-card border-0">
                        <div class="img-container">
-    <img src="<%= (listing.image && listing.image.length > 0) ? listing.image[0].url : 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267' %>" 
+    <img src="<%= (listing.image && listing.image.length > 0) ? cardThumb(listing.image[0].url) : 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&h=350&fit=crop&auto=format' %>" 
          class="card-img-top" 
-         alt="listing_image">
+         alt="listing_image"
+         loading="lazy">
     
     <div class="card-img-overlay p-2">
         <span class="badge bg-teal-brand px-2 py-1">New</span>
@@ -160,5 +159,44 @@
             </div>
         <% } %>
     </div>
+
+    <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+        <nav class="pagination-wrapper mt-4" aria-label="Listings pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item <%= currentPage <= 1 ? 'disabled' : '' %>">
+                    <a class="page-link" href="<%= buildUrl({ page: currentPage - 1 }) %>" aria-label="Previous">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </a>
+                </li>
+
+                <%
+                  const windowSize = 2;
+                  const pages = [];
+                  for (let p = 1; p <= totalPages; p++) {
+                      if (p === 1 || p === totalPages || (p >= currentPage - windowSize && p <= currentPage + windowSize)) {
+                          pages.push(p);
+                      }
+                  }
+                %>
+                <% let lastShown = 0; %>
+                <% pages.forEach(p => { %>
+                    <% if (p - lastShown > 1) { %>
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                    <% } %>
+                    <li class="page-item <%= p === currentPage ? 'active' : '' %>">
+                        <a class="page-link" href="<%= buildUrl({ page: p }) %>"><%= p %></a>
+                    </li>
+                    <% lastShown = p; %>
+                <% }) %>
+
+                <li class="page-item <%= currentPage >= totalPages ? 'disabled' : '' %>">
+                    <a class="page-link" href="<%= buildUrl({ page: currentPage + 1 }) %>" aria-label="Next">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+            <p class="text-center text-muted small mb-0">Page <%= currentPage %> of <%= totalPages %> &middot; <%= totalCount %> total listings</p>
+        </nav>
+    <% } %>
     <% } %>
 </div>

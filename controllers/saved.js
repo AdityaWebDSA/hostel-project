@@ -1,5 +1,6 @@
 const SavedListing = require("../models/savedListing.js");
 const Listing = require("../models/listing.js");
+const { cardThumb } = require("../utils/cloudinaryHelpers");
 
 module.exports.toggleSave = async (req, res) => {
     const { id } = req.params; // listing id
@@ -32,5 +33,5 @@ module.exports.mySaved = async (req, res) => {
         .filter(s => s.listing !== null)
         .map(s => s.listing);
 
-    res.render("listings/saved.ejs", { listings, CATEGORIES });
+res.render("listings/saved.ejs", { listings, CATEGORIES, cardThumb });
 };

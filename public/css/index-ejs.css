@@ -319,3 +319,36 @@
     background-color: var(--color-secondary) !important;
     color: white !important;
 }
+/* --- Pagination --- */
+.pagination-wrapper {
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.pagination .page-link {
+    color: var(--text-color);
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    margin: 0 3px;
+    border-radius: 8px !important;
+    font-weight: 600;
+    font-size: 0.85rem;
+    min-width: 38px;
+    text-align: center;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--color-secondary);
+    border-color: var(--color-secondary);
+    color: white;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: var(--color-text-muted);
+    background-color: var(--color-bg-light);
+    opacity: 0.6;
+}
+
+.pagination .page-link:hover:not(.disabled *) {
+    background-color: var(--color-bg-light);
+}

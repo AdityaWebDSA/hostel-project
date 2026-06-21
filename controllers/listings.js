@@ -1,5 +1,6 @@
 const Listing = require("../models/listing");
 const ExpressError = require("../utils/ExpressError.js"); 
+const { cardThumb, detailImage, smallThumb } = require("../utils/cloudinaryHelpers");
 
 // Helper function for Geocoding with Fallback logic
 async function getCoordinates(listingData) {
@@ -84,6 +85,7 @@ function sortByRating(listings) {
         return avg(b) - avg(a);
     });
 }
+const PAGE_SIZE = 12;
 
 module.exports.index = async (req, res) => {
   const { category } = req.query;
@@ -94,14 +96,23 @@ module.exports.index = async (req, res) => {
 
   const CATEGORIES = require("../utils/categories");
 
+  const totalCount = await Listing.countDocuments(filter);
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  let page = parseInt(req.query.page, 10);
+  if (!page || page < 1) page = 1;
+  if (page > totalPages) page = totalPages;
+  const skip = (page - 1) * PAGE_SIZE;
+
   let allListings;
   if (sort === "rating_desc") {
-      // Need reviews populated to compute average rating
-      allListings = await Listing.find(filter).populate("reviews");
-      allListings = sortByRating(allListings);
+      // Rating isn't stored, so we have to pull everything matching the filter,
+      // compute averages, sort, THEN slice the page in memory.
+      let fullSet = await Listing.find(filter).populate("reviews");
+      fullSet = sortByRating(fullSet);
+      allListings = fullSet.slice(skip, skip + PAGE_SIZE);
   } else {
       const sortStage = getSortStage(sort);
-      let query = Listing.find(filter);
+      let query = Listing.find(filter).skip(skip).limit(PAGE_SIZE);
       if (sortStage) query = query.sort(sortStage);
       allListings = await query;
   }
@@ -113,7 +124,7 @@ module.exports.index = async (req, res) => {
     savedIds = saved.map(s => s.listing.toString());
   }
 
-  res.render("listings/index.ejs", {
+ res.render("listings/index.ejs", {
       allListings,
       CATEGORIES,
       currentCategory: category || null,
@@ -121,6 +132,10 @@ module.exports.index = async (req, res) => {
       currentSort: sort,
       minPrice: req.query.minPrice || "",
       maxPrice: req.query.maxPrice || "",
+      currentPage: page,
+      totalPages,
+      totalCount,
+      cardThumb,
   });
 };
 
@@ -192,8 +207,18 @@ module.exports.searchListings = async (req, res) => {
         savedIds = saved.map(s => s.listing.toString());
     }
 
-    res.render("listings/index.ejs", {
-        allListings,
+  // Search merges two queries first, so pagination is applied AFTER sort,
+    // on the final in-memory array.
+    const totalCount = allListings.length;
+    const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+    let page = parseInt(req.query.page, 10);
+    if (!page || page < 1) page = 1;
+    if (page > totalPages) page = totalPages;
+    const skip = (page - 1) * PAGE_SIZE;
+    const pagedListings = allListings.slice(skip, skip + PAGE_SIZE);
+
+ res.render("listings/index.ejs", {
+        allListings: pagedListings,
         CATEGORIES,
         currentCategory: null,
         searchQuery: query,
@@ -202,13 +227,17 @@ module.exports.searchListings = async (req, res) => {
         currentSort: sort,
         minPrice: req.query.minPrice || "",
         maxPrice: req.query.maxPrice || "",
+        currentPage: page,
+        totalPages,
+        totalCount,
+        cardThumb,
     });
 };
 
 module.exports.myListings = async (req, res) => {
     const CATEGORIES = require("../utils/categories");
     const listings = await Listing.find({ owner: req.user._id });
-    res.render("listings/my-listings.ejs", { listings, CATEGORIES });
+    res.render("listings/my-listings.ejs", { listings, CATEGORIES, cardThumb });
 };
 
 module.exports.renderNewForm = (req, res) => {
@@ -246,7 +275,7 @@ module.exports.showListing = async (req, res) => {
   }
 
   const { BILLING_PLANS } = require("../utils/billingPlans");
-  res.render("listings/show.ejs", { listing, CATEGORIES, avgRating, reviewCount, isSaved, BILLING_PLANS });
+res.render("listings/show.ejs", { listing, CATEGORIES, avgRating, reviewCount, isSaved, BILLING_PLANS, detailImage, smallThumb });
 }
 
 module.exports.createListing = async (req, res, next) => {

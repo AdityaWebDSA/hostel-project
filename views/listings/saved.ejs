@@ -19,8 +19,8 @@
                 <a href="/listings/<%= listing._id %>" class="listing-link">
                     <div class="card listing-card border-0">
                         <div class="img-container">
-                            <img src="<%= (listing.image && listing.image.length > 0) ? listing.image[0].url : 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267' %>"
-                                 class="card-img-top" alt="listing_image">
+                          <img src="<%= (listing.image && listing.image.length > 0) ? cardThumb(listing.image[0].url) : 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&h=350&fit=crop&auto=format' %>"
+                                 class="card-img-top" alt="listing_image" loading="lazy">
                             <div class="card-img-overlay p-2">
                                 <button type="button" class="wishlist-icon save-btn" data-listing-id="<%= listing._id %>" onclick="event.preventDefault(); toggleSave(this);">
                                     <i class="fa-solid fa-heart saved"></i>

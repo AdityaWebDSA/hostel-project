@@ -2,7 +2,7 @@ const Booking = require("../models/booking.js");
 const Listing = require("../models/listing.js");
 const { BILLING_PLANS } = require("../utils/billingPlans");
 const notify = require("../utils/notify");
-
+const { smallThumb } = require("../utils/cloudinaryHelpers");
 // Tenant creates a booking request
 module.exports.createBooking = async (req, res) => {
     const { id } = req.params; // listing id
@@ -51,7 +51,7 @@ module.exports.myBookings = async (req, res) => {
     const bookings = await Booking.find({ tenant: req.user._id })
         .populate("listing")
         .sort({ createdAt: -1 });
-    res.render("bookings/my-bookings.ejs", { bookings, BILLING_PLANS, role: "tenant" });
+res.render("bookings/my-bookings.ejs", { bookings, BILLING_PLANS, role: "tenant", smallThumb });
 };
 
 // Owner's view: requests they've received
