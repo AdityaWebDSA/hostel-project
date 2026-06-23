@@ -10,7 +10,9 @@ module.exports.listingSchema = Joi.object({
         location: Joi.string().required(),
         country: Joi.string().required(),
         price: Joi.number().required().min(0),
-        landmark: Joi.string().allow("", null),
+       landmark: Joi.string().allow("", null),
+        lat: Joi.string().allow("", null),
+        lng: Joi.string().allow("", null),
         contactNumber: Joi.string().pattern(/^[0-9+\-\s]{7,15}$/).allow("", null)
             .messages({ "string.pattern.base": "Contact number must be 7-15 digits" }),
         contactEmail: Joi.string().email({ tlds: { allow: false } }).allow("", null)

@@ -1,5 +1,6 @@
 <% layout("/layouts/boilerplate") %>
 <link rel="stylesheet" href="/css/new-ejs.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <div class="row mt-4 mb-5">
     <div class="col-8 offset-2">
@@ -35,8 +36,10 @@
                         <% }) %>
                     </div>
                     <input type="text" class="form-control category-validity" required>
-                    <div class="invalid-feedback">Please select at least one category
-                        <div class="mb-3 billing-group" id="billingPlansSection">
+                    <div class="invalid-feedback">Please select at least one category</div>
+                </div>
+
+                <div class="mb-3 billing-group" id="billingPlansSection">
                     <label class="form-label">Accepted Billing Plans <span class="text-muted small">(auto-suggested based on categories)</span></label>
                     <div class="billing-grid" id="billingGrid">
                         <% BILLING_PLANS.forEach(plan => { %>
@@ -53,8 +56,6 @@
                     <input type="text" class="form-control billing-validity" required>
                     <div class="invalid-feedback">Please select at least one billing plan</div>
                     <small class="text-muted mt-1 d-block">Tip: selecting categories above will auto-suggest the right plans.</small>
-                </div>
-                    </div>
                 </div>
 
                 <div class="mb-3">
@@ -84,10 +85,24 @@
 
                 <div class="mb-3">
                     <label for="location" class="form-label">City/Location</label>
-                    <input name="listing[location]" placeholder="Kolhapur, Maharashtra" type="text" class="form-control custom-input" required>
+                    <input name="listing[location]" id="locationInput" placeholder="Kolhapur, Maharashtra" type="text" class="form-control custom-input" required>
                     <div class="invalid-feedback">Location should be valid</div>
                 </div>
-           <div class="row">
+
+                <div class="mb-4">
+                    <label class="form-label">Pin the Exact Location <span class="text-muted small">(click or drag the marker)</span></label>
+                    <div class="map-picker-wrapper">
+                        <div id="locationPickerMap"></div>
+                        <button type="button" id="locateMeBtn" class="locate-me-btn" title="Find my current location">
+                            <i class="fa-solid fa-location-crosshairs"></i>
+                        </button>
+                    </div>
+                    <small class="text-muted mt-1 d-block" id="pinStatusText">Type a city above, or click on the map to drop a pin.</small>
+                    <input type="hidden" name="listing[lat]" id="latInput">
+                    <input type="hidden" name="listing[lng]" id="lngInput">
+                </div>
+
+                <div class="row">
                     <div class="mb-3 col-md-6">
                         <label for="contactNumber" class="form-label">Contact Number</label>
                         <input name="listing[contactNumber]" placeholder="e.g., 9876543210" type="tel" class="form-control custom-input" pattern="[0-9+\-\s]{7,15}">
@@ -108,3 +123,6 @@
         </div>
     </div>
 </div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/js/location-picker.js"></script>

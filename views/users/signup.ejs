@@ -1,42 +1,137 @@
 <% layout("/layouts/boilerplate") %>
+<link rel="stylesheet" href="/css/auth.css">
 
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <img src="/ui_material/main_logo.png" alt="UniNest">
+            </div>
+            <h2>Join UniNest</h2>
+            <p>Find everything around your campus</p>
+        </div>
 
-<div class="row mt-3">
-    <h1 class="col-6 offset-3">SignUp on UniNest</h1>
-    <div class="col-6 offset-3">
-        <form action="/signup" method="POST" class="needs-validation" novalidate>
-                 <!-- username -->  
+        <form action="/signup" method="POST" class="needs-validation" novalidate id="signupForm">
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
-                <input name="username" 
-                id="username"
-                 placeholder="Enter Username" 
-                 type="text" 
-                 class="form-control" 
-                 required />
-             <div class="valid-feedback">Looks good!</div>
+                <div class="input-group-custom">
+                    <i class="fa-solid fa-user"></i>
+                    <input name="username" id="username" placeholder="Choose a username"
+                        type="text" class="form-control custom-input" required minlength="3">
+                </div>
+                <div class="invalid-feedback">Username must be at least 3 characters</div>
             </div>
-            <!-- email -->
-             <div class="mb-3">
-                <label for="email" class="form-label">E-mail</label>
-                <input name="email" 
-                id="email"
-                 placeholder="Enter email" 
-                 type="email" 
-                 class="form-control" 
-                 required />
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <div class="input-group-custom">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input name="email" id="email" placeholder="your@email.com"
+                        type="email" class="form-control custom-input" required>
+                </div>
+                <div class="invalid-feedback">Please enter a valid email address</div>
             </div>
-             <!-- password -->
-             <div class="mb-3">
+
+            <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
-                <input name="password" 
-                id="password"
-                 placeholder="Enter password" 
-                 type="password" 
-                 class="form-control" 
-                 required />
+                <div class="input-group-custom">
+                    <i class="fa-solid fa-lock"></i>
+                    <input name="password" id="password" placeholder="Create a password"
+                        type="password" class="form-control custom-input" required minlength="6"
+                        oninput="checkStrength(this.value)">
+                    <button type="button" class="toggle-password" onclick="togglePassword('password', this)">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+                <div class="password-strength mt-1">
+                    <div class="strength-bar" id="strengthBar"></div>
+                </div>
+                <small id="strengthText" class="text-muted"></small>
+                <div class="invalid-feedback">Password must be at least 6 characters</div>
             </div>
-  <button class="btn btn-success">SignUp</button>
+
+            <div class="mb-4">
+                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                <div class="input-group-custom">
+                    <i class="fa-solid fa-lock"></i>
+                    <input id="confirmPassword" placeholder="Re-enter your password"
+                        type="password" class="form-control custom-input" required>
+                    <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword', this)">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+                <div class="invalid-feedback" id="confirmFeedback">Passwords do not match</div>
+            </div>
+
+            <button type="submit" class="btn auth-btn w-100">Create Account</button>
         </form>
+
+        <div class="auth-footer">
+            <p>Already have an account? <a href="/login">Log in</a></p>
+        </div>
     </div>
 </div>
+
+<script>
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash';
+    } else {
+        input.type = 'password';
+        icon.className = 'fa-solid fa-eye';
+    }
+}
+
+function checkStrength(val) {
+    const bar = document.getElementById('strengthBar');
+    const text = document.getElementById('strengthText');
+    if (!val) { bar.style.width = '0'; text.textContent = ''; return; }
+
+    let score = 0;
+    if (val.length >= 6) score++;
+    if (val.length >= 10) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    const levels = [
+        { label: '', color: 'transparent', width: '0%' },
+        { label: 'Weak', color: '#dc3545', width: '25%' },
+        { label: 'Fair', color: '#fd7e14', width: '50%' },
+        { label: 'Good', color: '#caa45e', width: '75%' },
+        { label: 'Strong', color: '#156d6d', width: '100%' },
+    ];
+    const level = levels[Math.min(score, 4)];
+    bar.style.width = level.width;
+    bar.style.background = level.color;
+    text.textContent = level.label ? `Password strength: ${level.label}` : '';
+}
+
+document.getElementById('signupForm').addEventListener('submit', function(e) {
+    const pwd = document.getElementById('password').value;
+    const confirm = document.getElementById('confirmPassword');
+    const feedback = document.getElementById('confirmFeedback');
+
+    if (pwd !== confirm.value) {
+        confirm.setCustomValidity('Passwords do not match');
+        feedback.textContent = 'Passwords do not match';
+        e.preventDefault();
+        e.stopPropagation();
+    } else {
+        confirm.setCustomValidity('');
+    }
+    this.classList.add('was-validated');
+});
+
+document.getElementById('confirmPassword').addEventListener('input', function() {
+    const pwd = document.getElementById('password').value;
+    if (this.value && pwd !== this.value) {
+        this.setCustomValidity('no match');
+    } else {
+        this.setCustomValidity('');
+    }
+});
+</script>

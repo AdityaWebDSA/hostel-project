@@ -29,7 +29,22 @@ async function getCoordinates(listingData) {
     
     return [78.9629, 20.5937]; 
 }
-
+module.exports.geocodePreview = async (req, res) => {
+    const { q } = req.query;
+    if (!q || !q.trim()) {
+        return res.json({ lat: null, lng: null });
+    }
+    try {
+        let response = await fetch(`https://us1.locationiq.com/v1/search.php?key=${process.env.LOCATION_IQ_KEY}&q=${encodeURIComponent(q.trim())}&format=json`);
+        let geoData = await response.json();
+        if (geoData && geoData.length > 0 && geoData[0].lat) {
+            return res.json({ lat: parseFloat(geoData[0].lat), lng: parseFloat(geoData[0].lon) });
+        }
+    } catch (err) {
+        console.log("Geocode preview error:", err);
+    }
+    res.json({ lat: null, lng: null });
+};
 async function geocodeQuery(query) {
     try {
         let response = await fetch(`https://us1.locationiq.com/v1/search.php?key=${process.env.LOCATION_IQ_KEY}&q=${encodeURIComponent(query)}&format=json`);
@@ -283,10 +298,18 @@ module.exports.createListing = async (req, res, next) => {
         throw new ExpressError(400, "Send valid data for listings"); 
     }
 
-    const newListing = new Listing(req.body.listing);
+const newListing = new Listing(req.body.listing);
     newListing.owner = req.user._id;
 
-    const coords = await getCoordinates(req.body.listing);
+    // Prefer the exact pin the owner placed on the map. Only fall back to
+    // automatic geocoding (city-level guess) if no pin was set.
+    const { lat, lng } = req.body.listing;
+    let coords;
+    if (lat && lng && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lng))) {
+        coords = [parseFloat(lng), parseFloat(lat)];
+    } else {
+        coords = await getCoordinates(req.body.listing);
+    }
     newListing.geometry = { type: "Point", coordinates: coords };
 
     if(req.files && req.files.length > 0) {
@@ -344,7 +367,13 @@ module.exports.updateListing = async (req, res) => {
     listing.contactNumber = req.body.listing.contactNumber;
     listing.contactEmail = req.body.listing.contactEmail;
 
-    const coords = await getCoordinates(req.body.listing);
+const { lat, lng } = req.body.listing;
+    let coords;
+    if (lat && lng && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lng))) {
+        coords = [parseFloat(lng), parseFloat(lat)];
+    } else {
+        coords = await getCoordinates(req.body.listing);
+    }
     listing.geometry = { type: "Point", coordinates: coords };
 
     if (req.files && req.files.length > 0) {
