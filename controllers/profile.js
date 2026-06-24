@@ -1,11 +1,27 @@
 const User = require("../models/user.js");
 const Listing = require("../models/listing.js");
+const Booking = require("../models/booking.js");
+const SavedListing = require("../models/savedListing.js");
+const Review = require("../models/review.js");
 const { cloudinary } = require("../cloudConfig.js");
 
 module.exports.showProfile = async (req, res) => {
     const user = await User.findById(req.user._id);
-    const listingCount = await Listing.countDocuments({ owner: req.user._id });
-    res.render("users/profile.ejs", { user, listingCount });
+
+    const [listingCount, bookingCount, savedCount, recentListings] = await Promise.all([
+        Listing.countDocuments({ owner: req.user._id }),
+        Booking.countDocuments({ tenant: req.user._id }),
+        SavedListing.countDocuments({ user: req.user._id }),
+        Listing.find({ owner: req.user._id }).sort({ _id: -1 }).limit(3),
+    ]);
+
+    res.render("users/profile.ejs", {
+        user,
+        listingCount,
+        bookingCount,
+        savedCount,
+        recentListings,
+    });
 };
 
 module.exports.renderEditProfile = async (req, res) => {
@@ -21,7 +37,6 @@ module.exports.updateProfile = async (req, res) => {
     user.phone = phone || "";
 
     if (req.file) {
-        // Delete old avatar from Cloudinary if one exists, to avoid orphaned files
         if (user.avatar && user.avatar.filename) {
             await cloudinary.uploader.destroy(user.avatar.filename);
         }

@@ -1,36 +1,171 @@
-<% layout("/layouts/boilerplate")%>
+<% layout("/layouts/boilerplate") %>
 <link rel="stylesheet" href="/css/profile.css">
 
-<div class="index-container">
-    <div class="profile-header-card">
-        <div class="profile-avatar-lg">
-            <% if (user.avatar && user.avatar.url) { %>
-                <img src="<%= user.avatar.url %>" alt="<%= user.username %>">
-            <% } else { %>
-                <span><%= user.username.charAt(0).toUpperCase() %></span>
-            <% } %>
-        </div>
-        <div class="profile-header-info">
-            <h3><%= user.username %></h3>
-            <p class="text-muted mb-2"><i class="fa-solid fa-envelope"></i> <%= user.email %></p>
-            <% if (user.phone) { %>
-                <p class="text-muted mb-2"><i class="fa-solid fa-phone"></i> <%= user.phone %></p>
-            <% } %>
-            <p class="profile-bio"><%= user.bio || "No bio added yet." %></p>
-        </div>
-        <a href="/profile/edit" class="btn edit-btn px-4 align-self-start">
-            <i class="fa-solid fa-pen me-1"></i> Edit Profile
-        </a>
+<div class="profile-page">
+
+    <!-- Cover + Avatar -->
+    <div class="profile-cover">
+        <div class="profile-cover-inner"></div>
     </div>
 
-    <div class="profile-stats-row">
-        <div class="profile-stat-card">
-            <span class="stat-number"><%= listingCount %></span>
-            <span class="stat-label">Listings</span>
+    <div class="container profile-container">
+        <div class="profile-top-row">
+            <div class="profile-avatar-wrap">
+                <div class="profile-avatar-xl">
+                    <% if (user.avatar && user.avatar.url) { %>
+                        <img src="<%= user.avatar.url %>" alt="<%= user.username %>">
+                    <% } else { %>
+                        <span><%= user.username.charAt(0).toUpperCase() %></span>
+                    <% } %>
+                </div>
+            </div>
+            <div class="profile-identity">
+                <h2 class="profile-username"><%= user.username %></h2>
+                <div class="profile-meta-row">
+                    <span><i class="fa-solid fa-envelope"></i> <%= user.email %></span>
+                    <% if (user.phone) { %>
+                        <span><i class="fa-solid fa-phone"></i> <%= user.phone %></span>
+                    <% } %>
+                    <span class="profile-member-since"><i class="fa-solid fa-calendar-days"></i> Member since <%= new Date(user._id.getTimestamp()).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }) %></span>
+                </div>
+                <% if (user.bio) { %>
+                    <p class="profile-bio-text"><%= user.bio %></p>
+                <% } else { %>
+                    <p class="profile-bio-empty">No bio yet — <a href="/profile/edit">add one</a></p>
+                <% } %>
+            </div>
+            <a href="/profile/edit" class="btn profile-edit-btn">
+                <i class="fa-solid fa-pen me-1"></i> Edit Profile
+            </a>
         </div>
-        <a href="/listings/mylisting" class="profile-stat-link">View My Listings <i class="fa-solid fa-arrow-right"></i></a>
-        <a href="/saved" class="profile-stat-link">View Saved Listings <i class="fa-solid fa-arrow-right"></i></a>
-        <a href="/bookings" class="profile-stat-link">View My Bookings <i class="fa-solid fa-arrow-right"></i></a>
-        <a href="/bookings/received" class="profile-stat-link">View Booking Requests <i class="fa-solid fa-arrow-right"></i></a>
+
+        <!-- Stats -->
+        <div class="profile-stats-grid">
+            <a href="/listings/mylisting" class="profile-stat-tile">
+                <div class="stat-icon"><i class="fa-solid fa-house-user"></i></div>
+                <div>
+                    <div class="stat-num"><%= listingCount %></div>
+                    <div class="stat-lbl">My Listings</div>
+                </div>
+            </a>
+            <a href="/bookings" class="profile-stat-tile">
+                <div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                <div>
+                    <div class="stat-num"><%= bookingCount %></div>
+                    <div class="stat-lbl">Bookings</div>
+                </div>
+            </a>
+            <a href="/saved" class="profile-stat-tile">
+                <div class="stat-icon"><i class="fa-solid fa-heart"></i></div>
+                <div>
+                    <div class="stat-num"><%= savedCount %></div>
+                    <div class="stat-lbl">Saved</div>
+                </div>
+            </a>
+            <a href="/bookings/received" class="profile-stat-tile">
+                <div class="stat-icon"><i class="fa-solid fa-inbox"></i></div>
+                <div>
+                    <div class="stat-num">—</div>
+                    <div class="stat-lbl">Requests</div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Quick actions + Recent listings side by side -->
+        <div class="row g-4 mt-1">
+            <div class="col-lg-4">
+                <div class="profile-section-card">
+                    <h5 class="profile-section-title">Quick Actions</h5>
+                    <div class="quick-actions">
+                        <a href="/listings/new" class="quick-action-item">
+                            <div class="qa-icon"><i class="fa-solid fa-plus"></i></div>
+                            <div>
+                                <div class="qa-label">Add New Listing</div>
+                                <div class="qa-sub">List a hostel, shop, or service</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right qa-arrow"></i>
+                        </a>
+                        <a href="/listings/mylisting" class="quick-action-item">
+                            <div class="qa-icon"><i class="fa-solid fa-list-ul"></i></div>
+                            <div>
+                                <div class="qa-label">Manage Listings</div>
+                                <div class="qa-sub">Edit or remove your listings</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right qa-arrow"></i>
+                        </a>
+                        <a href="/bookings/received" class="quick-action-item">
+                            <div class="qa-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+                            <div>
+                                <div class="qa-label">Booking Requests</div>
+                                <div class="qa-sub">Approve or decline requests</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right qa-arrow"></i>
+                        </a>
+                        <a href="/saved" class="quick-action-item">
+                            <div class="qa-icon"><i class="fa-solid fa-heart"></i></div>
+                            <div>
+                                <div class="qa-label">Saved Listings</div>
+                                <div class="qa-sub">Places you've bookmarked</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right qa-arrow"></i>
+                        </a>
+                        <a href="/notifications" class="quick-action-item">
+                            <div class="qa-icon"><i class="fa-solid fa-bell"></i></div>
+                            <div>
+                                <div class="qa-label">Notifications</div>
+                                <div class="qa-sub">Reviews and booking updates</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right qa-arrow"></i>
+                        </a>
+                        <a href="/profile/edit" class="quick-action-item">
+                            <div class="qa-icon"><i class="fa-solid fa-gear"></i></div>
+                            <div>
+                                <div class="qa-label">Account Settings</div>
+                                <div class="qa-sub">Update bio, photo, contact</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right qa-arrow"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="profile-section-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="profile-section-title mb-0">My Recent Listings</h5>
+                        <a href="/listings/mylisting" class="profile-see-all">See all <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+
+                    <% if (recentListings.length === 0) { %>
+                        <div class="profile-empty-state">
+                            <i class="fa-solid fa-house-circle-exclamation"></i>
+                            <p>You haven't listed anything yet.</p>
+                            <a href="/listings/new" class="btn profile-edit-btn btn-sm">Add your first listing</a>
+                        </div>
+                    <% } else { %>
+                        <div class="recent-listings-list">
+                            <% recentListings.forEach(l => { %>
+                                <a href="/listings/<%= l._id %>" class="recent-listing-row">
+                                    <div class="recent-listing-img">
+                                        <% if (l.image && l.image[0]) { %>
+                                            <img src="<%= l.image[0].url.replace('/upload', '/upload/w_120,h_90,c_fill') %>" alt="">
+                                        <% } else { %>
+                                            <div class="recent-img-placeholder"><i class="fa-solid fa-image"></i></div>
+                                        <% } %>
+                                    </div>
+                                    <div class="recent-listing-info">
+                                        <div class="recent-listing-title"><%= l.title %></div>
+                                        <div class="recent-listing-meta"><i class="fa-solid fa-location-dot"></i> <%= l.location %></div>
+                                    </div>
+                                    <div class="recent-listing-price">&#x20B9;<%= l.price ? l.price.toLocaleString('en-IN') : 'N/A' %></div>
+                                    <i class="fa-solid fa-chevron-right recent-arrow"></i>
+                                </a>
+                            <% }) %>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>

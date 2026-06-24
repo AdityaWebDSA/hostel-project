@@ -2,52 +2,66 @@
 <footer class="footer mt-5">
     <div class="container py-5">
         <div class="row gy-4">
+
             <div class="col-lg-4 col-md-6">
                 <div class="footer-brand d-flex align-items-center mb-3">
                     <div class="footer-logo">
-                        <i class="fa-solid fa-house-chimney"></i>
+                        <img src="/ui_material/main_logo.png" alt="UniNest Logo">
                     </div>
                     <span class="ms-2 footer-brand-text">UniNest</span>
                 </div>
                 <p class="footer-description pe-lg-5">
-                    Connecting students with the best hostels, PGs, and local services in one click. Your comfort is our priority.
+                    Connecting students with hostels, PGs, and campus essentials — all in one place.
                 </p>
                 <div class="f-info-socials">
-                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
-                    <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
-                    <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+                    <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#" aria-label="X/Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
                 </div>
             </div>
 
             <div class="col-lg-2 col-md-6">
-                <h5 class="footer-heading mb-3">Platform</h5>
+                <h5 class="footer-heading mb-3">Explore</h5>
                 <ul class="list-unstyled footer-links">
-                    <li><a href="/listings">Explore Hostels</a></li>
-                    <li><a href="/listings/new">Add Your Property</a></li>
-                    <li><a href="#">Mess & Tiffins</a></li>
-                    <li><a href="#">Nearby Services</a></li>
+                    <li><a href="/listings">All Listings</a></li>
+                    <li><a href="/listings?category=hostels-pgs">Hostels & PGs</a></li>
+                    <li><a href="/listings?category=mess-tiffins">Mess & Tiffins</a></li>
+                    <li><a href="/listings?category=gym-fitness">Gym & Fitness</a></li>
+                    <li><a href="/listings?category=cafes-chai">Cafes & Chai</a></li>
                 </ul>
             </div>
 
             <div class="col-lg-2 col-md-6">
                 <h5 class="footer-heading mb-3">Support</h5>
                 <ul class="list-unstyled footer-links">
-                    <li><a href="#">Help Center</a></li>
-                    <li><a href="#">Safety Guidelines</a></li>
-                    <li><a href="#">Contact Us</a></li>
-                    <li><a href="#">FAQs</a></li>
+                    <li><a href="/help">Help & FAQ</a></li>
+                    <li><a href="/about">About UniNest</a></li>
+                    <li><a href="/listings/new">List Your Place</a></li>
+                    <% if (typeof currUser !== 'undefined' && currUser) { %>
+                        <li><a href="/profile">My Profile</a></li>
+                        <li><a href="/bookings">My Bookings</a></li>
+                    <% } else { %>
+                        <li><a href="/signup">Sign Up Free</a></li>
+                        <li><a href="/login">Log In</a></li>
+                    <% } %>
                 </ul>
             </div>
 
             <div class="col-lg-4 col-md-6">
                 <h5 class="footer-heading mb-3">Stay Updated</h5>
-                <p class="footer-description">Subscribe to get the latest hostel listings and offers.</p>
-                <form class="footer-newsletter d-flex gap-2">
-                    <input type="email" class="form-control" placeholder="Email address">
-                    <button class="btn footer-btn" type="button">Join</button>
+                <p class="footer-description">Get new listings and student deals in your inbox.</p>
+                <form class="footer-newsletter d-flex gap-2" id="newsletterForm" novalidate>
+                    <input type="email" class="form-control" id="newsletterEmail" placeholder="your@email.com" required>
+                    <button class="btn footer-btn" type="submit">Join</button>
                 </form>
+                <small id="newsletterMsg" class="mt-2 d-block" style="min-height:1.2rem;"></small>
+
+                <div class="footer-badges mt-4">
+                    <span class="footer-badge"><i class="fa-solid fa-shield-halved"></i> Verified Listings</span>
+                    <span class="footer-badge"><i class="fa-solid fa-bolt"></i> Student First</span>
+                </div>
             </div>
         </div>
 
@@ -55,14 +69,35 @@
 
         <div class="row align-items-center">
             <div class="col-md-6 text-center text-md-start">
-                <div class="f-info-brand"> &copy; 2026 UniNest Private Limited. All rights reserved.</div>
+                <div class="f-info-brand">&copy; <%= new Date().getFullYear() %> UniNest. All rights reserved.</div>
             </div>
-            <div class="col-md-6 text-center text-md-end">
+            <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
                 <div class="f-info-links">
-                    <a href="/privacy" class="me-3">Privacy Policy</a>
-                    <a href="/terms">Terms of Service</a>
+                    <a href="/help" class="me-3">Help</a>
+                    <a href="/about" class="me-3">About</a>
+                    <a href="#" class="me-3">Privacy</a>
+                    <a href="#">Terms</a>
                 </div>
             </div>
         </div>
     </div>
 </footer>
+
+<script>
+document.getElementById('newsletterForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('newsletterEmail').value.trim();
+    const msg = document.getElementById('newsletterMsg');
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        msg.textContent = 'Please enter a valid email address.';
+        msg.style.color = '#dc3545';
+        return;
+    }
+
+    // Store in localStorage to avoid re-prompting same browser session
+    localStorage.setItem('uninest_newsletter', email);
+    this.innerHTML = `<p class="footer-newsletter-thanks"><i class="fa-solid fa-circle-check"></i> You're on the list!</p>`;
+    msg.textContent = '';
+});
+</script>

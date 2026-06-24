@@ -1,35 +1,129 @@
-<% layout("/layouts/boilerplate")%>
+<% layout("/layouts/boilerplate") %>
 <link rel="stylesheet" href="/css/static-pages.css">
 
-<div class="index-container static-page">
-    <h2 class="page-heading">Help & FAQ</h2>
+<div class="help-hero">
+    <h1>How can we help?</h1>
+    <p>Find answers to the most common questions about UniNest.</p>
+</div>
 
-    <div class="faq-list">
-        <details class="faq-item">
-            <summary>How do I list my place?</summary>
-            <p>Log in, click "Add Listing" in the navbar, fill in the details, select the categories that apply, choose your accepted billing plans, and upload photos.</p>
-        </details>
-        <details class="faq-item">
-            <summary>Can one listing offer multiple services?</summary>
-            <p>Yes. A single shop (e.g., a cafe that also does Xerox) can select multiple categories when creating or editing its listing.</p>
-        </details>
-        <details class="faq-item">
-            <summary>How does booking work?</summary>
-            <p>Sending a booking request doesn't charge you anything. The owner reviews your request and either confirms or declines it. You can track the status under "My Bookings."</p>
-        </details>
-        <details class="faq-item">
-            <summary>How do I save a listing for later?</summary>
-            <p>Click the heart icon on any listing card or its detail page. View all your saved listings under "Saved" in the navbar.</p>
-        </details>
-        <details class="faq-item">
-            <summary>How do I manage requests for my own listings?</summary>
-            <p>Go to "Bookings" → "Requests Received" in the navbar to approve or decline incoming requests.</p>
-        </details>
-        <details class="faq-item">
-            <summary>Is payment handled on UniNest?</summary>
-            <p>Not yet — booking requests are confirmation-only for now. Payment is arranged directly with the owner.</p>
-        </details>
+<div class="container help-body">
+
+    <div class="faq-categories">
+        <button class="faq-cat-btn active" data-cat="all">All</button>
+        <button class="faq-cat-btn" data-cat="listing">Listings</button>
+        <button class="faq-cat-btn" data-cat="booking">Bookings</button>
+        <button class="faq-cat-btn" data-cat="account">Account</button>
+        <button class="faq-cat-btn" data-cat="safety">Safety</button>
     </div>
 
-    <p class="static-footer-note">Still stuck? Reach out via the contact details on the listing page, or email us at support@uninest.example.</p>
+    <div class="faq-list">
+
+        <details class="faq-item" data-cat="listing">
+            <summary><span>How do I list my place on UniNest?</span><i class="fa-solid fa-chevron-down faq-icon"></i></summary>
+            <div class="faq-body">
+                <p>Log in, click <strong>Add Listing</strong> in the navbar, and fill in your property details. You can select multiple categories (e.g., a shop that does Xerox AND sells stationery), set accepted billing plans, upload photos, and pin the exact location on the map.</p>
+            </div>
+        </details>
+
+        <details class="faq-item" data-cat="listing">
+            <summary><span>Can one listing offer multiple services?</span><i class="fa-solid fa-chevron-down faq-icon"></i></summary>
+            <div class="faq-body">
+                <p>Yes — that's exactly how UniNest is designed. A real-world shop (e.g., a cafe that also does printing) can select multiple categories when creating or editing its listing, so it appears in all relevant filter results.</p>
+            </div>
+        </details>
+
+        <details class="faq-item" data-cat="listing">
+            <summary><span>How do I edit or delete my listing?</span><i class="fa-solid fa-chevron-down faq-icon"></i></summary>
+            <div class="faq-body">
+                <p>Go to <strong>My Listings</strong> via your profile dropdown. Each listing has an Edit and Delete button. You can also open any of your listings and click "Manage Listing" directly from the listing page.</p>
+            </div>
+        </details>
+
+        <details class="faq-item" data-cat="booking">
+            <summary><span>How does the booking system work?</span><i class="fa-solid fa-chevron-down faq-icon"></i></summary>
+            <div class="faq-body">
+                <p>Click <strong>Request to Book</strong> on any listing, choose a billing plan, set your preferred move-in date, and optionally add a message. The owner reviews your request and either confirms or declines. You track the status under <strong>Bookings → My Requests</strong>.</p>
+            </div>
+        </details>
+
+        <details class="faq-item" data-cat="booking">
+            <summary><span>Is payment handled on UniNest?</span><i class="fa-solid fa-chevron-down faq-icon"></i></summary>
+            <div class="faq-body">
+                <p>Not yet — booking requests are confirmation-only for now. Once a booking is confirmed, payment is arranged directly between you and the owner. Online payment support is coming soon.</p>
+            </div>
+        </details>
+
+        <details class="faq-item" data-cat="booking">
+            <summary><span>How do I manage requests for my own listings?</span><i class="fa-solid fa-chevron-down faq-icon"></i></summary>
+            <div class="faq-body">
+                <p>Go to <strong>Bookings → Requests Received</strong> in the navbar. Each incoming request shows the tenant's name, chosen billing plan, move-in date, and any message. You can Approve or Decline directly from there.</p>
+            </div>
+        </details>
+
+        <details class="faq-item" data-cat="booking">
+            <summary><span>Can I cancel a booking request I sent?</span><i class="fa-solid fa-chevron-down faq-icon"></i></summary>
+            <div class="faq-body">
+                <p>Yes — go to <strong>Bookings → My Requests</strong> and click Cancel on any pending or confirmed booking. Cancelled bookings can't be reopened, but you can send a new request.</p>
+            </div>
+        </details>
+
+        <details class="faq-item" data-cat="account">
+            <summary><span>How do I save a listing for later?</span><i class="fa-solid fa-chevron-down faq-icon"></i></summary>
+            <div class="faq-body">
+                <p>Click the heart icon on any listing card (on the homepage) or the "Save to Wishlist" button on a listing's detail page. View all your saved listings under <strong>Saved</strong> in the navbar.</p>
+            </div>
+        </details>
+
+        <details class="faq-item" data-cat="account">
+            <summary><span>How do I update my profile or photo?</span><i class="fa-solid fa-chevron-down faq-icon"></i></summary>
+            <div class="faq-body">
+                <p>Click your username in the top-right navbar dropdown → <strong>Profile</strong> → <strong>Edit Profile</strong>. You can upload a profile photo, update your bio, and add your phone number.</p>
+            </div>
+        </details>
+
+        <details class="faq-item" data-cat="safety">
+            <summary><span>How do I know a listing is genuine?</span><i class="fa-solid fa-chevron-down faq-icon"></i></summary>
+            <div class="faq-body">
+                <p>Every listing shows the owner's name and contact details. You can call, WhatsApp, or email the owner directly before booking. Listings also show real student reviews — read them before making any decision.</p>
+            </div>
+        </details>
+
+        <details class="faq-item" data-cat="safety">
+            <summary><span>How do I report a fake or misleading listing?</span><i class="fa-solid fa-chevron-down faq-icon"></i></summary>
+            <div class="faq-body">
+                <p>Email us at <strong>support@uninest.example</strong> with the listing URL and details of the issue. We review all reports and remove listings that violate our guidelines.</p>
+            </div>
+        </details>
+
+    </div>
+
+    <div class="help-contact-strip">
+        <i class="fa-solid fa-headset"></i>
+        <div>
+            <h5>Still need help?</h5>
+            <p>Email us at <a href="mailto:support@uninest.example">support@uninest.example</a> and we'll get back to you within 24 hours.</p>
+        </div>
+        <a href="mailto:support@uninest.example" class="btn about-cta-primary">Contact Support</a>
+    </div>
+
 </div>
+
+<script>
+// Category filter for FAQ
+document.querySelectorAll('.faq-cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.faq-cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const cat = btn.dataset.cat;
+        document.querySelectorAll('.faq-item').forEach(item => {
+            if (cat === 'all' || item.dataset.cat === cat) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+                item.removeAttribute('open'); // close hidden items
+            }
+        });
+    });
+});
+</script>

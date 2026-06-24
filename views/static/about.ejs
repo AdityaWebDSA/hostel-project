@@ -1,27 +1,103 @@
-<% layout("/layouts/boilerplate")%>
+<% layout("/layouts/boilerplate") %>
 <link rel="stylesheet" href="/css/static-pages.css">
 
-<div class="index-container static-page">
-    <h2 class="page-heading">About UniNest</h2>
-    <p class="static-lead">UniNest helps students find everything around their campus — not just a place to stay, but the everyday essentials around it.</p>
+<!-- Hero -->
+<div class="about-hero">
+    <div class="about-hero-inner">
+        <span class="about-hero-tag">Built for students</span>
+        <h1>Everything you need,<br>right near campus.</h1>
+        <p>UniNest is the one place to find hostels, PGs, mess, gyms, Xerox shops, cafes, and more — all listed by real owners, searchable on a map.</p>
+        <div class="about-hero-ctas">
+            <a href="/listings" class="btn about-cta-primary">Explore Listings</a>
+            <a href="/listings/new" class="btn about-cta-secondary">List Your Place</a>
+        </div>
+    </div>
+</div>
 
-    <div class="about-grid">
-        <div class="about-card">
-            <i class="fa-solid fa-house-user"></i>
-            <h5>Housing</h5>
-            <p>Hostels, PGs, and independent rooms near your college, listed by real owners.</p>
+<div class="container about-body">
+
+    <!-- Stats row -->
+    <div class="about-stats-row">
+        <div class="about-stat">
+            <span class="about-stat-num">11+</span>
+            <span class="about-stat-lbl">Categories</span>
         </div>
-        <div class="about-card">
-            <i class="fa-solid fa-map-location-dot"></i>
-            <h5>Nearby Essentials</h5>
-            <p>Mess, laundry, gyms, clinics, Xerox shops, and cafes — all in one searchable map.</p>
+        <div class="about-stat">
+            <span class="about-stat-num">100%</span>
+            <span class="about-stat-lbl">Student Focused</span>
         </div>
-        <div class="about-card">
-            <i class="fa-solid fa-handshake"></i>
-            <h5>Direct Connection</h5>
-            <p>Message or call owners directly, send booking requests, and manage everything from your dashboard.</p>
+        <div class="about-stat">
+            <span class="about-stat-num">Free</span>
+            <span class="about-stat-lbl">To Browse</span>
+        </div>
+        <div class="about-stat">
+            <span class="about-stat-num">Real</span>
+            <span class="about-stat-lbl">Owner Listings</span>
         </div>
     </div>
 
-    <p class="static-footer-note">Built by students, for students.</p>
+    <!-- What we offer -->
+    <div class="about-section">
+        <h2 class="about-section-title">What UniNest offers</h2>
+        <div class="about-features-grid">
+            <div class="about-feature-card">
+                <div class="about-feature-icon"><i class="fa-solid fa-house-user"></i></div>
+                <h5>Housing</h5>
+                <p>Hostels, PGs, and independent rooms near your college — listed by verified owners with real photos and contact details.</p>
+            </div>
+            <div class="about-feature-card">
+                <div class="about-feature-icon"><i class="fa-solid fa-utensils"></i></div>
+                <h5>Food & Mess</h5>
+                <p>Find nearby mess, tiffin services, and cafes with menus, prices, and reviews from other students.</p>
+            </div>
+            <div class="about-feature-card">
+                <div class="about-feature-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                <h5>Campus Essentials</h5>
+                <p>Xerox shops, libraries, gyms, clinics, laundry, and bus stops — everything pinned on a real interactive map.</p>
+            </div>
+            <div class="about-feature-card">
+                <div class="about-feature-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                <h5>Booking System</h5>
+                <p>Send booking requests directly to owners, choose your billing plan, and track request status — no middlemen.</p>
+            </div>
+            <div class="about-feature-card">
+                <div class="about-feature-icon"><i class="fa-solid fa-star"></i></div>
+                <h5>Real Reviews</h5>
+                <p>Every listing can be reviewed by students who've actually stayed or visited — so you know what to expect.</p>
+            </div>
+            <div class="about-feature-card">
+                <div class="about-feature-icon"><i class="fa-solid fa-magnifying-glass-location"></i></div>
+                <h5>Smart Search</h5>
+                <p>Search by college name and find listings within 5km automatically — even if the listing doesn't mention your college by name.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mission -->
+    <div class="about-mission-row">
+        <div class="about-mission-text">
+            <h2>Why we built this</h2>
+            <p>Finding a decent hostel or a reliable mess near college is harder than it should be. Students spend days asking seniors, scrolling through noisy WhatsApp groups, or getting duped by fake listings on generic property sites.</p>
+            <p>UniNest was built to solve exactly this — a dedicated, student-first platform where every listing is a real place that matters to college life.</p>
+            <p class="about-mission-tagline">Built by students. For students.</p>
+        </div>
+        <div class="about-mission-visual">
+            <div class="about-mission-card">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <h4>Student First</h4>
+                <p>Every feature is designed around what a student actually needs when moving to a new college city.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA strip -->
+    <div class="about-cta-strip">
+        <h3>Ready to find your place?</h3>
+        <p>Browse listings near your campus or add your own property today.</p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a href="/listings" class="btn about-cta-primary">Browse Listings</a>
+            <a href="/signup" class="btn about-cta-secondary">Create Account</a>
+        </div>
+    </div>
+
 </div>
