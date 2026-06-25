@@ -1,6 +1,6 @@
 const Booking = require("../models/booking.js");
 const Listing = require("../models/listing.js");
-const { BILLING_PLANS } = require("../utils/billingPlans");
+const { PRICE_PLANS } = require("../utils/pricePlans");
 const notify = require("../utils/notify");
 const { smallThumb } = require("../utils/cloudinaryHelpers");
 // Tenant creates a booking request
@@ -20,8 +20,9 @@ module.exports.createBooking = async (req, res) => {
 
     const { billingPlan, moveInDate, message } = req.body.booking;
 
-    if (!listing.billingPlans.includes(billingPlan)) {
-        req.flash("error", "That billing plan is not available for this listing.");
+  // pricePlan is now a single field on the listing — any plan from PRICE_PLANS is valid
+    if (!billingPlan) {
+        req.flash("error", "Please select a billing plan.");
         return res.redirect(`/listings/${id}`);
     }
 
@@ -51,7 +52,7 @@ module.exports.myBookings = async (req, res) => {
     const bookings = await Booking.find({ tenant: req.user._id })
         .populate("listing")
         .sort({ createdAt: -1 });
-res.render("bookings/my-bookings.ejs", { bookings, BILLING_PLANS, role: "tenant", smallThumb });
+res.render("bookings/my-bookings.ejs", { bookings, PRICE_PLANS, role: "tenant", smallThumb });
 };
 
 // Owner's view: requests they've received
@@ -60,7 +61,8 @@ module.exports.receivedBookings = async (req, res) => {
         .populate("listing")
         .populate("tenant")
         .sort({ createdAt: -1 });
-    res.render("bookings/my-bookings.ejs", { bookings, BILLING_PLANS, role: "owner" });
+const { smallThumb } = require("../utils/cloudinaryHelpers");
+res.render("bookings/my-bookings.ejs", { bookings, PRICE_PLANS, role: "owner", smallThumb });
 };
 
 // Owner approves or rejects

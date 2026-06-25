@@ -1,6 +1,7 @@
 <% layout("/layouts/boilerplate") %>
 <link rel="stylesheet" href="/css/new-ejs.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <div class="row mt-4 mb-5">
     <div class="col-8 offset-2">
@@ -10,18 +11,18 @@
             <form method="POST" action="/listings" class="needs-validation" novalidate enctype="multipart/form-data">
 
                 <div class="mb-3">
-                    <label for="title" class="form-label">Title</label>
-                    <input name="listing[title]" placeholder="Enter a catchy title" type="text" class="form-control custom-input" required> 
-                    <div class="valid-feedback">Title looks good!</div>
+                    <label class="form-label">Title</label>
+                    <input name="listing[title]" placeholder="Enter a catchy title" type="text" class="form-control custom-input" required>
                     <div class="invalid-feedback">Title is Required</div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
+                    <label class="form-label">Description</label>
                     <textarea name="listing[description]" placeholder="Describe the place, rules, and amenities..." class="form-control custom-input" rows="4" required></textarea>
                     <div class="invalid-feedback">Please enter a short description</div>
                 </div>
 
+                <!-- Categories -->
                 <div class="mb-3 category-group">
                     <label class="form-label">What does this place offer? <span class="text-muted small">(select all that apply)</span></label>
                     <div class="category-grid">
@@ -39,82 +40,85 @@
                     <div class="invalid-feedback">Please select at least one category</div>
                 </div>
 
-                <div class="mb-3 billing-group" id="billingPlansSection">
-                    <label class="form-label">Accepted Billing Plans <span class="text-muted small">(auto-suggested based on categories)</span></label>
-                    <div class="billing-grid" id="billingGrid">
-                        <% BILLING_PLANS.forEach(plan => { %>
-                            <div class="billing-option">
-                                <input type="checkbox" name="listing[billingPlans][]" value="<%= plan.key %>" id="plan-<%= plan.key %>" class="billing-checkbox"
-                                    <%= plan.key === 'monthly' ? 'checked' : '' %>>
-                                <label for="plan-<%= plan.key %>" class="billing-label">
-                                    <i class="fa-solid fa-calendar-check"></i>
-                                    <span><%= plan.label %></span>
-                                </label>
-                            </div>
-                        <% }) %>
-                    </div>
-                    <input type="text" class="form-control billing-validity" required>
-                    <div class="invalid-feedback">Please select at least one billing plan</div>
-                    <small class="text-muted mt-1 d-block">Tip: selecting categories above will auto-suggest the right plans.</small>
-                </div>
-
+                <!-- Images -->
                 <div class="mb-3">
-                    <label for="image" class="form-label">Upload Listing Image</label>
+                    <label class="form-label">Upload Photos</label>
                     <input name="listing[image]" type="file" class="form-control custom-input" multiple required>
-                    <div class="invalid-feedback">A listing needs a photo!</div>
+                    <div class="invalid-feedback">Please upload at least one photo</div>
                 </div>
 
-                <div class="row">
-                    <div class="mb-3 col-md-4">
-                        <label for="price" class="form-label">Price (₹)</label>
-                        <input name="listing[price]" placeholder="1200" type="number" class="form-control custom-input" required>
-                        <div class="invalid-feedback">Price should be valid</div>
+                <!-- Price + Plan inline -->
+                <div class="mb-3">
+                    <label class="form-label">Price & Plan</label>
+                    <div class="price-plan-row">
+                        <div class="price-plan-prefix">₹</div>
+                        <input name="listing[price]" placeholder="0" type="number" class="form-control custom-input price-plan-input" min="0">
+                        <select name="listing[pricePlan]" class="form-select custom-input price-plan-select">
+                            <% PRICE_PLANS.forEach(plan => { %>
+                                <option value="<%= plan.key %>"><%= plan.label %></option>
+                            <% }) %>
+                        </select>
                     </div>
-                    
+                    <small class="text-muted">Leave price as 0 or select "Free" for free services.</small>
+                </div>
+
+                <!-- Dynamic Amenities -->
+                <div class="mb-3" id="amenitiesSection" style="display:none;">
+                    <label class="form-label">What's available here? <span class="text-muted small">(select all that apply)</span></label>
+                    <div class="amenity-grid" id="amenityGrid"></div>
+                    <div class="mt-3">
+                        <label class="form-label">Anything else? <span class="text-muted small">(optional free text)</span></label>
+                        <input type="text" name="listing[customAmenities]" class="form-control custom-input" placeholder="e.g. Hot water, Rooftop access, 24hr gate...">
+                    </div>
+                </div>
+
+                <!-- Location -->
+                <div class="row">
                     <div class="mb-3 col-md-8">
-                        <label for="country" class="form-label">Country</label>
+                        <label class="form-label">City/Location</label>
+                        <input name="listing[location]" id="locationInput" placeholder="Kolhapur, Maharashtra" type="text" class="form-control custom-input" required>
+                        <div class="invalid-feedback">Location should be valid</div>
+                    </div>
+                    <div class="mb-3 col-md-4">
+                        <label class="form-label">Country</label>
                         <input name="listing[country]" placeholder="India" type="text" class="form-control custom-input" required>
-                        <div class="invalid-feedback">Country name should be valid</div>
+                        <div class="invalid-feedback">Country is required</div>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="landmark" class="form-label">Exact Landmark / Street</label>
+                    <label class="form-label">Exact Landmark / Street</label>
                     <input name="listing[landmark]" placeholder="e.g., Near Bharati Vidyapeeth College" type="text" class="form-control custom-input">
                 </div>
 
+                <!-- Map picker -->
                 <div class="mb-3">
-                    <label for="location" class="form-label">City/Location</label>
-                    <input name="listing[location]" id="locationInput" placeholder="Kolhapur, Maharashtra" type="text" class="form-control custom-input" required>
-                    <div class="invalid-feedback">Location should be valid</div>
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label">Pin the Exact Location <span class="text-muted small">(click or drag the marker)</span></label>
-                    <div class="map-picker-wrapper">
-                        <div id="locationPickerMap"></div>
-                        <button type="button" id="locateMeBtn" class="locate-me-btn" title="Find my current location">
-                            <i class="fa-solid fa-location-crosshairs"></i>
+                    <label class="form-label">Pin Exact Location <span class="text-muted small">(click the map to set the pin)</span></label>
+                    <div id="locationPickerMap" class="location-picker-map"></div>
+                    <div class="map-helper-row">
+                        <button type="button" id="locateMeBtn" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                            <i class="fa-solid fa-location-crosshairs me-1"></i> Find from City/Landmark
                         </button>
+                        <span id="pinStatus" class="text-muted small">No pin set — defaults to city center if skipped.</span>
                     </div>
-                    <small class="text-muted mt-1 d-block" id="pinStatusText">Type a city above, or click on the map to drop a pin.</small>
                     <input type="hidden" name="listing[lat]" id="latInput">
                     <input type="hidden" name="listing[lng]" id="lngInput">
                 </div>
 
+                <!-- Contact -->
                 <div class="row">
                     <div class="mb-3 col-md-6">
-                        <label for="contactNumber" class="form-label">Contact Number</label>
-                        <input name="listing[contactNumber]" placeholder="e.g., 9876543210" type="tel" class="form-control custom-input" pattern="[0-9+\-\s]{7,15}">
-                        <div class="invalid-feedback">Enter a valid phone number (7-15 digits)</div>
-                        <small class="text-muted">Shown to visitors so they can contact you directly.</small>
+                        <label class="form-label">Contact Number</label>
+                        <input name="listing[contactNumber]" placeholder="9876543210" type="tel" class="form-control custom-input" pattern="[0-9+\-\s]{7,15}">
+                        <div class="invalid-feedback">Enter a valid phone number</div>
                     </div>
                     <div class="mb-3 col-md-6">
-                        <label for="contactEmail" class="form-label">Contact Email</label>
+                        <label class="form-label">Contact Email</label>
                         <input name="listing[contactEmail]" placeholder="owner@example.com" type="email" class="form-control custom-input">
-                        <div class="invalid-feedback">Enter a valid email address</div>
+                        <div class="invalid-feedback">Enter a valid email</div>
                     </div>
                 </div>
+
                 <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-4">
                     <button class="btn add-btn px-5 py-2">Create Listing</button>
                     <a href="/listings" class="btn btn-outline-secondary px-4 py-2">Cancel</a>
@@ -124,5 +128,92 @@
     </div>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="/js/location-picker.js"></script>
+<script>
+// Pass the amenity map from server to client as a JS object
+const AMENITY_MAP = <%- JSON.stringify(AMENITY_MAP) %>;
+
+function buildAmenityGrid(selectedCategories, currentlyChecked = []) {
+    const section = document.getElementById('amenitiesSection');
+    const grid = document.getElementById('amenityGrid');
+
+    // Collect union of amenities for selected categories
+    const seen = new Set();
+    const amenities = [];
+    for (const cat of selectedCategories) {
+        const list = AMENITY_MAP[cat] || [];
+        for (const a of list) {
+            if (!seen.has(a.key)) {
+                seen.add(a.key);
+                amenities.push(a);
+            }
+        }
+    }
+
+    if (amenities.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = '';
+    grid.innerHTML = amenities.map(a => `
+        <div class="amenity-option">
+            <input type="checkbox" name="listing[amenities][]" value="${a.key}"
+                id="am-${a.key}" class="amenity-checkbox"
+                ${currentlyChecked.includes(a.key) ? 'checked' : ''}>
+            <label for="am-${a.key}" class="amenity-label">
+                <i class="${a.icon}"></i>
+                <span>${a.label}</span>
+            </label>
+        </div>
+    `).join('');
+}
+
+// Rebuild amenity grid whenever category selection changes
+document.querySelectorAll('.category-checkbox').forEach(cb => {
+    cb.addEventListener('change', () => {
+        const selected = Array.from(document.querySelectorAll('.category-checkbox:checked')).map(c => c.value);
+        buildAmenityGrid(selected);
+    });
+});
+</script>
+
+<script>
+(function() {
+    const DEFAULT_CENTER = [20.5937, 78.9629];
+    const map = L.map('locationPickerMap').setView(DEFAULT_CENTER, 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+
+    let marker = null;
+    const latInput = document.getElementById('latInput');
+    const lngInput = document.getElementById('lngInput');
+    const pinStatus = document.getElementById('pinStatus');
+
+    function setPin(lat, lng, zoom) {
+        latInput.value = lat; lngInput.value = lng;
+        if (marker) { marker.setLatLng([lat, lng]); } else {
+            marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+            marker.on('dragend', () => { const p = marker.getLatLng(); latInput.value = p.lat; lngInput.value = p.lng; pinStatus.textContent = `Pin set at ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}`; });
+        }
+        map.setView([lat, lng], zoom || map.getZoom());
+        pinStatus.textContent = `Pin set at ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+    }
+
+    map.on('click', e => setPin(e.latlng.lat, e.latlng.lng, Math.max(map.getZoom(), 15)));
+
+    document.getElementById('locateMeBtn').addEventListener('click', async () => {
+        const loc = document.getElementById('locationInput').value.trim();
+        const lm = document.querySelector('[name="listing[landmark]"]').value.trim();
+        const q = lm ? `${lm}, ${loc}` : loc;
+        if (!q) { pinStatus.textContent = "Type a city first."; return; }
+        pinStatus.textContent = "Searching...";
+        try {
+            const res = await fetch(`/listings/geocode-preview?q=${encodeURIComponent(q)}`);
+            const data = await res.json();
+            if (data.lat) setPin(data.lat, data.lng, 15);
+            else pinStatus.textContent = "Not found — click the map to set manually.";
+        } catch { pinStatus.textContent = "Error — click the map instead."; }
+    });
+
+    setTimeout(() => map.invalidateSize(), 200);
+})();
+</script>

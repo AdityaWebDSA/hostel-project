@@ -57,12 +57,12 @@ module.exports.normalizeCategory = (req, res, next) => {
             req.body.listing.category = [cat];
         }
 
-        // Normalize billingPlans the same way
-        let plans = req.body.listing.billingPlans;
-        if (!plans) {
-            req.body.listing.billingPlans = [];
-        } else if (!Array.isArray(plans)) {
-            req.body.listing.billingPlans = [plans];
+        // Normalize amenities
+        let am = req.body.listing.amenities;
+        if (!am) {
+            req.body.listing.amenities = [];
+        } else if (!Array.isArray(am)) {
+            req.body.listing.amenities = [am];
         }
     }
     next();

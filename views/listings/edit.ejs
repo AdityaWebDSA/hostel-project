@@ -9,21 +9,22 @@
         
         <div class="form-container">
             <form method="POST" action="/listings/<%= listing._id %>?_method=PUT" class="needs-validation" novalidate enctype="multipart/form-data">
-                
+
                 <div class="mb-3">
-                    <label for="title" class="form-label">Title</label>
+                    <label class="form-label">Title</label>
                     <input name="listing[title]" value="<%= listing.title %>" type="text" class="form-control custom-input" required>
                     <div class="invalid-feedback">Title is Required</div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
+                    <label class="form-label">Description</label>
                     <textarea name="listing[description]" class="form-control custom-input" rows="4" required><%= listing.description %></textarea>
                     <div class="invalid-feedback">Please enter a short description</div>
                 </div>
 
+                <!-- Categories -->
                 <div class="mb-3 category-group">
-                    <label class="form-label">What does this place offer? <span class="text-muted small">(select all that apply)</span></label>
+                    <label class="form-label">What does this place offer?</label>
                     <div class="category-grid">
                         <% CATEGORIES.forEach(cat => { %>
                             <div class="category-option">
@@ -40,24 +41,7 @@
                     <div class="invalid-feedback">Please select at least one category</div>
                 </div>
 
-                <div class="mb-3 billing-group" id="billingPlansSection">
-                    <label class="form-label">Accepted Billing Plans</label>
-                    <div class="billing-grid" id="billingGrid">
-                        <% BILLING_PLANS.forEach(plan => { %>
-                            <div class="billing-option">
-                                <input type="checkbox" name="listing[billingPlans][]" value="<%= plan.key %>" id="plan-<%= plan.key %>" class="billing-checkbox"
-                                    <%= (listing.billingPlans && listing.billingPlans.includes(plan.key)) ? 'checked' : '' %>>
-                                <label for="plan-<%= plan.key %>" class="billing-label">
-                                    <i class="fa-solid fa-calendar-check"></i>
-                                    <span><%= plan.label %></span>
-                                </label>
-                            </div>
-                        <% }) %>
-                    </div>
-                    <input type="text" class="form-control billing-validity" required>
-                    <div class="invalid-feedback">Please select at least one billing plan</div>
-                </div>
-
+                <!-- Images -->
                 <div class="mb-3">
                     <label class="form-label">Current Images (Select to Delete)</label>
                     <div class="row row-cols-md-4 row-cols-2 g-3 mb-3">
@@ -65,77 +49,86 @@
                             <% listing.image.forEach((img, index) => { %>
                                 <div class="col">
                                     <div class="edit-img-container">
-                                        <img src="<%= img.url.replace('/upload', '/upload/w_200,h_200,c_fill') %>" 
-                                             class="img-thumbnail rounded-3" alt="listing_img">
-                                        
+                                        <img src="<%= img.url.replace('/upload', '/upload/w_200,h_200,c_fill') %>" class="img-thumbnail rounded-3" alt="listing_img">
                                         <div class="delete-overlay">
                                             <input type="checkbox" name="deleteImages[]" value="<%= img.filename %>" id="del-<%= index %>" class="delete-checkbox">
-                                            <label for="del-<%= index %>" class="delete-icon-label">
-                                                <i class="fa-solid fa-trash-can"></i>
-                                            </label>
+                                            <label for="del-<%= index %>" class="delete-icon-label"><i class="fa-solid fa-trash-can"></i></label>
                                         </div>
                                     </div>
                                 </div>
                             <% }) %>
                         <% } %>
                     </div>
-                    
-                    <label for="image" class="form-label">Add More Images</label>
+                    <label class="form-label">Add More Images</label>
                     <input name="listing[image]" type="file" class="form-control custom-input" multiple>
-                    <small class="text-muted">Click the trash icon to mark an image for removal.</small>
                 </div>
 
+                <!-- Price + Plan inline -->
+                <div class="mb-3">
+                    <label class="form-label">Price & Plan</label>
+                    <div class="price-plan-row">
+                        <div class="price-plan-prefix">₹</div>
+                        <input name="listing[price]" value="<%= listing.price %>" type="number" class="form-control custom-input price-plan-input" min="0">
+                        <select name="listing[pricePlan]" class="form-select custom-input price-plan-select">
+                            <% PRICE_PLANS.forEach(plan => { %>
+                                <option value="<%= plan.key %>" <%= listing.pricePlan === plan.key ? 'selected' : '' %>><%= plan.label %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Dynamic Amenities (pre-loaded from existing data) -->
+                <div class="mb-3" id="amenitiesSection" style="<%= (listing.category && listing.category.length > 0) ? '' : 'display:none;' %>">
+                    <label class="form-label">What's available here?</label>
+                    <div class="amenity-grid" id="amenityGrid"></div>
+                    <div class="mt-3">
+                        <label class="form-label">Anything else? <span class="text-muted small">(optional)</span></label>
+                        <input type="text" name="listing[customAmenities]" class="form-control custom-input" value="<%= listing.customAmenities || '' %>" placeholder="e.g. Hot water, Rooftop access...">
+                    </div>
+                </div>
+
+                <!-- Location -->
                 <div class="row">
-                    <div class="mb-3 col-md-4">
-                        <label for="price" class="form-label">Price (₹)</label>
-                        <input name="listing[price]" value="<%= listing.price %>" type="number" class="form-control custom-input" required>
-                        <div class="invalid-feedback">Price should be valid</div>
-                    </div>
-
                     <div class="mb-3 col-md-8">
-                        <label for="country" class="form-label">Country</label>
+                        <label class="form-label">City/Location</label>
+                        <input name="listing[location]" id="locationInput" value="<%= listing.location %>" type="text" class="form-control custom-input" required>
+                        <div class="invalid-feedback">Location should be valid</div>
+                    </div>
+                    <div class="mb-3 col-md-4">
+                        <label class="form-label">Country</label>
                         <input name="listing[country]" value="<%= listing.country %>" type="text" class="form-control custom-input" required>
-                        <div class="invalid-feedback">Country name should be valid</div>
+                        <div class="invalid-feedback">Country is required</div>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="landmark" class="form-label">Exact Landmark / Street</label>
-                    <input name="listing[landmark]" value="<%= listing.landmark %>" placeholder="e.g., Near Bharati Vidyapeeth College" type="text" class="form-control custom-input">
+                    <label class="form-label">Exact Landmark / Street</label>
+                    <input name="listing[landmark]" value="<%= listing.landmark || '' %>" placeholder="e.g., Near Bharati Vidyapeeth College" type="text" class="form-control custom-input">
                 </div>
 
+                <!-- Map picker -->
                 <div class="mb-3">
-                    <label for="location" class="form-label">City/Location</label>
-                    <input name="listing[location]" id="locationInput" value="<%= listing.location %>" type="text" class="form-control custom-input" required>
-                    <div class="invalid-feedback">Location should be valid</div>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Pin Exact Location on Map <span class="text-muted small">(click the map, or drag the marker, to update the exact spot)</span></label>
+                    <label class="form-label">Pin Exact Location <span class="text-muted small">(click/drag to update)</span></label>
                     <div id="locationPickerMap" class="location-picker-map"></div>
                     <div class="map-helper-row">
                         <button type="button" id="locateMeBtn" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
-                            <i class="fa-solid fa-location-crosshairs me-1"></i> Re-search from City/Landmark
+                            <i class="fa-solid fa-location-crosshairs me-1"></i> Re-search
                         </button>
                         <span id="pinStatus" class="text-muted small">Showing current saved location.</span>
                     </div>
-                    <input type="hidden" name="listing[lat]" id="latInput"
-                        value="<%= (listing.geometry && listing.geometry.coordinates) ? listing.geometry.coordinates[1] : '' %>">
-                    <input type="hidden" name="listing[lng]" id="lngInput"
-                        value="<%= (listing.geometry && listing.geometry.coordinates) ? listing.geometry.coordinates[0] : '' %>">
+                    <input type="hidden" name="listing[lat]" id="latInput" value="<%= (listing.geometry && listing.geometry.coordinates) ? listing.geometry.coordinates[1] : '' %>">
+                    <input type="hidden" name="listing[lng]" id="lngInput" value="<%= (listing.geometry && listing.geometry.coordinates) ? listing.geometry.coordinates[0] : '' %>">
                 </div>
 
+                <!-- Contact -->
                 <div class="row">
                     <div class="mb-3 col-md-6">
-                        <label for="contactNumber" class="form-label">Contact Number</label>
-                        <input name="listing[contactNumber]" value="<%= listing.contactNumber || '' %>" placeholder="e.g., 9876543210" type="tel" class="form-control custom-input" pattern="[0-9+\-\s]{7,15}">
-                        <div class="invalid-feedback">Enter a valid phone number (7-15 digits)</div>
-                        <small class="text-muted">Shown to visitors so they can contact you directly.</small>
+                        <label class="form-label">Contact Number</label>
+                        <input name="listing[contactNumber]" value="<%= listing.contactNumber || '' %>" type="tel" class="form-control custom-input">
                     </div>
                     <div class="mb-3 col-md-6">
-                        <label for="contactEmail" class="form-label">Contact Email</label>
-                        <input name="listing[contactEmail]" value="<%= listing.contactEmail || '' %>" placeholder="owner@example.com" type="email" class="form-control custom-input">
-                        <div class="invalid-feedback">Enter a valid email address</div>
+                        <label class="form-label">Contact Email</label>
+                        <input name="listing[contactEmail]" value="<%= listing.contactEmail || '' %>" type="email" class="form-control custom-input">
                     </div>
                 </div>
 
@@ -143,26 +136,56 @@
                     <button class="btn edit-btn px-5 py-2">Update Listing</button>
                     <a href="/listings/<%= listing._id %>" class="btn btn-outline-secondary px-4 py-2">Cancel</a>
                 </div>
-                
             </form>
         </div>
     </div>
 </div>
 
 <script>
+const AMENITY_MAP = <%- JSON.stringify(AMENITY_MAP) %>;
+const EXISTING_AMENITIES = <%- JSON.stringify(listing.amenities || []) %>;
+
+function buildAmenityGrid(selectedCategories, currentlyChecked = []) {
+    const section = document.getElementById('amenitiesSection');
+    const grid = document.getElementById('amenityGrid');
+    const seen = new Set();
+    const amenities = [];
+    for (const cat of selectedCategories) {
+        const list = AMENITY_MAP[cat] || [];
+        for (const a of list) {
+            if (!seen.has(a.key)) { seen.add(a.key); amenities.push(a); }
+        }
+    }
+    if (amenities.length === 0) { section.style.display = 'none'; return; }
+    section.style.display = '';
+    grid.innerHTML = amenities.map(a => `
+        <div class="amenity-option">
+            <input type="checkbox" name="listing[amenities][]" value="${a.key}" id="am-${a.key}" class="amenity-checkbox" ${currentlyChecked.includes(a.key) ? 'checked' : ''}>
+            <label for="am-${a.key}" class="amenity-label"><i class="${a.icon}"></i><span>${a.label}</span></label>
+        </div>
+    `).join('');
+}
+
+// Load amenity grid on page load from existing categories
+const initialCategories = Array.from(document.querySelectorAll('.category-checkbox:checked')).map(c => c.value);
+buildAmenityGrid(initialCategories, EXISTING_AMENITIES);
+
+// Rebuild when categories change
+document.querySelectorAll('.category-checkbox').forEach(cb => {
+    cb.addEventListener('change', () => {
+        const selected = Array.from(document.querySelectorAll('.category-checkbox:checked')).map(c => c.value);
+        buildAmenityGrid(selected, EXISTING_AMENITIES);
+    });
+});
+</script>
+
+<script>
 (function() {
     const existingLat = parseFloat(document.getElementById('latInput').value);
     const existingLng = parseFloat(document.getElementById('lngInput').value);
     const hasExisting = !isNaN(existingLat) && !isNaN(existingLng);
-
-    const startCenter = hasExisting ? [existingLat, existingLng] : [20.5937, 78.9629];
-    const startZoom = hasExisting ? 15 : 5;
-
-    const map = L.map('locationPickerMap').setView(startCenter, startZoom);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+    const map = L.map('locationPickerMap').setView(hasExisting ? [existingLat, existingLng] : [20.5937, 78.9629], hasExisting ? 15 : 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
 
     let marker = null;
     const latInput = document.getElementById('latInput');
@@ -170,53 +193,29 @@
     const pinStatus = document.getElementById('pinStatus');
 
     function setPin(lat, lng, zoom) {
-        latInput.value = lat;
-        lngInput.value = lng;
-        if (marker) {
-            marker.setLatLng([lat, lng]);
-        } else {
+        latInput.value = lat; lngInput.value = lng;
+        if (marker) { marker.setLatLng([lat, lng]); } else {
             marker = L.marker([lat, lng], { draggable: true }).addTo(map);
-            marker.on('dragend', () => {
-                const pos = marker.getLatLng();
-                latInput.value = pos.lat;
-                lngInput.value = pos.lng;
-                pinStatus.textContent = `Pin set at ${pos.lat.toFixed(5)}, ${pos.lng.toFixed(5)}`;
-            });
+            marker.on('dragend', () => { const p = marker.getLatLng(); latInput.value = p.lat; lngInput.value = p.lng; pinStatus.textContent = `Pin set at ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}`; });
         }
         map.setView([lat, lng], zoom || map.getZoom());
         pinStatus.textContent = `Pin set at ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
     }
 
-    if (hasExisting) {
-        setPin(existingLat, existingLng, 15);
-    }
-
-    map.on('click', (e) => {
-        setPin(e.latlng.lat, e.latlng.lng, Math.max(map.getZoom(), 15));
-    });
+    if (hasExisting) setPin(existingLat, existingLng, 15);
+    map.on('click', e => setPin(e.latlng.lat, e.latlng.lng, Math.max(map.getZoom(), 15)));
 
     document.getElementById('locateMeBtn').addEventListener('click', async () => {
-        const location = document.getElementById('locationInput').value.trim();
-        const landmark = document.querySelector('[name="listing[landmark]"]').value.trim();
-        const query = landmark ? `${landmark}, ${location}` : location;
-
-        if (!query) {
-            pinStatus.textContent = "Type a city or landmark first, then click this button.";
-            return;
-        }
-
+        const loc = document.getElementById('locationInput').value.trim();
+        const lm = document.querySelector('[name="listing[landmark]"]').value.trim();
+        const q = lm ? `${lm}, ${loc}` : loc;
+        if (!q) return;
         pinStatus.textContent = "Searching...";
         try {
-            const res = await fetch(`/listings/geocode-preview?q=${encodeURIComponent(query)}`);
+            const res = await fetch(`/listings/geocode-preview?q=${encodeURIComponent(q)}`);
             const data = await res.json();
-            if (data && data.lat && data.lng) {
-                setPin(data.lat, data.lng, 15);
-            } else {
-                pinStatus.textContent = "Couldn't find that location — click the map to set it manually.";
-            }
-        } catch (err) {
-            pinStatus.textContent = "Search failed — click the map to set the pin manually.";
-        }
+            if (data.lat) setPin(data.lat, data.lng, 15);
+        } catch {}
     });
 
     setTimeout(() => map.invalidateSize(), 200);

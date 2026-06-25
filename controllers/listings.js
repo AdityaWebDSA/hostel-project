@@ -257,8 +257,9 @@ module.exports.myListings = async (req, res) => {
 
 module.exports.renderNewForm = (req, res) => {
   const CATEGORIES = require("../utils/categories");
-  const { BILLING_PLANS, getPlansForCategories } = require("../utils/billingPlans");
-  res.render("listings/new.ejs", { CATEGORIES, BILLING_PLANS, getPlansForCategories });
+  const { PRICE_PLANS } = require("../utils/pricePlans");
+  const { AMENITY_MAP } = require("../utils/amenities");
+  res.render("listings/new.ejs", { CATEGORIES, PRICE_PLANS, AMENITY_MAP });
 }
 
 module.exports.showListing = async (req, res) => {
@@ -289,8 +290,9 @@ module.exports.showListing = async (req, res) => {
     isSaved = !!existing;
   }
 
-  const { BILLING_PLANS } = require("../utils/billingPlans");
-res.render("listings/show.ejs", { listing, CATEGORIES, avgRating, reviewCount, isSaved, BILLING_PLANS, detailImage, smallThumb });
+ const { ALL_AMENITIES } = require("../utils/amenities");
+  const { PRICE_PLANS } = require("../utils/pricePlans");
+  res.render("listings/show.ejs", { listing, CATEGORIES, avgRating, reviewCount, isSaved, PRICE_PLANS, ALL_AMENITIES, detailImage, smallThumb });
 }
 
 module.exports.createListing = async (req, res, next) => {
@@ -340,8 +342,9 @@ module.exports.renderEditForm = async (req, res) => {
   }
 
   const CATEGORIES = require("../utils/categories");
-  const { BILLING_PLANS } = require("../utils/billingPlans");
-  res.render("listings/edit.ejs", { listing, originalImageUrl, CATEGORIES, BILLING_PLANS });
+const { PRICE_PLANS } = require("../utils/pricePlans");
+  const { AMENITY_MAP } = require("../utils/amenities");
+  res.render("listings/edit.ejs", { listing, originalImageUrl, CATEGORIES, PRICE_PLANS, AMENITY_MAP });
 }
 
 module.exports.updateListing = async (req, res) => {
@@ -363,7 +366,9 @@ module.exports.updateListing = async (req, res) => {
     listing.price = req.body.listing.price;
     listing.landmark = req.body.listing.landmark;
     listing.category = req.body.listing.category;
-    listing.billingPlans = req.body.listing.billingPlans;
+   listing.pricePlan = req.body.listing.pricePlan || "monthly";
+    listing.amenities = req.body.listing.amenities || [];
+    listing.customAmenities = req.body.listing.customAmenities || "";
     listing.contactNumber = req.body.listing.contactNumber;
     listing.contactEmail = req.body.listing.contactEmail;
 

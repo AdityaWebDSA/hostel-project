@@ -77,16 +77,30 @@
                     <p class="description-body"><%= listing.description %></p>
                 </div>
 
+             <% if ((listing.amenities && listing.amenities.length > 0) || listing.customAmenities) { %>
                 <div class="amenities-grid mb-5">
                     <h4 class="section-label">What to expect</h4>
                     <div class="row g-3">
-                        <div class="col-6 col-md-4 amenity-item"><i class="fa-solid fa-wifi"></i> High-speed Wi-Fi</div>
-                        <div class="col-6 col-md-4 amenity-item"><i class="fa-solid fa-bolt"></i> 24/7 Power Backup</div>
-                        <div class="col-6 col-md-4 amenity-item"><i class="fa-solid fa-broom"></i> Daily Cleaning</div>
-                        <div class="col-6 col-md-4 amenity-item"><i class="fa-solid fa-shield-halved"></i> CCTV Security</div>
-                        <div class="col-6 col-md-4 amenity-item"><i class="fa-solid fa-faucet"></i> RO Water</div>
+                        <% if (listing.amenities && listing.amenities.length > 0) { %>
+                            <% listing.amenities.forEach(key => {
+                                const amenity = ALL_AMENITIES[key];
+                                if (amenity) { %>
+                                    <div class="col-6 col-md-4 amenity-item">
+                                        <i class="<%= amenity.icon %>"></i> <%= amenity.label %>
+                                    </div>
+                                <% }
+                            }) %>
+                        <% } %>
+                        <% if (listing.customAmenities) {
+                            listing.customAmenities.split(',').map(s => s.trim()).filter(Boolean).forEach(item => { %>
+                                <div class="col-6 col-md-4 amenity-item">
+                                    <i class="fa-solid fa-circle-check"></i> <%= item %>
+                                </div>
+                            <% })
+                        } %>
                     </div>
                 </div>
+                <% } %>
 
                 <% if(currUser && listing.owner && currUser._id.equals(listing.owner._id)) { %>
                     <div class="owner-actions p-4 rounded-4 d-flex gap-3">
@@ -106,8 +120,13 @@
                 <div class="booking-card sticky-top shadow-lg">
                     <div class="price-header d-flex justify-content-between align-items-center">
                         <div>
-                            <span class="price-big">&#x20B9;<%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %></span>
-                            <span class="text-muted">/month</span>
+                            <% if (listing.price && listing.price > 0) { %>
+                                <span class="price-big">&#x20B9;<%= listing.price.toLocaleString("en-IN") %></span>
+                                <% const activePlan = PRICE_PLANS.find(p => p.key === listing.pricePlan); %>
+                                <span class="text-muted"><%= activePlan ? activePlan.label : '/month' %></span>
+                            <% } else { %>
+                                <span class="price-big price-free">Free / Enquire</span>
+                            <% } %>
                         </div>
                         <div class="rating-badge">
                             <i class="fa-solid fa-star"></i>
@@ -119,19 +138,17 @@
                         </div>
                     </div>
                     <hr>
-                    <div class="booking-details mb-4">
-                        <p class="mb-2 fw-semibold" style="font-size:0.85rem; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:0.5px;">Available Plans</p>
-                        <% if (listing.billingPlans && listing.billingPlans.length > 0) { %>
+             <div class="booking-details mb-4">
+                        <% if (listing.pricePlan) { 
+                            const plan = PRICE_PLANS.find(p => p.key === listing.pricePlan); %>
                             <div class="billing-pills">
-                                <% listing.billingPlans.forEach(planKey => {
-                                    const plan = BILLING_PLANS.find(p => p.key === planKey);
-                                    if (plan) { %>
-                                        <span class="billing-pill"><i class="fa-solid fa-calendar-check"></i> <%= plan.label %></span>
-                                    <% }
-                                }) %>
+                                <span class="billing-pill">
+                                    <i class="fa-solid fa-calendar-check"></i>
+                                    <%= plan ? plan.label : listing.pricePlan %>
+                                </span>
                             </div>
                         <% } %>
-                        <p class="mb-0 mt-3"><i class="fa-solid fa-check text-success me-1"></i>Refundable deposit</p>
+                        <p class="mb-0 mt-2"><i class="fa-solid fa-check text-success me-1"></i>Refundable deposit</p>
                     </div>
                     <% if (currUser) { %>
                         <button type="button" class="btn btn-save-listing w-100 mb-2" data-listing-id="<%= listing._id %>" onclick="toggleSave(this)">
@@ -295,20 +312,26 @@
       <form action="/bookings/listing/<%= listing._id %>" method="POST" class="needs-validation" novalidate>
         <div class="modal-body">
 
-          <div class="mb-3">
-            <label class="form-label">Billing Plan</label>
-            <select name="booking[billingPlan]" class="form-select custom-input" required>
-              <option value="" disabled selected>Choose a plan</option>
-              <% if (listing.billingPlans && listing.billingPlans.length > 0) { %>
-                <% listing.billingPlans.forEach(planKey => {
-                    const plan = BILLING_PLANS.find(p => p.key === planKey);
-                    if (plan) { %>
-                      <option value="<%= plan.key %>"><%= plan.label %></option>
-                <% }
-                }) %>
-              <% } %>
-            </select>
-            <div class="invalid-feedback">Please choose a billing plan</div>
+         <div class="mb-3">
+            <label class="form-label">Price Plan</label>
+            <% const bookingPlan = PRICE_PLANS.find(p => p.key === listing.pricePlan); %>
+            <% if (listing.pricePlan === 'free' || listing.pricePlan === 'onetime') { %>
+                <input type="hidden" name="booking[billingPlan]" value="<%= listing.pricePlan %>">
+                <div class="form-control custom-input" style="background:var(--color-bg-light);">
+                    <i class="fa-solid fa-calendar-check me-1 text-muted"></i>
+                    <%= bookingPlan ? bookingPlan.label : listing.pricePlan %>
+                </div>
+            <% } else { %>
+                <select name="booking[billingPlan]" class="form-select custom-input" required>
+                    <option value="" disabled selected>Choose a plan</option>
+                    <% PRICE_PLANS.filter(p => !['free','onetime'].includes(p.key)).forEach(plan => { %>
+                        <option value="<%= plan.key %>" <%= listing.pricePlan === plan.key ? 'selected' : '' %>>
+                            <%= plan.label %>
+                        </option>
+                    <% }) %>
+                </select>
+                <div class="invalid-feedback">Please choose a plan</div>
+            <% } %>
           </div>
 
           <div class="mb-3">

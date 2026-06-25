@@ -567,3 +567,7 @@
 .btn-save-listing i.saved {
     color: #ff385c;
 }
+.price-free {
+    font-size: 1.4rem;
+    color: var(--color-tertiary);
+}

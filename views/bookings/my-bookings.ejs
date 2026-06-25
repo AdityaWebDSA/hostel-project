@@ -21,7 +21,7 @@
     <% } else { %>
         <div class="booking-list">
             <% bookings.forEach(b => {
-                const plan = BILLING_PLANS.find(p => p.key === b.billingPlan);
+      const plan = PRICE_PLANS.find(p => p.key === b.billingPlan);
             %>
                 <div class="booking-card-row status-<%= b.status %>">
                     <div class="booking-img">

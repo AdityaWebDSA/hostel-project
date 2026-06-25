@@ -2,65 +2,46 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const Review = require("./review.js");
 const CATEGORIES = require("../utils/categories");
-const { BILLING_PLANS } = require("../utils/billingPlans");
+const { PRICE_PLANS } = require("../utils/pricePlans");
 
 const listingSchema = new Schema({
-    title: {
-        type: String,
-        required: true,
-    },
+    title: { type: String, required: true },
     description: String,
-    image: [
-        {
-            url: String,
-            filename: String
-        }
-    ],
+    image: [{ url: String, filename: String }],
     price: Number,
+    // How the price is charged — replaces the old billingPlans array
+    pricePlan: {
+        type: String,
+        enum: PRICE_PLANS.map(p => p.key),
+        default: "monthly",
+    },
     location: String,
     country: String,
     landmark: String,
-    contactNumber: {
-        type: String,
-        trim: true,
-    },
-    contactEmail: {
-        type: String,
-        trim: true,
-        lowercase: true,
-    },
+    contactNumber: { type: String, trim: true },
+    contactEmail: { type: String, trim: true, lowercase: true },
     geometry: {
-        type: {
-            type: String,
-            enum: ['Point'],
-            required: true
-        },
-        coordinates: {
-            type: [Number],
-            required: true
-        }
+        type: { type: String, enum: ['Point'], required: true },
+        coordinates: { type: [Number], required: true }
     },
     category: {
         type: [String],
         enum: CATEGORIES.map(c => c.key),
         default: [],
     },
-    // Owner sets which billing plans their listing accepts
-    billingPlans: {
+    // Selected amenities from the category-driven checklist
+    amenities: {
         type: [String],
-        enum: BILLING_PLANS.map(p => p.key),
-        default: ["monthly"],
+        default: [],
     },
-    reviews: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: "Review"
-        },
-    ],
-    owner: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
+    // Owner's free-text additions
+    customAmenities: {
+        type: String,
+        trim: true,
+        default: "",
     },
+    reviews: [{ type: Schema.Types.ObjectId, ref: "Review" }],
+    owner: { type: Schema.Types.ObjectId, ref: "User" },
 });
 
 listingSchema.index({ geometry: "2dsphere" });

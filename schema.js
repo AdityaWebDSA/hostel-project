@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const CATEGORY_KEYS = require('./utils/categories').map(c => c.key);
-const { BILLING_PLANS } = require('./utils/billingPlans');
-const BILLING_KEYS = BILLING_PLANS.map(p => p.key);
+const { PRICE_PLANS } = require('./utils/pricePlans');
+const PRICE_PLAN_KEYS = PRICE_PLANS.map(p => p.key);
 
 module.exports.listingSchema = Joi.object({
     listing: Joi.object({
@@ -9,24 +9,20 @@ module.exports.listingSchema = Joi.object({
         description: Joi.string().required(),
         location: Joi.string().required(),
         country: Joi.string().required(),
-        price: Joi.number().required().min(0),
-       landmark: Joi.string().allow("", null),
-        lat: Joi.string().allow("", null),
-        lng: Joi.string().allow("", null),
-        contactNumber: Joi.string().pattern(/^[0-9+\-\s]{7,15}$/).allow("", null)
-            .messages({ "string.pattern.base": "Contact number must be 7-15 digits" }),
-        contactEmail: Joi.string().email({ tlds: { allow: false } }).allow("", null)
-            .messages({ "string.email": "Please enter a valid email address" }),
+        price: Joi.number().min(0).allow(null, ""),
+        pricePlan: Joi.string().valid(...PRICE_PLAN_KEYS).allow("", null),
+        landmark: Joi.string().allow("", null),
+        contactNumber: Joi.string().pattern(/^[0-9+\-\s]{7,15}$/).allow("", null),
+        contactEmail: Joi.string().email({ tlds: { allow: false } }).allow("", null),
         category: Joi.array().items(Joi.string().valid(...CATEGORY_KEYS)).min(1).required(),
-        billingPlans: Joi.array().items(Joi.string().valid(...BILLING_KEYS)).min(1).required(),
+        amenities: Joi.array().items(Joi.string()).allow(null),
+        customAmenities: Joi.string().allow("", null),
+        lat: Joi.number().allow(null, ""),
+        lng: Joi.number().allow(null, ""),
         image: Joi.array().items(
-            Joi.object({
-                url: Joi.string().allow("", null),
-                filename: Joi.string().allow("", null)
-            })
+            Joi.object({ url: Joi.string().allow("", null), filename: Joi.string().allow("", null) })
         ).allow(null, ""),
     }).required(),
-
     deleteImages: Joi.array()
 });
 
