@@ -7,7 +7,7 @@ const Listing = require("../models/listing.js");
 const Review = require("../models/review.js");
 const reviewController=require("../controllers/reviews.js");
 // ✅ FIX: Capitalized the 'R' in isReviewAuthor to match your middleware file
-const { validateReview, isLoggedIn, isReviewAuthor } = require("../middleware.js"); 
+const { validateReview, isLoggedIn, isReviewAuthor } = require("../express-middleware.js"); 
 
 // POST Route: Create a Review
 router.post("/", isLoggedIn, validateReview, wrapAsync(reviewController.createReview));

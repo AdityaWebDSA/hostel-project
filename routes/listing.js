@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const wrapAsync = require("../utils/wrapAsync.js");
 
-const { isLoggedIn, isOwner, validateListing, normalizeCategory } = require("../middleware.js");
+const { isLoggedIn, isOwner, validateListing, normalizeCategory } = require("../express-middleware.js");
 const listingController = require("../controllers/listings.js");
 
 // Multer Setup

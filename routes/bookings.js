@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const wrapAsync = require("../utils/wrapAsync.js");
-const { isLoggedIn } = require("../middleware.js");
+const { isLoggedIn } = require("../express-middleware.js");
 const bookingController = require("../controllers/bookings.js");
 
 // Tenant: view my sent requests
