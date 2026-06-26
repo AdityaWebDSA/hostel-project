@@ -571,3 +571,21 @@
     font-size: 1.4rem;
     color: var(--color-tertiary);
 }
+.price-service {
+    font-size: 1.2rem;
+    color: var(--color-tertiary);
+}
+/* --- Gender badge on listing detail --- */
+.gender-show-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 1rem;
+    border-radius: 50px;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.gender-show-badge.boys { background: rgba(37,99,235,0.1); color: #2563eb; border: 1.5px solid #2563eb; }
+.gender-show-badge.girls { background: rgba(219,39,119,0.1); color: #db2777; border: 1.5px solid #db2777; }
+.gender-show-badge.coed { background: rgba(21,109,109,0.1); color: var(--color-tertiary); border: 1.5px solid var(--color-tertiary); }

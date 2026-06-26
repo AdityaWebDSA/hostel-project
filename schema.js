@@ -17,6 +17,7 @@ module.exports.listingSchema = Joi.object({
         category: Joi.array().items(Joi.string().valid(...CATEGORY_KEYS)).min(1).required(),
         amenities: Joi.array().items(Joi.string()).allow(null),
         customAmenities: Joi.string().allow("", null),
+        genderPolicy: Joi.string().valid("boys", "girls", "coed", "").allow(null),
         lat: Joi.number().allow(null, ""),
         lng: Joi.number().allow(null, ""),
         image: Joi.array().items(

@@ -119,3 +119,23 @@ if (document.querySelector('.category-checkbox') && document.getElementById('bil
     categoryCheckboxes.forEach(cb => cb.addEventListener('change', suggestBillingPlans));
   }
 }
+// Show gender policy selector only for relevant categories
+const GENDER_CATEGORIES = ["hostels-pgs", "mess-tiffins", "independent-rooms", "near-campus"];
+
+function updateGenderVisibility() {
+    const section = document.getElementById('genderPolicySection');
+    if (!section) return;
+
+    const checkedCats = Array.from(document.querySelectorAll('.category-checkbox:checked'))
+        .map(cb => cb.value);
+
+    const isRelevant = checkedCats.some(c => GENDER_CATEGORIES.includes(c));
+    section.style.display = isRelevant ? 'block' : 'none';
+}
+
+document.querySelectorAll('.category-checkbox').forEach(cb => {
+    cb.addEventListener('change', updateGenderVisibility);
+});
+
+// Run once on load (for edit form where categories are pre-checked)
+updateGenderVisibility();

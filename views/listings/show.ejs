@@ -49,6 +49,16 @@
             </p>
         </div>
 
+<div class="d-flex align-items-center gap-2 flex-wrap mb-3">
+            <% if (listing.genderPolicy === 'boys') { %>
+                <span class="gender-show-badge boys"><i class="fa-solid fa-mars"></i> Boys Only</span>
+            <% } else if (listing.genderPolicy === 'girls') { %>
+                <span class="gender-show-badge girls"><i class="fa-solid fa-venus"></i> Girls Only</span>
+            <% } else if (listing.genderPolicy === 'coed') { %>
+                <span class="gender-show-badge coed"><i class="fa-solid fa-venus-mars"></i> Co-ed / All</span>
+            <% } %>
+        </div>
+
         <% if (listing.category && listing.category.length > 0) { %>
             <div class="category-pills-show mb-4">
                 <% listing.category.forEach(catKey => {
@@ -118,14 +128,19 @@
 
             <div class="col-lg-4">
                 <div class="booking-card sticky-top shadow-lg">
-                    <div class="price-header d-flex justify-content-between align-items-center">
+                  <div class="price-header d-flex justify-content-between align-items-center">
                         <div>
                             <% if (listing.price && listing.price > 0) { %>
                                 <span class="price-big">&#x20B9;<%= listing.price.toLocaleString("en-IN") %></span>
-                                <% const activePlan = PRICE_PLANS.find(p => p.key === listing.pricePlan); %>
-                                <span class="text-muted"><%= activePlan ? activePlan.label : '/month' %></span>
+                                <%
+                                  const activePlan = typeof PRICE_PLANS !== 'undefined'
+                                    ? PRICE_PLANS.find(p => p.key === listing.pricePlan)
+                                    : null;
+                                 const planSuffix = activePlan ? activePlan.label : '/ month';
+                                %>
+                                <span class="text-muted"><%= planSuffix %></span>
                             <% } else { %>
-                                <span class="price-big price-free">Free / Enquire</span>
+                                <span class="price-big price-service">Contact for Price</span>
                             <% } %>
                         </div>
                         <div class="rating-badge">
@@ -138,17 +153,19 @@
                         </div>
                     </div>
                     <hr>
-             <div class="booking-details mb-4">
-                        <% if (listing.pricePlan) { 
-                            const plan = PRICE_PLANS.find(p => p.key === listing.pricePlan); %>
+            <div class="booking-details mb-4">
+                        <% if (listing.pricePlan && typeof PRICE_PLANS !== 'undefined') {
+                            const shownPlan = PRICE_PLANS.find(p => p.key === listing.pricePlan);
+                        %>
+                            <p class="mb-2 fw-semibold" style="font-size:0.85rem; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:0.5px;">Billing</p>
                             <div class="billing-pills">
                                 <span class="billing-pill">
                                     <i class="fa-solid fa-calendar-check"></i>
-                                    <%= plan ? plan.label : listing.pricePlan %>
+                                    <%= shownPlan ? shownPlan.label : listing.pricePlan %>
                                 </span>
                             </div>
                         <% } %>
-                        <p class="mb-0 mt-2"><i class="fa-solid fa-check text-success me-1"></i>Refundable deposit</p>
+                        <p class="mb-0 mt-3"><i class="fa-solid fa-check text-success me-1"></i>Refundable deposit</p>
                     </div>
                     <% if (currUser) { %>
                         <button type="button" class="btn btn-save-listing w-100 mb-2" data-listing-id="<%= listing._id %>" onclick="toggleSave(this)">

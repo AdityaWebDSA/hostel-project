@@ -8,7 +8,8 @@
     if (typeof searchQuery !== 'undefined' && searchQuery) params.set('q', searchQuery);
     if (typeof minPrice !== 'undefined' && minPrice) params.set('minPrice', minPrice);
     if (typeof maxPrice !== 'undefined' && maxPrice) params.set('maxPrice', maxPrice);
-    if (typeof currentSort !== 'undefined' && currentSort) params.set('sort', currentSort);
+if (typeof currentSort !== 'undefined' && currentSort) params.set('sort', currentSort);
+    if (typeof currentGender !== 'undefined' && currentGender) params.set('gender', currentGender);
     if (typeof currentPage !== 'undefined' && currentPage > 1) params.set('page', currentPage);
 
     Object.keys(overrides).forEach(key => {
@@ -35,7 +36,11 @@
 %>
 
 <div class="index-container">
-    <div class="filters-wrapper d-flex align-items-center justify-content-between py-3">
+<div class="filters-wrapper py-3">
+        <button class="filter-arrow filter-arrow-left" id="filterLeft" aria-label="Scroll left">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+
         <div id="filters">
             <a href="<%= buildUrl({ category: null, page: null }) %>" class="filter <%= !currentCategory ? 'active' : '' %>">
                 <i class="fa-solid fa-layer-group"></i>
@@ -48,8 +53,33 @@
                 </a>
             <% }) %>
         </div>
-    </div>
 
+        <button class="filter-arrow filter-arrow-right" id="filterRight" aria-label="Scroll right">
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
+    </div>
+<!-- Location search map panel - shown when searching or using "Near Me" -->
+    <div id="searchMapPanel" class="search-map-panel" style="display:none;">
+        <div class="search-map-header">
+            <div id="searchMapLabel" class="search-map-label">
+                <i class="fa-solid fa-location-dot"></i>
+                <span id="searchMapTitle">Nearby listings</span>
+            </div>
+            <button type="button" id="closeMapPanel" class="search-map-close">
+                <i class="fa-solid fa-xmark"></i> Close map
+            </button>
+        </div>
+        <div class="search-map-body">
+            <div id="searchMap" class="search-map-leaflet"></div>
+            <div id="searchMapSidebar" class="search-map-sidebar">
+                <div id="searchMapResults" class="search-map-results">
+                    <div class="search-map-loading">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Finding nearby places...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
         <div class="search-results-banner mb-3">
             <i class="fa-solid fa-magnifying-glass"></i>
@@ -58,7 +88,13 @@
             <a href="/listings" class="ms-2 clear-filter-link"><i class="fa-solid fa-xmark"></i> Clear</a>
         </div>
     <% } %>
-
+<div class="near-me-bar mb-3">
+        <button id="nearMeBtn" type="button" class="btn near-me-btn">
+            <i class="fa-solid fa-location-crosshairs"></i>
+            <span>Show listings near me</span>
+        </button>
+        <span id="nearMeStatus" class="near-me-status"></span>
+    </div>
     <div class="result-info d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3 px-1">
         <h6 class="text-muted fw-normal mb-0">
             Showing <%= allListings.length %> available place<%= allListings.length === 1 ? '' : 's' %>
@@ -95,7 +131,22 @@
             </div>
         </div>
     </div>
-
+<!-- Gender filter pills -->
+    <div class="gender-filter-bar mb-2">
+        <span class="gender-filter-label">Filter:</span>
+        <a href="<%= buildUrl({ gender: null, page: null }) %>" class="gender-pill <%= !currentGender ? 'active' : '' %>">
+            All
+        </a>
+        <a href="<%= buildUrl({ gender: 'boys', page: null }) %>" class="gender-pill boys <%= currentGender === 'boys' ? 'active' : '' %>">
+            <i class="fa-solid fa-mars"></i> Boys
+        </a>
+        <a href="<%= buildUrl({ gender: 'girls', page: null }) %>" class="gender-pill girls <%= currentGender === 'girls' ? 'active' : '' %>">
+            <i class="fa-solid fa-venus"></i> Girls
+        </a>
+        <a href="<%= buildUrl({ gender: 'coed', page: null }) %>" class="gender-pill coed <%= currentGender === 'coed' ? 'active' : '' %>">
+            <i class="fa-solid fa-venus-mars"></i> Co-ed
+        </a>
+    </div>
     <% if (allListings.length === 0) { %>
         <div class="empty-state">
             <i class="fa-solid fa-magnifying-glass"></i>
@@ -108,20 +159,26 @@
             <div class="col listing-col">
                 <a href="/listings/<%= listing._id %>" class="listing-link">
                     <div class="card listing-card border-0">
-                       <div class="img-container">
+                      <div class="img-container">
     <img src="<%= (listing.image && listing.image.length > 0) ? cardThumb(listing.image[0].url) : 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&h=350&fit=crop&auto=format' %>" 
          class="card-img-top" 
          alt="listing_image"
          loading="lazy">
     
     <div class="card-img-overlay p-2">
-        <span class="badge bg-teal-brand px-2 py-1">New</span>
-        
-        <% if(listing.price < 5000) { %>
+        <% if (listing.genderPolicy === 'boys') { %>
+            <span class="badge gender-badge-boys px-2 py-1"><i class="fa-solid fa-mars me-1"></i>Boys Only</span>
+        <% } else if (listing.genderPolicy === 'girls') { %>
+            <span class="badge gender-badge-girls px-2 py-1"><i class="fa-solid fa-venus me-1"></i>Girls Only</span>
+        <% } else { %>
+            <span class="badge bg-teal-brand px-2 py-1">New</span>
+        <% } %>
+
+        <% if (listing.price && listing.price < 5000) { %>
             <span class="badge bg-gold-brand ms-1 px-2 py-1">Best Value</span>
         <% } %>
-        
-       <% if (currUser) { %>
+
+        <% if (currUser) { %>
             <button type="button" class="wishlist-icon save-btn" data-listing-id="<%= listing._id %>" onclick="event.preventDefault(); toggleSave(this);">
                 <i class="<%= (typeof savedIds !== 'undefined' && savedIds.includes(listing._id.toString())) ? 'fa-solid fa-heart saved' : 'fa-regular fa-heart' %>"></i>
             </button>
@@ -136,11 +193,21 @@
                         <div class="card-body px-1">
                             <div class="d-flex justify-content-between align-items-start">
                                 <span class="listing-title"><b><%= listing.title %></b></span>
-                                <span class="text-muted small"><i class="fa-solid fa-star text-warning"></i> 4.5</span>
+                               <% if (listing.avgRating && listing.avgRating > 0) { %>
+                                    <span class="text-muted small">
+                                        <i class="fa-solid fa-star text-warning"></i> <%= listing.avgRating %>
+                                        <span class="d-none d-md-inline text-muted" style="font-size:0.72rem;">(<%= listing.reviewCount %>)</span>
+                                    </span>
+                                <% } else { %>
+                                    <span class="text-muted small" style="font-size:0.72rem;">No reviews</span>
+                                <% } %>
                             </div>
                             <p class="card-text">
-                                <span class="listing-price">&#x20B9; <%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %></span> 
-                                <span class="per-month">/ month</span>
+                           <span class="listing-price">&#x20B9; <%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %></span>
+                                <%
+                                  const cardPlan = typeof PRICE_PLANS !== 'undefined' ? PRICE_PLANS.find(p => p.key === listing.pricePlan) : null;
+                                %>
+                                <span class="per-month"><%= cardPlan ? cardPlan.label : '/ month' %></span>
                                 <i class="tax-info text-muted small d-none">+ 18% GST</i>
                             </p>
                             <% if (listing.category && listing.category.length > 0) { %>
@@ -199,4 +266,47 @@
         </nav>
     <% } %>
     <% } %>
+    <script>
+    // Pass server-side search context to client JS
+    window.__UNINEST__ = {
+        searchQuery: '<%= typeof searchQuery !== "undefined" ? searchQuery : "" %>',
+        searchCenter: '<%= typeof searchCenter !== "undefined" && searchCenter ? JSON.stringify({ lat: searchCenter[1], lng: searchCenter[0] }) : "null" %>',
+        currentCategory: '<%= typeof currentCategory !== "undefined" && currentCategory ? currentCategory : "" %>',
+        locationIqKey: '<%= process.env.LOCATION_IQ_KEY %>',
+    };
+</script>
+<script>
+(function() {
+    const track = document.getElementById('filters');
+    const leftBtn = document.getElementById('filterLeft');
+    const rightBtn = document.getElementById('filterRight');
+    if (!track) return;
+
+    const SCROLL_AMOUNT = 200;
+
+    function updateArrows() {
+        leftBtn.style.opacity = track.scrollLeft > 10 ? '1' : '0.3';
+        leftBtn.style.pointerEvents = track.scrollLeft > 10 ? 'auto' : 'none';
+        const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 10;
+        rightBtn.style.opacity = atEnd ? '0.3' : '1';
+        rightBtn.style.pointerEvents = atEnd ? 'none' : 'auto';
+    }
+
+    leftBtn.addEventListener('click', () => {
+        track.scrollBy({ left: -SCROLL_AMOUNT, behavior: 'smooth' });
+    });
+    rightBtn.addEventListener('click', () => {
+        track.scrollBy({ left: SCROLL_AMOUNT, behavior: 'smooth' });
+    });
+
+    track.addEventListener('scroll', updateArrows);
+    updateArrows();
+
+    // Scroll active filter into view on load
+    const activeFilter = track.querySelector('.filter.active');
+    if (activeFilter) {
+        setTimeout(() => activeFilter.scrollIntoView({ inline: 'center', behavior: 'smooth', block: 'nearest' }), 100);
+    }
+})();
+</script>
 </div>

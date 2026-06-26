@@ -38,6 +38,31 @@
                     </div>
                     <input type="text" class="form-control category-validity" required>
                     <div class="invalid-feedback">Please select at least one category</div>
+                    <!-- Gender policy — only shown for relevant categories -->
+                <div class="mb-3" id="genderPolicySection" style="display:none;">
+                    <label class="form-label">Who is this for?</label>
+                    <div class="gender-options">
+                        <div class="gender-option">
+                            <input type="radio" name="listing[genderPolicy]" value="boys" id="gender-boys" class="gender-radio">
+                            <label for="gender-boys" class="gender-label">
+                                <i class="fa-solid fa-mars"></i> Boys Only
+                            </label>
+                        </div>
+                        <div class="gender-option">
+                            <input type="radio" name="listing[genderPolicy]" value="girls" id="gender-girls" class="gender-radio">
+                            <label for="gender-girls" class="gender-label">
+                                <i class="fa-solid fa-venus"></i> Girls Only
+                            </label>
+                        </div>
+                        <div class="gender-option">
+                            <input type="radio" name="listing[genderPolicy]" value="coed" id="gender-coed" class="gender-radio" checked>
+                            <label for="gender-coed" class="gender-label">
+                                <i class="fa-solid fa-venus-mars"></i> Co-ed / All
+                            </label>
+                        </div>
+                    </div>
+                    <small class="text-muted">Leave unselected if not applicable</small>
+                </div>
                 </div>
 
                 <!-- Images -->

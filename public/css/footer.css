@@ -13,12 +13,14 @@
     height: 40px;
     min-width: 40px;
     background: var(--color-secondary);
+  
+     /* background-color: var(--color-primary); */
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    padding: 5px;
+   
 }
 
 .footer-logo img {
@@ -60,8 +62,12 @@
     font-size: 1rem;
     transition: all 0.25s ease;
     text-decoration: none;
+     /* line-height: 0;  */
 }
-
+.f-info-socials a * {
+  margin: 0;
+  padding: 0;
+}
 .f-info-socials a:hover {
     background: var(--color-accent);
     color: var(--color-primary);

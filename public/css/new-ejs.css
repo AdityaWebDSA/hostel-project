@@ -311,3 +311,55 @@
 .amenity-checkbox:checked + .amenity-label i {
     color: var(--color-white);
 }
+/* --- Gender Policy Selector --- */
+.gender-options {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.gender-radio {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.gender-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.1rem;
+    border: 1.5px solid var(--border-color);
+    border-radius: 50px;
+    background: var(--color-bg-light);
+    color: var(--text-color);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 0;
+}
+
+.gender-label:hover {
+    border-color: var(--color-secondary);
+}
+
+.gender-radio:checked + .gender-label {
+    color: white;
+}
+
+#gender-boys:checked + .gender-label {
+    background: #2563eb;
+    border-color: #2563eb;
+}
+
+#gender-girls:checked + .gender-label {
+    background: #db2777;
+    border-color: #db2777;
+}
+
+#gender-coed:checked + .gender-label {
+    background: var(--color-secondary);
+    border-color: var(--color-secondary);
+}

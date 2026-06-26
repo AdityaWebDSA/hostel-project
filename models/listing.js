@@ -35,13 +35,31 @@ const listingSchema = new Schema({
         default: [],
     },
     // Owner's free-text additions
-    customAmenities: {
+customAmenities: {
         type: String,
         trim: true,
         default: "",
     },
-    reviews: [{ type: Schema.Types.ObjectId, ref: "Review" }],
+    // Only relevant for hostels, PGs, independent rooms, mess
+    genderPolicy: {
+        type: String,
+        enum: ["boys", "girls", "coed", ""],
+        default: "",
+    },
+   reviews: [{ type: Schema.Types.ObjectId, ref: "Review" }],
     owner: { type: Schema.Types.ObjectId, ref: "User" },
+    // Cached rating fields — updated whenever a review is added/deleted
+    // Storing these avoids a populate+compute on every index page load
+    avgRating: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 5,
+    },
+    reviewCount: {
+        type: Number,
+        default: 0,
+    },
 });
 
 listingSchema.index({ geometry: "2dsphere" });

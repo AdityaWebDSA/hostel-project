@@ -45,6 +45,45 @@ module.exports.geocodePreview = async (req, res) => {
     }
     res.json({ lat: null, lng: null });
 };
+// Returns listings near a lat/lng as JSON — used by the client-side map
+module.exports.nearbyListings = async (req, res) => {
+    const { lat, lng, radius = 5000, category } = req.query;
+
+    if (!lat || !lng || isNaN(parseFloat(lat)) || isNaN(parseFloat(lng))) {
+        return res.json({ listings: [], center: null });
+    }
+
+    const coords = [parseFloat(lng), parseFloat(lat)];
+
+    let filter = {
+        geometry: {
+            $near: {
+                $geometry: { type: "Point", coordinates: coords },
+                $maxDistance: parseInt(radius) || 5000
+            }
+        }
+    };
+
+    if (category) filter.category = category;
+
+    const listings = await Listing.find(filter)
+        .limit(50)
+        .select("title location price pricePlan geometry image category");
+
+    const data = listings.map(l => ({
+        id: l._id,
+        title: l.title,
+        location: l.location,
+        price: l.price,
+        pricePlan: l.pricePlan,
+        lat: l.geometry?.coordinates[1],
+        lng: l.geometry?.coordinates[0],
+        image: l.image?.[0]?.url || null,
+        category: l.category,
+    }));
+
+    res.json({ listings: data, center: { lat: parseFloat(lat), lng: parseFloat(lng) } });
+};
 async function geocodeQuery(query) {
     try {
         let response = await fetch(`https://us1.locationiq.com/v1/search.php?key=${process.env.LOCATION_IQ_KEY}&q=${encodeURIComponent(query)}&format=json`);
@@ -80,25 +119,20 @@ function buildPriceFilter(req, baseFilter = {}) {
 
 function getSortStage(sort) {
     switch (sort) {
-        case "price_asc": return { price: 1 };
-        case "price_desc": return { price: -1 };
-        case "newest": return { _id: -1 };
-        // "rating_desc" is handled separately below since rating isn't a stored field
-        default: return null; // "recommended" / unset -> natural/default order
+        case "price_asc":    return { price: 1 };
+        case "price_desc":   return { price: -1 };
+        case "newest":       return { _id: -1 };
+        case "rating_desc":  return { avgRating: -1, reviewCount: -1 };
+        default:             return null;
     }
 }
 
 // Sorts an already-fetched array by average review rating, descending.
 // Listings with no reviews sort last.
+// avgRating is now a stored field — MongoDB sorts it directly
+// This function kept only as fallback for search results (in-memory merge)
 function sortByRating(listings) {
-    return [...listings].sort((a, b) => {
-        const avg = (l) => {
-            if (!l.reviews || l.reviews.length === 0) return -1;
-            const total = l.reviews.reduce((sum, r) => sum + (r.rating || 0), 0);
-            return total / l.reviews.length;
-        };
-        return avg(b) - avg(a);
-    });
+    return [...listings].sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
 }
 const PAGE_SIZE = 12;
 
@@ -106,7 +140,8 @@ module.exports.index = async (req, res) => {
   const { category } = req.query;
   const sort = VALID_SORTS.includes(req.query.sort) ? req.query.sort : "recommended";
 
-  let filter = category ? { category: category } : {};
+let filter = category ? { category: category } : {};
+  if (req.query.gender) filter.genderPolicy = req.query.gender;
   filter = buildPriceFilter(req, filter);
 
   const CATEGORIES = require("../utils/categories");
@@ -118,19 +153,10 @@ module.exports.index = async (req, res) => {
   if (page > totalPages) page = totalPages;
   const skip = (page - 1) * PAGE_SIZE;
 
-  let allListings;
-  if (sort === "rating_desc") {
-      // Rating isn't stored, so we have to pull everything matching the filter,
-      // compute averages, sort, THEN slice the page in memory.
-      let fullSet = await Listing.find(filter).populate("reviews");
-      fullSet = sortByRating(fullSet);
-      allListings = fullSet.slice(skip, skip + PAGE_SIZE);
-  } else {
-      const sortStage = getSortStage(sort);
-      let query = Listing.find(filter).skip(skip).limit(PAGE_SIZE);
-      if (sortStage) query = query.sort(sortStage);
-      allListings = await query;
-  }
+ const sortStage = getSortStage(sort);
+  let query = Listing.find(filter).skip(skip).limit(PAGE_SIZE);
+  if (sortStage) query = query.sort(sortStage);
+  const allListings = await query;
 
   let savedIds = [];
   if (req.user) {
@@ -139,9 +165,12 @@ module.exports.index = async (req, res) => {
     savedIds = saved.map(s => s.listing.toString());
   }
 
- res.render("listings/index.ejs", {
+const { PRICE_PLANS } = require("../utils/pricePlans");
+  res.render("listings/index.ejs", {
       allListings,
       CATEGORIES,
+    PRICE_PLANS,
+      currentGender: req.query.gender || null,
       currentCategory: category || null,
       savedIds,
       currentSort: sort,
@@ -165,8 +194,9 @@ module.exports.searchListings = async (req, res) => {
 
     const query = q.trim();
     const regex = new RegExp(query, "i");
-
+const genderFilter = req.query.gender ? { genderPolicy: req.query.gender } : {};
     let textFilter = buildPriceFilter(req, {
+        ...genderFilter,
         $or: [
             { title: regex },
             { location: regex },
@@ -183,6 +213,7 @@ module.exports.searchListings = async (req, res) => {
     if (coords) {
         searchCenter = coords;
         let nearFilter = buildPriceFilter(req, {
+              ...genderFilter,
             geometry: {
                 $near: {
                     $geometry: { type: "Point", coordinates: coords },
@@ -210,9 +241,8 @@ module.exports.searchListings = async (req, res) => {
         allListings.sort((a, b) => (b.price || 0) - (a.price || 0));
     } else if (sort === "newest") {
         allListings.sort((a, b) => b._id.toString().localeCompare(a._id.toString()));
-    } else if (sort === "rating_desc") {
-        const populated = await Listing.populate(allListings, { path: "reviews" });
-        allListings = sortByRating(populated);
+ } else if (sort === "rating_desc") {
+        allListings = sortByRating(allListings); // uses stored avgRating field now
     }
 
     let savedIds = [];
@@ -232,10 +262,13 @@ module.exports.searchListings = async (req, res) => {
     const skip = (page - 1) * PAGE_SIZE;
     const pagedListings = allListings.slice(skip, skip + PAGE_SIZE);
 
- res.render("listings/index.ejs", {
+const { PRICE_PLANS } = require("../utils/pricePlans");
+    res.render("listings/index.ejs", {
         allListings: pagedListings,
         CATEGORIES,
+        PRICE_PLANS,
         currentCategory: null,
+        currentGender: req.query.gender || null,
         searchQuery: query,
         searchCenter,
         savedIds,
@@ -367,8 +400,9 @@ module.exports.updateListing = async (req, res) => {
     listing.landmark = req.body.listing.landmark;
     listing.category = req.body.listing.category;
    listing.pricePlan = req.body.listing.pricePlan || "monthly";
-    listing.amenities = req.body.listing.amenities || [];
+   listing.amenities = req.body.listing.amenities || [];
     listing.customAmenities = req.body.listing.customAmenities || "";
+    listing.genderPolicy = req.body.listing.genderPolicy || "";
     listing.contactNumber = req.body.listing.contactNumber;
     listing.contactEmail = req.body.listing.contactEmail;
 
