@@ -589,3 +589,70 @@
 .gender-show-badge.boys { background: rgba(37,99,235,0.1); color: #2563eb; border: 1.5px solid #2563eb; }
 .gender-show-badge.girls { background: rgba(219,39,119,0.1); color: #db2777; border: 1.5px solid #db2777; }
 .gender-show-badge.coed { background: rgba(21,109,109,0.1); color: var(--color-tertiary); border: 1.5px solid var(--color-tertiary); }
+
+/* =================== MOBILE POLISH =================== */
+
+/* Booking card: on mobile sits below content, not sticky */
+@media (max-width: 991px) {
+    .booking-card {
+        position: static !important;
+        margin-top: 2rem;
+        border-radius: 16px;
+    }
+}
+
+/* Booking modal: full-screen on mobile */
+@media (max-width: 576px) {
+    .booking-modal-content {
+        border-radius: 20px 20px 0 0;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: 0;
+        max-height: 92vh;
+        overflow-y: auto;
+    }
+
+    #bookingModal .modal-dialog {
+        margin: 0;
+        max-width: 100%;
+        align-items: flex-end;
+        min-height: 100vh;
+        display: flex;
+    }
+
+    #bookingModal .modal-dialog-centered {
+        align-items: flex-end;
+    }
+
+    /* Gallery: full height single image on mobile */
+    .bento-gallery-wrapper {
+        border-radius: 0;
+        margin-left: -12px;
+        margin-right: -12px;
+    }
+
+    /* Location + map: stack properly */
+    .location-info-card {
+        margin-bottom: 1rem;
+    }
+
+    /* Owner actions: stack buttons */
+    .owner-actions {
+        flex-direction: column;
+    }
+    .owner-actions .btn {
+        width: 100% !important;
+    }
+
+    /* Reviews: full width on mobile */
+    .review-card-modern {
+        border-radius: 14px;
+    }
+
+    /* Host info card: compact on mobile */
+    .host-info-card {
+        padding: 0.9rem !important;
+    }
+}

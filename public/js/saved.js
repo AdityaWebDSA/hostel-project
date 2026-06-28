@@ -1,25 +1,40 @@
+const _saveInFlight = new Set();
+
 async function toggleSave(el) {
     const listingId = el.dataset.listingId;
-    if (!listingId) return;
+    if (!listingId || _saveInFlight.has(listingId)) return;
+    _saveInFlight.add(listingId);
+
+    const icon = el.querySelector('i');
+    const label = el.querySelector('span');
+    const prevClass = icon.className;
+
+    // Immediate feedback — spinner replaces icon
+    icon.className = 'fa-solid fa-spinner fa-spin';
+    el.style.opacity = '0.7';
+    el.style.pointerEvents = 'none';
 
     try {
-        const res = await fetch(`/saved/toggle/${listingId}`, { method: "POST" });
-        if (!res.ok) throw new Error("Failed to toggle save");
+        const res = await fetch(`/saved/toggle/${listingId}`, { method: 'POST' });
+        if (!res.ok) throw new Error('Failed');
         const data = await res.json();
 
-        const icon = el.querySelector('i');
         if (data.saved) {
-            icon.classList.remove('fa-regular');
-            icon.classList.add('fa-solid', 'saved');
-            const label = el.querySelector('span');
+            icon.className = 'fa-solid fa-heart saved';
             if (label) label.textContent = 'Saved';
+            // Brief scale-up animation to confirm the action
+            icon.style.transform = 'scale(1.3)';
+            setTimeout(() => icon.style.transform = '', 200);
         } else {
-            icon.classList.remove('fa-solid', 'saved');
-            icon.classList.add('fa-regular');
-            const label = el.querySelector('span');
+            icon.className = 'fa-regular fa-heart';
             if (label) label.textContent = 'Save to Wishlist';
         }
     } catch (err) {
-        console.error("Save toggle error:", err);
+        icon.className = prevClass; // restore on error
+        console.error('Save toggle error:', err);
+    } finally {
+        el.style.opacity = '';
+        el.style.pointerEvents = '';
+        _saveInFlight.delete(listingId);
     }
 }

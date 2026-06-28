@@ -1,13 +1,48 @@
-<% if(success && success.length) { %>
-    <div class="alert alert-success alert-dismissible fade show flash-alert" role="alert">
-        <%= success %>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<% if (success && success.length) { %>
+    <div class="flash-toast flash-success" role="alert" id="flashToast">
+        <div class="flash-icon"><i class="fa-solid fa-circle-check"></i></div>
+        <div class="flash-body">
+            <div class="flash-title">Success</div>
+            <div class="flash-message"><%= success %></div>
+        </div>
+        <button class="flash-close" onclick="dismissFlash(this)" aria-label="Close">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="flash-progress"></div>
     </div>
 <% } %>
 
-<% if(error && error.length) { %>
-    <div class="alert alert-danger alert-dismissible fade show flash-alert" role="alert">
-        <%= error %>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<% if (error && error.length) { %>
+    <div class="flash-toast flash-error" role="alert" id="flashToast">
+        <div class="flash-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+        <div class="flash-body">
+            <div class="flash-title">Something went wrong</div>
+            <div class="flash-message"><%= error %></div>
+        </div>
+        <button class="flash-close" onclick="dismissFlash(this)" aria-label="Close">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="flash-progress"></div>
     </div>
 <% } %>
+
+<script>
+(function() {
+    const toasts = document.querySelectorAll('.flash-toast');
+    toasts.forEach(toast => {
+        // Slide in
+        requestAnimationFrame(() => toast.classList.add('flash-visible'));
+
+        // Auto-dismiss after 4s
+        const timer = setTimeout(() => dismissFlash(toast.querySelector('.flash-close')), 4000);
+        toast.addEventListener('mouseenter', () => clearTimeout(timer));
+    });
+})();
+
+function dismissFlash(btn) {
+    const toast = btn.closest('.flash-toast');
+    toast.classList.remove('flash-visible');
+    toast.classList.add('flash-hiding');
+    setTimeout(() => toast.remove(), 350);
+}
+</script>

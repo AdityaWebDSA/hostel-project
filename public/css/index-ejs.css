@@ -105,11 +105,20 @@
 /* --- Listings Grid --- */
 .listing-card {
     border-radius: 1.2rem;
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.listing-card:hover { transform: translateY(-8px); }
+.listing-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(14, 34, 69, 0.12);
+}
+.img-container img {
+    transition: transform 0.4s ease;
+}
 
+.listing-card:hover .img-container img {
+    transform: scale(1.04);
+}
 .img-container {
     height: 17rem;
     border-radius: 1.2rem;
@@ -202,9 +211,13 @@
 }
 
 @media (hover: none) {
-    .listing-card:hover { transform: none; }
+    .listing-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
     .listing-card:active {
-        transform: scale(0.98);
+        transform: scale(0.99);
+        box-shadow: 0 4px 12px rgba(14, 34, 69, 0.08);
         transition: 0.1s;
     }
 }
@@ -730,3 +743,47 @@
 /* --- Gender badges on cards --- */
 .gender-badge-boys { background: #2563eb !important; }
 .gender-badge-girls { background: #db2777 !important; }
+
+/* --- Badge tooltip on hover --- */
+.badge[data-tip] {
+    position: relative;
+    cursor: default;
+}
+
+.badge[data-tip]::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-primary);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    z-index: 10;
+}
+
+.badge[data-tip]::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: var(--color-primary);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    z-index: 10;
+}
+
+.badge[data-tip]:hover::after,
+.badge[data-tip]:hover::before {
+    opacity: 1;
+}

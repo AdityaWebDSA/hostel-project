@@ -131,6 +131,18 @@ app.use("/", staticRouter);
 app.all(/(.*)/, (req, res, next) => {
     next(new ExpressError(404, "Page not Found!"));
 });
+// 404 handler — must be AFTER all routes, BEFORE the error handler
+app.use((req, res, next) => {
+    res.status(404).render("error.ejs", {
+        statusCode: 404,
+        message: "The page you're looking for doesn't exist or has been moved."
+    });
+});
+
+app.use((err, req, res, next) => {
+    let { statusCode = 500, message = "Something went wrong!" } = err;
+    res.status(statusCode).render("error.ejs", { message, statusCode });
+});
 app.use((err, req, res, next) => {
     let { statusCode = 500, message = "Something went wrong!" } = err;
     res.status(statusCode).render("error.ejs", { message, statusCode });

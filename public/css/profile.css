@@ -370,3 +370,75 @@
     .profile-edit-btn { margin-top: 0; }
     .profile-stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
+/* =================== MOBILE POLISH =================== */
+@media (max-width: 576px) {
+    .profile-cover {
+        height: 110px;
+    }
+
+    .profile-top-row {
+        margin-top: -45px;
+        gap: 0.75rem;
+    }
+
+    .profile-avatar-xl {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+    }
+
+    .profile-username {
+        font-size: 1.3rem;
+    }
+
+    .profile-meta-row {
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .profile-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.6rem;
+    }
+
+    .profile-stat-tile {
+        padding: 0.85rem;
+    }
+
+    .stat-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+    }
+
+    .stat-num {
+        font-size: 1.25rem;
+    }
+
+    .quick-action-item {
+        padding: 0.55rem 0.6rem;
+    }
+
+    .qa-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+
+    .qa-label {
+        font-size: 0.82rem;
+    }
+
+    .qa-sub {
+        font-size: 0.7rem;
+    }
+
+    .recent-listing-img {
+        width: 60px;
+        height: 45px;
+    }
+
+    .recent-listing-title {
+        font-size: 0.82rem;
+    }
+}

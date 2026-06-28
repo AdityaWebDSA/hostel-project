@@ -279,7 +279,9 @@
                                 <div class="invalid-feedback">Please add a comment before submitting.</div>
                             </div>
 
-                            <button class="btn btn-teal-solid px-5 rounded-pill">Submit Review</button>
+                            <button class="btn btn-teal-solid px-5 rounded-pill" id="reviewSubmitBtn">
+                                <i class="fa-solid fa-star me-2"></i>Submit Review
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -315,6 +317,26 @@
             </div>
         </div>
     </div>
+    <script>
+// Booking form loading state
+document.querySelector('#bookingModal form')?.addEventListener('submit', function(e) {
+    // Let Bootstrap validation run first
+    if (!this.checkValidity()) return;
+    const btn = document.getElementById('bookingSubmitBtn');
+    if (!btn) return;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Sending...';
+});
+
+// Review form loading state
+document.querySelector('#reviewForm form')?.addEventListener('submit', function(e) {
+    if (!this.checkValidity()) return;
+    const btn = document.getElementById('reviewSubmitBtn');
+    if (!btn) return;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Submitting...';
+});
+</script>
 </div>
 
 <!-- Booking Request Modal -->
@@ -366,7 +388,9 @@
         </div>
         <div class="modal-footer border-0">
           <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-book-now rounded-pill px-4">Send Request</button>
+       <button type="submit" class="btn btn-book-now rounded-pill px-4" id="bookingSubmitBtn">
+              <i class="fa-solid fa-calendar-check me-2"></i>Send Request
+          </button>
         </div>
       </form>
     </div>

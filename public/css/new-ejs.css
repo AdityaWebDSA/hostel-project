@@ -363,3 +363,46 @@
     background: var(--color-secondary);
     border-color: var(--color-secondary);
 }
+/* =================== MOBILE POLISH =================== */
+@media (max-width: 767px) {
+    /* col-8 offset-2 is too narrow on mobile — go full width */
+    .row > .col-8.offset-2 {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+
+    .form-container {
+        padding: 1.25rem;
+        border-radius: 12px;
+    }
+
+    /* Category grid: 2 columns on mobile */
+    .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Billing grid: 2 columns on mobile */
+    .billing-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Amenity grid: 2 columns on mobile */
+    .amenity-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Gender options: wrap nicely */
+    .gender-options {
+        gap: 0.5rem;
+    }
+
+    /* Price + plan row: stack on very small screens */
+    .price-plan-row {
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    .price-plan-select {
+        min-width: 120px;
+    }
+}

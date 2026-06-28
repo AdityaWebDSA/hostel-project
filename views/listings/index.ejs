@@ -166,16 +166,16 @@ if (typeof currentSort !== 'undefined' && currentSort) params.set('sort', curren
          loading="lazy">
     
     <div class="card-img-overlay p-2">
-        <% if (listing.genderPolicy === 'boys') { %>
-            <span class="badge gender-badge-boys px-2 py-1"><i class="fa-solid fa-mars me-1"></i>Boys Only</span>
+      <% if (listing.genderPolicy === 'boys') { %>
+            <span class="badge gender-badge-boys px-2 py-1" data-tip="Boys only hostel"><i class="fa-solid fa-mars me-1"></i>Boys Only</span>
         <% } else if (listing.genderPolicy === 'girls') { %>
-            <span class="badge gender-badge-girls px-2 py-1"><i class="fa-solid fa-venus me-1"></i>Girls Only</span>
+            <span class="badge gender-badge-girls px-2 py-1" data-tip="Girls only hostel"><i class="fa-solid fa-venus me-1"></i>Girls Only</span>
         <% } else { %>
-            <span class="badge bg-teal-brand px-2 py-1">New</span>
+            <span class="badge bg-teal-brand px-2 py-1" data-tip="Recently listed">New</span>
         <% } %>
 
         <% if (listing.price && listing.price < 5000) { %>
-            <span class="badge bg-gold-brand ms-1 px-2 py-1">Best Value</span>
+            <span class="badge bg-gold-brand ms-1 px-2 py-1" data-tip="Under ₹5,000/month">Best Value</span>
         <% } %>
 
         <% if (currUser) { %>

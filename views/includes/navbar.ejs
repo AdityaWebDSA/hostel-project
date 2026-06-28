@@ -35,8 +35,10 @@
 
     <div class="navbar-nav mx-auto search-container">
       <form class="d-flex search-form" role="search" action="/listings/search" method="GET">
-        <input name="q" class="form-control search-input" type="search" placeholder="Search a college, area..." aria-label="Search">
-        <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <input name="q" class="form-control search-input" type="search" placeholder="Search your area..." aria-label="Search">
+        <button class="btn search-btn" type="submit" id="searchSubmitBtn">
+            <i class="fa-solid fa-magnifying-glass" id="searchBtnIcon"></i>
+        </button>
       </form>
     </div>
 
@@ -101,4 +103,14 @@
       <% } %>
     </div>
   </div>
+  <script>
+document.querySelector('.search-form')?.addEventListener('submit', function() {
+    const btn = document.getElementById('searchSubmitBtn');
+    const icon = document.getElementById('searchBtnIcon');
+    if (!btn || !icon) return;
+    icon.className = 'fa-solid fa-spinner fa-spin';
+    btn.disabled = true;
+    btn.style.opacity = '0.8';
+});
+</script>
 </nav>

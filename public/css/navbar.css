@@ -230,9 +230,14 @@
 @media (max-width: 400px) {
     .search-container {
         margin: 0 0.2rem;
+        min-width: 0;
     }
     .nav-link {
         padding: 0.1rem 0.3rem !important;
+    }
+    .search-input {
+        width: 100% !important;
+        min-width: 0;
     }
 }
 /* --- Notification bell --- */

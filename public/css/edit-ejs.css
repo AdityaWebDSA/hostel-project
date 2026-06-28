@@ -412,3 +412,45 @@
     background: var(--color-secondary);
     border-color: var(--color-secondary);
 }
+/* =================== MOBILE POLISH =================== */
+@media (max-width: 767px) {
+    .row > .col-8.offset-2 {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+
+    .form-container {
+        padding: 1.25rem;
+        border-radius: 12px;
+    }
+
+    .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .billing-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .amenity-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .gender-options {
+        gap: 0.5rem;
+    }
+
+    .price-plan-row {
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    .price-plan-select {
+        min-width: 120px;
+    }
+
+    /* Edit image thumbnails: 2 per row on mobile */
+    .row-cols-md-4 {
+        --bs-columns: 2;
+    }
+}
