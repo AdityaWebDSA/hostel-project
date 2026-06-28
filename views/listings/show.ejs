@@ -49,7 +49,7 @@
             </p>
         </div>
 
-<div class="d-flex align-items-center gap-2 flex-wrap mb-3">
+        <div class="d-flex align-items-center gap-2 flex-wrap mb-3">
             <% if (listing.genderPolicy === 'boys') { %>
                 <span class="gender-show-badge boys"><i class="fa-solid fa-mars"></i> Boys Only</span>
             <% } else if (listing.genderPolicy === 'girls') { %>
@@ -62,7 +62,7 @@
         <% if (listing.category && listing.category.length > 0) { %>
             <div class="category-pills-show mb-4">
                 <% listing.category.forEach(catKey => {
-                    const cat = CATEGORIES.find(c => c.key === catKey);
+                    const cat = typeof CATEGORIES !== 'undefined' ? CATEGORIES.find(c => c.key === catKey) : null;
                     if (cat) { %>
                         <span class="category-pill-lg"><i class="<%= cat.icon %>"></i> <%= cat.label %></span>
                     <% }
@@ -87,11 +87,11 @@
                     <p class="description-body"><%= listing.description %></p>
                 </div>
 
-             <% if ((listing.amenities && listing.amenities.length > 0) || listing.customAmenities) { %>
+                <% if ((listing.amenities && listing.amenities.length > 0) || listing.customAmenities) { %>
                 <div class="amenities-grid mb-5">
                     <h4 class="section-label">What to expect</h4>
                     <div class="row g-3">
-                        <% if (listing.amenities && listing.amenities.length > 0) { %>
+                        <% if (listing.amenities && listing.amenities.length > 0 && typeof ALL_AMENITIES !== 'undefined') { %>
                             <% listing.amenities.forEach(key => {
                                 const amenity = ALL_AMENITIES[key];
                                 if (amenity) { %>
@@ -112,7 +112,7 @@
                 </div>
                 <% } %>
 
-                <% if(currUser && listing.owner && currUser._id.equals(listing.owner._id)) { %>
+                <% if(typeof currUser !== 'undefined' && currUser && listing.owner && currUser._id.equals(listing.owner._id)) { %>
                     <div class="owner-actions p-4 rounded-4 d-flex gap-3">
                         <a href="/listings/<%= listing._id %>/edit" class="btn btn-edit-premium flex-grow-1">
                             <i class="fa-solid fa-sliders me-2"></i>Manage Listing
@@ -128,15 +128,15 @@
 
             <div class="col-lg-4">
                 <div class="booking-card sticky-top shadow-lg">
-                  <div class="price-header d-flex justify-content-between align-items-center">
+                    <div class="price-header d-flex justify-content-between align-items-center">
                         <div>
                             <% if (listing.price && listing.price > 0) { %>
-                                <span class="price-big">&#x20B9;<%= listing.price.toLocaleString("en-IN") %></span>
+                                <span class="price-big">₹<%= listing.price.toLocaleString("en-IN") %></span>
                                 <%
                                   const activePlan = typeof PRICE_PLANS !== 'undefined'
                                     ? PRICE_PLANS.find(p => p.key === listing.pricePlan)
                                     : null;
-                                 const planSuffix = activePlan ? activePlan.label : '/ month';
+                                  const planSuffix = activePlan ? activePlan.label : '/ month';
                                 %>
                                 <span class="text-muted"><%= planSuffix %></span>
                             <% } else { %>
@@ -145,7 +145,7 @@
                         </div>
                         <div class="rating-badge">
                             <i class="fa-solid fa-star"></i>
-                            <% if (reviewCount > 0) { %>
+                            <% if (typeof reviewCount !== 'undefined' && reviewCount > 0) { %>
                                 <%= avgRating %> <span class="review-count">(<%= reviewCount %>)</span>
                             <% } else { %>
                                 New
@@ -153,7 +153,7 @@
                         </div>
                     </div>
                     <hr>
-            <div class="booking-details mb-4">
+                    <div class="booking-details mb-4">
                         <% if (listing.pricePlan && typeof PRICE_PLANS !== 'undefined') {
                             const shownPlan = PRICE_PLANS.find(p => p.key === listing.pricePlan);
                         %>
@@ -167,13 +167,13 @@
                         <% } %>
                         <p class="mb-0 mt-3"><i class="fa-solid fa-check text-success me-1"></i>Refundable deposit</p>
                     </div>
-                    <% if (currUser) { %>
+                    <% if (typeof currUser !== 'undefined' && currUser) { %>
                         <button type="button" class="btn btn-save-listing w-100 mb-2" data-listing-id="<%= listing._id %>" onclick="toggleSave(this)">
-                            <i class="<%= isSaved ? 'fa-solid fa-heart saved' : 'fa-regular fa-heart' %>"></i>
-                            <span><%= isSaved ? 'Saved' : 'Save to Wishlist' %></span>
+                            <i class="<%= typeof isSaved !== 'undefined' && isSaved ? 'fa-solid fa-heart saved' : 'fa-regular fa-heart' %>"></i>
+                            <span><%= typeof isSaved !== 'undefined' && isSaved ? 'Saved' : 'Save to Wishlist' %></span>
                         </button>
 
-                        <% if (!listing.owner._id.equals(currUser._id)) { %>
+                        <% if (listing.owner && !listing.owner._id.equals(currUser._id)) { %>
                             <button type="button" class="btn btn-book-now w-100 mb-3 py-3" data-bs-toggle="modal" data-bs-target="#bookingModal">
                                 Request to Book
                             </button>
@@ -200,8 +200,8 @@
                         <%= listing.landmark ? listing.landmark + ", " : "" %><%= listing.location %><%= listing.country ? ", " + listing.country : "" %>
                     </p>
 
-                    <% if (listing.geometry && listing.geometry.coordinates) { %>
-                        <a href="https://www.google.com/maps/dir/?api=1&destination=<%= listing.geometry.coordinates[1] %>,<%= listing.geometry.coordinates[0] %>"
+                    <% if (listing.geometry && listing.geometry.coordinates && listing.geometry.coordinates.length >= 2) { %>
+                        <a href="https://www.google.com/maps/search/?api=1&query=<%= listing.geometry.coordinates[1] %>,<%= listing.geometry.coordinates[0] %>"
                            target="_blank" rel="noopener" class="contact-action-btn directions-btn">
                             <i class="fa-solid fa-diamond-turn-right"></i> Get Directions
                         </a>
@@ -237,50 +237,53 @@
                 <div id="map" class="map-premium"></div>
             </div>
 
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="section-label">
-                        Reviews (<%= listing.reviews.length %>)
+           <div class="col-12" id="reviews-section">
+                <div class="reviews-header">
+                    <div>
+                        <h4 class="section-label mb-0">Reviews</h4>
                         <% if (reviewCount > 0) { %>
-                            <span class="reviews-avg"><i class="fa-solid fa-star"></i> <%= avgRating %></span>
+                            <div class="reviews-summary">
+                                <span class="reviews-big-rating"><%= avgRating %></span>
+                                <div>
+                                    <div class="reviews-stars">
+                                        <% for(let s = 1; s <= 5; s++) { %>
+                                            <i class="fa-<%= s <= Math.round(avgRating) ? 'solid' : 'regular' %> fa-star"></i>
+                                        <% } %>
+                                    </div>
+                                    <span class="text-muted small"><%= reviewCount %> review<%= reviewCount !== 1 ? 's' : '' %></span>
+                                </div>
+                            </div>
                         <% } %>
-                    </h4>
+                    </div>
                     <% if(currUser) { %>
                         <button class="btn btn-outline-teal rounded-pill" data-bs-toggle="collapse" data-bs-target="#reviewForm">
-                            Write a Review
+                            <i class="fa-solid fa-pen me-1"></i> Write a Review
                         </button>
                     <% } %>
                 </div>
 
-                <div class="collapse mb-5" id="reviewForm">
-                    <div class="card card-body border-0 shadow-sm rounded-4 p-4">
-                        <h5 class="mb-3">Share your experience</h5>
+                <div class="collapse mb-4" id="reviewForm">
+                    <div class="write-review-card">
+                        <h6 class="mb-3">Share your experience</h6>
                         <form action="/listings/<%= listing._id %>/reviews" method="POST" novalidate class="needs-validation">
                             <div class="mb-3">
-                                <label class="form-label">Rating</label>
+                                <label class="form-label small fw-semibold">Rating</label>
                                 <fieldset class="starability-slot">
                                     <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
-                                    <input type="radio" id="first-rate1" name="review[rating]" value="1" />
-                                    <label for="first-rate1" title="Terrible">1 star</label>
-                                    <input type="radio" id="first-rate2" name="review[rating]" value="2" />
-                                    <label for="first-rate2" title="Not good">2 stars</label>
-                                    <input type="radio" id="first-rate3" name="review[rating]" value="3" />
-                                    <label for="first-rate3" title="Average">3 stars</label>
-                                    <input type="radio" id="first-rate4" name="review[rating]" value="4" />
-                                    <label for="first-rate4" title="Very good">4 stars</label>
-                                    <input type="radio" id="first-rate5" name="review[rating]" value="5" />
-                                    <label for="first-rate5" title="Amazing">5 stars</label>
+                                    <input type="radio" id="first-rate1" name="review[rating]" value="1" /><label for="first-rate1" title="Terrible">1 star</label>
+                                    <input type="radio" id="first-rate2" name="review[rating]" value="2" /><label for="first-rate2" title="Not good">2 stars</label>
+                                    <input type="radio" id="first-rate3" name="review[rating]" value="3" /><label for="first-rate3" title="Average">3 stars</label>
+                                    <input type="radio" id="first-rate4" name="review[rating]" value="4" /><label for="first-rate4" title="Very good">4 stars</label>
+                                    <input type="radio" id="first-rate5" name="review[rating]" value="5" /><label for="first-rate5" title="Amazing">5 stars</label>
                                 </fieldset>
                             </div>
-
                             <div class="mb-3">
-                                <label for="comment" class="form-label">Comment</label>
-                                <textarea name="review[comment]" id="comment" cols="30" rows="4" class="form-control custom-input" required placeholder="Tell us about the hostel, mess, or owner..."></textarea>
-                                <div class="invalid-feedback">Please add a comment before submitting.</div>
+                                <label class="form-label small fw-semibold">Comment</label>
+                                <textarea name="review[comment]" rows="3" class="form-control custom-input" required placeholder="Tell others about your experience..."></textarea>
+                                <div class="invalid-feedback">Please add a comment.</div>
                             </div>
-
-                            <button class="btn btn-teal-solid px-5 rounded-pill" id="reviewSubmitBtn">
-                                <i class="fa-solid fa-star me-2"></i>Submit Review
+                            <button class="btn btn-teal-solid rounded-pill px-4" id="reviewSubmitBtn" data-loading-text="Submitting...">
+                                <i class="fa-solid fa-paper-plane me-1"></i> Post Review
                             </button>
                         </form>
                     </div>
@@ -292,55 +295,141 @@
                         <p class="mb-0">No reviews yet. Be the first to share your experience!</p>
                     </div>
                 <% } else { %>
-                <div class="row g-4">
+                <div class="reviews-list">
                     <% for(let review of listing.reviews) { %>
-                        <div class="col-md-6">
-                            <div class="review-card-modern p-4 h-100">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h6 class="mb-0 review-author">@<%= review.author.username %></h6>
-                                    <p class="starability-result" data-rating="<%= review.rating %>"></p>
-                                </div>
-                                <p class="review-text">"<%= review.comment %>"</p>
+                    <div class="review-item" id="review-<%= review._id %>">
 
-                                <% if(currUser && currUser._id.equals(review.author._id)) { %>
-                                    <form method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
-                                        <button class="btn btn-sm btn-outline-danger border-0 mt-2">
-                                            <i class="fa-solid fa-trash-can me-1"></i>Delete Review
+                        <div class="review-item-avatar">
+                            <%= review.author.username.charAt(0).toUpperCase() %>
+                        </div>
+
+                        <div class="review-item-body">
+                            <div class="review-item-header">
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <span class="review-username">@<%= review.author.username %></span>
+                                    <p class="starability-result mb-0" data-rating="<%= review.rating %>"></p>
+                                </div>
+                                <span class="review-timestamp">
+                                    <%= review.createdAt ? new Date(review.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '' %>
+                                </span>
+                            </div>
+
+                            <p class="review-comment"><%= review.comment %></p>
+
+                            <div class="review-actions">
+                                <% const userLikedReview = currUser && review.likes.some(id => id.equals(currUser._id)); %>
+                                <% const userDislikedReview = currUser && review.dislikes.some(id => id.equals(currUser._id)); %>
+
+                                <% if (currUser) { %>
+                                    <button class="review-action-btn like-btn <%= userLikedReview ? 'active-like' : '' %>"
+                                        data-id="<%= review._id %>" data-type="review" data-action="like"
+                                        onclick="toggleVote(this)">
+                                        <i class="fa-<%= userLikedReview ? 'solid' : 'regular' %> fa-thumbs-up"></i>
+                                        <span class="like-count"><%= review.likes.length %></span>
+                                    </button>
+                                    <button class="review-action-btn dislike-btn <%= userDislikedReview ? 'active-dislike' : '' %>"
+                                        data-id="<%= review._id %>" data-type="review" data-action="dislike"
+                                        onclick="toggleVote(this)">
+                                        <i class="fa-<%= userDislikedReview ? 'solid' : 'regular' %> fa-thumbs-down"></i>
+                                        <span class="dislike-count"><%= review.dislikes.length %></span>
+                                    </button>
+                                    <button class="review-action-btn reply-trigger-btn"
+                                        onclick="toggleInlineReply('reply-box-<%= review._id %>')">
+                                        <i class="fa-solid fa-reply"></i> Reply
+                                    </button>
+                                <% } else { %>
+                                    <span class="review-vote-count"><i class="fa-regular fa-thumbs-up"></i> <%= review.likes.length %></span>
+                                    <span class="review-vote-count"><i class="fa-regular fa-thumbs-down"></i> <%= review.dislikes.length %></span>
+                                <% } %>
+
+                                <% if (currUser && currUser._id.equals(review.author._id)) { %>
+                                    <form method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE" class="d-inline">
+                                        <button class="review-action-btn text-danger">
+                                            <i class="fa-solid fa-trash-can"></i> Delete
                                         </button>
                                     </form>
                                 <% } %>
                             </div>
+
+                            <!-- Inline reply box -->
+                            <% if (currUser) { %>
+                            <div class="inline-reply-box" id="reply-box-<%= review._id %>" style="display:none;">
+                                <form method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>/replies">
+                                    <div class="d-flex gap-2 align-items-start">
+                                        <div class="reply-avatar-sm"><%= currUser.username.charAt(0).toUpperCase() %></div>
+                                        <div class="flex-grow-1">
+                                            <textarea name="text" rows="2" class="form-control custom-input reply-textarea"
+                                                placeholder="Write a reply..." required maxlength="500"></textarea>
+                                            <div class="d-flex gap-2 mt-2">
+                                                <button type="submit" class="btn btn-sm btn-teal-solid rounded-pill px-3" data-loading-text="Posting...">Reply</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill"
+                                                    onclick="toggleInlineReply('reply-box-<%= review._id %>')">Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <% } %>
+
+                            <!-- Replies thread -->
+                            <% if (review.replies && review.replies.length > 0) { %>
+                            <div class="replies-thread">
+                                <% review.replies.forEach(reply => { %>
+                                <div class="reply-item" id="reply-<%= reply._id %>">
+                                    <div class="reply-avatar-sm <%= reply.isOwnerReply ? 'owner-avatar' : '' %>">
+                                        <%= reply.author ? reply.author.username.charAt(0).toUpperCase() : '?' %>
+                                    </div>
+                                    <div class="reply-item-body">
+                                        <div class="reply-item-header">
+                                            <span class="reply-username">@<%= reply.author ? reply.author.username : 'Unknown' %></span>
+                                            <% if (reply.isOwnerReply) { %>
+                                                <span class="owner-reply-badge"><i class="fa-solid fa-user-tie"></i> Owner</span>
+                                            <% } %>
+                                            <span class="review-timestamp"><%= new Date(reply.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></span>
+                                        </div>
+                                        <p class="reply-text"><%= reply.text %></p>
+                                        <div class="review-actions">
+                                            <% const userLikedReply = currUser && reply.likes.some(id => id.equals(currUser._id)); %>
+                                            <% const userDislikedReply = currUser && reply.dislikes.some(id => id.equals(currUser._id)); %>
+                                            <% if (currUser) { %>
+                                                <button class="review-action-btn like-btn <%= userLikedReply ? 'active-like' : '' %>"
+                                                    data-id="<%= review._id %>" data-reply-id="<%= reply._id %>" data-type="reply" data-action="like"
+                                                    onclick="toggleVote(this)">
+                                                    <i class="fa-<%= userLikedReply ? 'solid' : 'regular' %> fa-thumbs-up"></i>
+                                                    <span class="like-count"><%= reply.likes.length %></span>
+                                                </button>
+                                                <button class="review-action-btn dislike-btn <%= userDislikedReply ? 'active-dislike' : '' %>"
+                                                    data-id="<%= review._id %>" data-reply-id="<%= reply._id %>" data-type="reply" data-action="dislike"
+                                                    onclick="toggleVote(this)">
+                                                    <i class="fa-<%= userDislikedReply ? 'solid' : 'regular' %> fa-thumbs-down"></i>
+                                                    <span class="dislike-count"><%= reply.dislikes.length %></span>
+                                                </button>
+                                            <% } else { %>
+                                                <span class="review-vote-count"><i class="fa-regular fa-thumbs-up"></i> <%= reply.likes.length %></span>
+                                            <% } %>
+                                            <% if (currUser && (reply.author && currUser._id.equals(reply.author._id) || (listing.owner && currUser._id.equals(listing.owner._id)))) { %>
+                                                <form method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>/replies/<%= reply._id %>?_method=DELETE" class="d-inline">
+                                                    <button class="review-action-btn text-danger"><i class="fa-solid fa-trash-can"></i></button>
+                                                </form>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% }) %>
+                            </div>
+                            <% } %>
+
                         </div>
+                    </div>
                     <% } %>
                 </div>
                 <% } %>
             </div>
         </div>
     </div>
-    <script>
-// Booking form loading state
-document.querySelector('#bookingModal form')?.addEventListener('submit', function(e) {
-    // Let Bootstrap validation run first
-    if (!this.checkValidity()) return;
-    const btn = document.getElementById('bookingSubmitBtn');
-    if (!btn) return;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Sending...';
-});
-
-// Review form loading state
-document.querySelector('#reviewForm form')?.addEventListener('submit', function(e) {
-    if (!this.checkValidity()) return;
-    const btn = document.getElementById('reviewSubmitBtn');
-    if (!btn) return;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Submitting...';
-});
-</script>
 </div>
 
-<!-- Booking Request Modal -->
-<% if (currUser && listing.owner && !listing.owner._id.equals(currUser._id)) { %>
+<% if (typeof currUser !== 'undefined' && currUser && listing.owner && !listing.owner._id.equals(currUser._id)) { %>
 <div class="modal fade" id="bookingModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content booking-modal-content">
@@ -351,9 +440,9 @@ document.querySelector('#reviewForm form')?.addEventListener('submit', function(
       <form action="/bookings/listing/<%= listing._id %>" method="POST" class="needs-validation" novalidate>
         <div class="modal-body">
 
-         <div class="mb-3">
+          <div class="mb-3">
             <label class="form-label">Price Plan</label>
-            <% const bookingPlan = PRICE_PLANS.find(p => p.key === listing.pricePlan); %>
+            <% const bookingPlan = typeof PRICE_PLANS !== 'undefined' ? PRICE_PLANS.find(p => p.key === listing.pricePlan) : null; %>
             <% if (listing.pricePlan === 'free' || listing.pricePlan === 'onetime') { %>
                 <input type="hidden" name="booking[billingPlan]" value="<%= listing.pricePlan %>">
                 <div class="form-control custom-input" style="background:var(--color-bg-light);">
@@ -363,11 +452,13 @@ document.querySelector('#reviewForm form')?.addEventListener('submit', function(
             <% } else { %>
                 <select name="booking[billingPlan]" class="form-select custom-input" required>
                     <option value="" disabled selected>Choose a plan</option>
-                    <% PRICE_PLANS.filter(p => !['free','onetime'].includes(p.key)).forEach(plan => { %>
-                        <option value="<%= plan.key %>" <%= listing.pricePlan === plan.key ? 'selected' : '' %>>
-                            <%= plan.label %>
-                        </option>
-                    <% }) %>
+                    <% if (typeof PRICE_PLANS !== 'undefined') { %>
+                        <% PRICE_PLANS.filter(p => !['free','onetime'].includes(p.key)).forEach(plan => { %>
+                            <option value="<%= plan.key %>" <%= listing.pricePlan === plan.key ? 'selected' : '' %>>
+                                <%= plan.label %>
+                            </option>
+                        <% }) %>
+                    <% } %>
                 </select>
                 <div class="invalid-feedback">Please choose a plan</div>
             <% } %>
@@ -388,7 +479,7 @@ document.querySelector('#reviewForm form')?.addEventListener('submit', function(
         </div>
         <div class="modal-footer border-0">
           <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
-       <button type="submit" class="btn btn-book-now rounded-pill px-4" id="bookingSubmitBtn">
+          <button type="submit" class="btn btn-book-now rounded-pill px-4" id="bookingSubmitBtn">
               <i class="fa-solid fa-calendar-check me-2"></i>Send Request
           </button>
         </div>
@@ -399,15 +490,100 @@ document.querySelector('#reviewForm form')?.addEventListener('submit', function(
 <% } %>
 
 <script>
-    function swapImage(newSrc) {
-        const mainImg = document.getElementById('mainDisplayImg');
-        mainImg.style.opacity = '0.4';
-        setTimeout(() => {
-            mainImg.src = newSrc;
-            mainImg.style.opacity = '1';
-        }, 150);
-    }
+function toggleInlineReply(id) {
+    const box = document.getElementById(id);
+    if (!box) return;
+    const isHidden = box.style.display === 'none';
+    box.style.display = isHidden ? 'block' : 'none';
+    if (isHidden) box.querySelector('textarea')?.focus();
+}
+
+async function toggleVote(btn) {
+    const type = btn.dataset.type;     // "review" or "reply"
+    const action = btn.dataset.action; // "like" or "dislike"
+    const reviewId = btn.dataset.id;
+    const replyId = btn.dataset.replyId;
+
+    let url = `/listings/<%= listing._id %>/reviews/${reviewId}`;
+    if (type === 'reply') url += `/replies/${replyId}`;
+    url += `/${action}`;
+
+    btn.disabled = true;
+    try {
+        const res = await fetch(url, { method: 'POST' });
+        const data = await res.json();
+
+        // Update the containing action group
+        const group = btn.closest('.review-actions');
+
+        // Update like button
+        const likeBtn = group.querySelector('.like-btn');
+        if (likeBtn) {
+            likeBtn.querySelector('.like-count').textContent = data.likes;
+            const isLiked = action === 'like' && !likeBtn.classList.contains('active-like')
+                          || (action === 'like' && likeBtn.classList.toggle('active-like'));
+            const icon = likeBtn.querySelector('i');
+            likeBtn.classList.toggle('active-like');
+            icon.className = likeBtn.classList.contains('active-like') ? 'fa-solid fa-thumbs-up' : 'fa-regular fa-thumbs-up';
+            // Remove dislike active if liking
+            if (action === 'like') {
+                const dislikeBtn = group.querySelector('.dislike-btn');
+                if (dislikeBtn) {
+                    dislikeBtn.classList.remove('active-dislike');
+                    dislikeBtn.querySelector('i').className = 'fa-regular fa-thumbs-down';
+                    dislikeBtn.querySelector('.dislike-count').textContent = data.dislikes;
+                }
+            }
+        }
+
+        // Update dislike button
+        const dislikeBtn = group.querySelector('.dislike-btn');
+        if (dislikeBtn && action === 'dislike') {
+            dislikeBtn.querySelector('.dislike-count').textContent = data.dislikes;
+            dislikeBtn.classList.toggle('active-dislike');
+            dislikeBtn.querySelector('i').className = dislikeBtn.classList.contains('active-dislike') ? 'fa-solid fa-thumbs-down' : 'fa-regular fa-thumbs-down';
+            const likeBtn2 = group.querySelector('.like-btn');
+            if (likeBtn2) {
+                likeBtn2.classList.remove('active-like');
+                likeBtn2.querySelector('i').className = 'fa-regular fa-thumbs-up';
+                likeBtn2.querySelector('.like-count').textContent = data.likes;
+            }
+        }
+    } catch(e) { console.error(e); }
+    finally { btn.disabled = false; }
+}
 </script>
+
+<script>
+function swapImage(newSrc) {
+    const mainImg = document.getElementById('mainDisplayImg');
+    if(!mainImg) return;
+    mainImg.style.opacity = '0.4';
+    setTimeout(() => {
+        mainImg.src = newSrc;
+        mainImg.style.opacity = '1';
+    }, 150);
+}
+
+// Booking form loading state
+document.querySelector('#bookingModal form')?.addEventListener('submit', function(e) {
+    if (!this.checkValidity()) return;
+    const btn = document.getElementById('bookingSubmitBtn');
+    if (!btn) return;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Sending...';
+});
+
+// Review form loading state
+document.querySelector('#reviewForm form')?.addEventListener('submit', function(e) {
+    if (!this.checkValidity()) return;
+    const btn = document.getElementById('reviewSubmitBtn');
+    if (!btn) return;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Submitting...';
+});
+</script>
+
 <script>
     const mapKey = "<%= process.env.LOCATION_IQ_KEY %>";
     const listing = <%- JSON.stringify(listing) %>;

@@ -198,25 +198,252 @@
 .btn-edit-premium { background: var(--color-primary); color: var(--color-white); border-radius: 10px; padding: 12px; font-weight: 600; }
 .btn-delete-premium { background: var(--bg-surface); color: #dc3545; border: 1.5px solid #dc3545; border-radius: 10px; padding: 12px; font-weight: 600; }
 
-/* --- REVIEWS --- */
-.review-card-modern {
+/* =================== REVIEWS — FULL REDESIGN =================== */
+
+/* Header row */
+.reviews-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.reviews-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.4rem;
+}
+
+.reviews-big-rating {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--text-color);
+    line-height: 1;
+}
+
+.reviews-stars i {
+    color: var(--color-accent);
+    font-size: 0.9rem;
+}
+
+/* Write review card */
+.write-review-card {
     background: var(--bg-surface);
-    border-radius: 20px;
-    border-left: 4px solid var(--color-accent);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.03);
-    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
-.review-author {
-    color: var(--text-color);
+/* Reviews list */
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* Each review */
+.review-item {
+    display: flex;
+    gap: 0.85rem;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.review-item:last-child {
+    border-bottom: none;
+}
+
+.review-item-avatar {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 50%;
+    background: var(--color-secondary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-weight: 700;
+    font-size: 0.95rem;
+    flex-shrink: 0;
 }
 
-.review-text {
+.review-item-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.review-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.4rem;
+}
+
+.review-username {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.review-timestamp {
+    font-size: 0.75rem;
     color: var(--color-text-muted);
-    font-style: italic;
 }
 
+.review-comment {
+    color: var(--text-color);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin: 0.4rem 0 0.6rem;
+}
+
+/* Action bar: like, dislike, reply, delete */
+.review-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    flex-wrap: wrap;
+}
+
+.review-action-btn {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.3rem 0.6rem;
+    border-radius: 50px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: background 0.15s, color 0.15s;
+}
+
+.review-action-btn:hover {
+    background: var(--color-bg-light);
+    color: var(--text-color);
+}
+
+.review-action-btn.active-like {
+    color: #2563eb;
+}
+
+.review-action-btn.active-dislike {
+    color: #dc3545;
+}
+
+.review-action-btn.reply-trigger-btn:hover {
+    color: var(--color-secondary);
+}
+
+.review-vote-count {
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    padding: 0 0.4rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* Inline reply box */
+.inline-reply-box {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    background: var(--color-bg-light);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.reply-textarea {
+    font-size: 0.85rem;
+    resize: none;
+}
+
+/* Replies thread */
+.replies-thread {
+    margin-top: 0.75rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.reply-item {
+    display: flex;
+    gap: 0.65rem;
+    padding: 0.75rem 0;
+}
+
+.reply-avatar-sm {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    border-radius: 50%;
+    background: var(--color-bg-light);
+    color: var(--text-color);
+    border: 1.5px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+}
+
+.reply-avatar-sm.owner-avatar {
+    background: var(--color-secondary);
+    color: white;
+    border-color: var(--color-secondary);
+}
+
+.reply-item-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.reply-item-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.25rem;
+}
+
+.reply-username {
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--text-color);
+}
+
+.owner-reply-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: var(--color-secondary);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 50px;
+}
+
+.reply-text {
+    font-size: 0.85rem;
+    color: var(--text-color);
+    line-height: 1.5;
+    margin: 0 0 0.3rem;
+}
+
+/* No reviews state */
 .no-reviews-yet {
     text-align: center;
     padding: 3rem 1rem;
@@ -233,6 +460,24 @@
     margin-bottom: 0.75rem;
 }
 
+/* Mobile */
+@media (max-width: 576px) {
+    .review-item {
+        gap: 0.6rem;
+    }
+    .review-item-avatar {
+        width: 34px;
+        height: 34px;
+        font-size: 0.85rem;
+    }
+    .replies-thread {
+        padding-left: 0.6rem;
+    }
+    .review-action-btn {
+        padding: 0.25rem 0.4rem;
+        font-size: 0.75rem;
+    }
+}
 /* --- MAP --- */
 .map-premium {
     height: 100%;
@@ -655,4 +900,99 @@
     .host-info-card {
         padding: 0.9rem !important;
     }
+}
+/* --- Reviewer avatar --- */
+.reviewer-avatar {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border-radius: 50%;
+    background: var(--color-secondary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+/* --- Review date --- */
+.review-date {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin: 0.25rem 0 0;
+}
+
+.review-date i {
+    margin-right: 0.25rem;
+}
+
+/* --- Small action buttons inside review cards --- */
+.btn-review-action {
+    background: none;
+    border: none;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.2rem 0;
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+
+.btn-review-action:hover {
+    opacity: 0.75;
+}
+
+/* --- Owner reply block --- */
+.owner-reply-block {
+    margin-top: 1rem;
+    padding: 0.85rem 1rem;
+    background: var(--color-bg-light);
+    border-left: 3px solid var(--color-secondary);
+    border-radius: 0 10px 10px 0;
+}
+
+.owner-reply-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.owner-reply-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: var(--color-secondary);
+    color: white;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 50px;
+}
+
+.owner-reply-text {
+    font-size: 0.88rem;
+    color: var(--text-color);
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* --- Reply trigger button --- */
+.btn-reply-trigger {
+    background: transparent;
+    border: 1.5px dashed var(--border-color);
+    color: var(--color-text-muted);
+    font-size: 0.82rem;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 0.5rem;
+    transition: all 0.2s;
+    text-align: left;
+}
+
+.btn-reply-trigger:hover {
+    border-color: var(--color-secondary);
+    color: var(--color-secondary);
+    background: rgba(10, 84, 96, 0.04);
 }

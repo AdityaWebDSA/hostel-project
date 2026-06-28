@@ -1,19 +1,23 @@
 const express = require("express");
-// mergeParams: true is REQUIRED so this file can access the :id from app.js
-const router = express.Router({ mergeParams: true }); 
+const router = express.Router({ mergeParams: true });
 const wrapAsync = require("../utils/wrapAsync.js");
-const ExpressError = require("../utils/ExpressError.js");
-const Listing = require("../models/listing.js");
-const Review = require("../models/review.js");
-const reviewController=require("../controllers/reviews.js");
-// ✅ FIX: Capitalized the 'R' in isReviewAuthor to match your middleware file
-const { validateReview, isLoggedIn, isReviewAuthor } = require("../express-middleware.js"); 
+const reviewController = require("../controllers/reviews.js");
+const { validateReview, isLoggedIn, isReviewAuthor } = require("../express-middleware.js");
 
-// POST Route: Create a Review
+// Create review
 router.post("/", isLoggedIn, validateReview, wrapAsync(reviewController.createReview));
 
-// DELETE Route: Delete a Review
-// ✅ FIX: Capitalized the 'R' here as well
+// Delete review
 router.delete("/:reviewId", isLoggedIn, isReviewAuthor, wrapAsync(reviewController.destroyReview));
+
+// Replies
+router.post("/:reviewId/replies", isLoggedIn, wrapAsync(reviewController.addReply));
+router.delete("/:reviewId/replies/:replyId", isLoggedIn, wrapAsync(reviewController.deleteReply));
+
+// Likes/dislikes — JSON API (no page reload)
+router.post("/:reviewId/like", isLoggedIn, wrapAsync(reviewController.toggleReviewLike));
+router.post("/:reviewId/dislike", isLoggedIn, wrapAsync(reviewController.toggleReviewDislike));
+router.post("/:reviewId/replies/:replyId/like", isLoggedIn, wrapAsync(reviewController.toggleReplyLike));
+router.post("/:reviewId/replies/:replyId/dislike", isLoggedIn, wrapAsync(reviewController.toggleReplyDislike));
 
 module.exports = router;
