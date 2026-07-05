@@ -5,8 +5,8 @@
 
 /* --- Cover banner --- */
 .profile-cover {
-    height: 180px;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    height: 160px;
+    background-color: var(--color-primary);
     position: relative;
     overflow: hidden;
 }
@@ -151,8 +151,7 @@
 
 .profile-stat-tile:hover {
     border-color: var(--color-secondary);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(10,84,96,0.1);
+    background: var(--color-bg-light);
 }
 
 .stat-icon {
@@ -186,8 +185,8 @@
 .profile-section-card {
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
     height: 100%;
 }
 
@@ -440,5 +439,91 @@
 
     .recent-listing-title {
         font-size: 0.82rem;
+    }
+}
+/* =================== AVATAR CROP MODAL =================== */
+
+.avatar-crop-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 12, 18, 0.85);
+    z-index: 10001;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.avatar-crop-modal.crop-modal-active {
+    display: flex;
+}
+
+.avatar-crop-dialog {
+    background: var(--bg-surface);
+    border-radius: 20px;
+    padding: 1.75rem;
+    max-width: 360px;
+    width: 100%;
+    text-align: center;
+}
+
+.avatar-crop-title {
+    font-weight: 800;
+    color: var(--text-color);
+    margin-bottom: 0.2rem;
+}
+
+.avatar-crop-hint {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1.25rem;
+}
+
+.avatar-crop-canvas-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+    background: repeating-conic-gradient(#e9edf1 0% 25%, #f6f8fa 0% 50%) 50% / 20px 20px;
+    border-radius: 16px;
+    padding: 1rem;
+}
+
+#avatarCropCanvas {
+    border-radius: 50%;
+    cursor: grab;
+    touch-action: none;
+}
+
+#avatarCropCanvas:active {
+    cursor: grabbing;
+}
+
+.avatar-zoom-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding: 0 0.5rem;
+}
+
+.avatar-zoom-row i {
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+}
+
+.avatar-zoom-row input[type="range"] {
+    flex: 1;
+    accent-color: var(--color-secondary);
+}
+
+.avatar-crop-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+@media (max-width: 420px) {
+    .avatar-crop-dialog {
+        padding: 1.25rem;
     }
 }

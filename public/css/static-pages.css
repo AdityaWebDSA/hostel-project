@@ -13,7 +13,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 70% 50%, rgba(202,164,94,0.15) 0%, transparent 70%);
+    background: rgba(10, 84, 96, 0.15);
 }
 
 .about-hero-inner {
@@ -153,10 +153,8 @@
 }
 
 .about-feature-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    border-color: var(--color-secondary);
 }
-
 .about-feature-icon {
     width: 48px;
     height: 48px;

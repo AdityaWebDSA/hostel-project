@@ -147,11 +147,64 @@ if (typeof currentSort !== 'undefined' && currentSort) params.set('sort', curren
             <i class="fa-solid fa-venus-mars"></i> Co-ed
         </a>
     </div>
-    <% if (allListings.length === 0) { %>
-        <div class="empty-state">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <h5>No listings match these filters</h5>
-            <p class="mb-0"><a href="/listings">View all listings</a> or try a different price range.</p>
+   <% if (allListings.length === 0) { %>
+        <div class="no-results-page">
+            <div class="no-results-hero">
+                <i class="fa-solid fa-map-location-dot"></i>
+                <h4>
+                    <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+                        No results for "<%= searchQuery %>"
+                    <% } else { %>
+                        No listings match these filters
+                    <% } %>
+                </h4>
+                <p>
+                    <% if (currentCategory || minPrice || maxPrice || currentGender) { %>
+                        Try removing a filter, or browse all listings below.
+                    <% } else { %>
+                        Try a different search, or explore by category below.
+                    <% } %>
+                </p>
+                <a href="/listings" class="btn no-results-reset-btn">
+                    <i class="fa-solid fa-rotate-left me-1"></i> Reset & view all listings
+                </a>
+            </div>
+
+            <div class="no-results-categories">
+                <h6>Browse by category</h6>
+                <div class="no-results-cat-grid">
+                    <% CATEGORIES.slice(0, 8).forEach(cat => { %>
+                        <a href="/listings?category=<%= cat.key %>" class="no-results-cat-pill">
+                            <i class="<%= cat.icon %>"></i>
+                            <span><%= cat.label %></span>
+                        </a>
+                    <% }) %>
+                </div>
+            </div>
+
+            <% if (typeof suggestions !== 'undefined' && suggestions.length > 0) { %>
+                <div class="no-results-suggestions">
+                    <h6>Popular listings you might like</h6>
+                    <div class="row row-cols-md-4 row-cols-2 g-3">
+                        <% suggestions.forEach(s => { %>
+                            <div class="col">
+                                <a href="/listings/<%= s._id %>" class="suggestion-card">
+                                    <div class="suggestion-img">
+                                        <img src="<%= (s.image && s.image[0]) ? cardThumb(s.image[0].url) : 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400' %>" alt="">
+                                    </div>
+                                    <div class="suggestion-info">
+                                        <div class="suggestion-title"><%= s.title %></div>
+                                        <div class="suggestion-loc"><i class="fa-solid fa-location-dot"></i> <%= s.location %></div>
+                                        <% if (s.avgRating > 0) { %>
+                                            <div class="suggestion-rating"><i class="fa-solid fa-star"></i> <%= s.avgRating %></div>
+                                        <% } %>
+                                    </div>
+                                </a>
+                            </div>
+                        <% }) %>
+                    </div>
+                </div>
+            <% } %>
         </div>
     <% } else { %>
     <div class="row row-cols-xxl-4 row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
@@ -210,7 +263,7 @@ if (typeof currentSort !== 'undefined' && currentSort) params.set('sort', curren
                                 <span class="per-month"><%= cardPlan ? cardPlan.label : '/ month' %></span>
                                 <i class="tax-info text-muted small d-none">+ 18% GST</i>
                             </p>
-                            <% if (listing.category && listing.category.length > 0) { %>
+                          <% if (listing.category && listing.category.length > 0) { %>
                                 <div class="category-pills">
                                     <% listing.category.forEach(catKey => {
                                         const cat = CATEGORIES.find(c => c.key === catKey);
@@ -218,6 +271,33 @@ if (typeof currentSort !== 'undefined' && currentSort) params.set('sort', curren
                                             <span class="category-pill"><i class="<%= cat.icon %>"></i> <%= cat.label %></span>
                                         <% } 
                                     }) %>
+                                </div>
+                            <% } %>
+
+                            <% 
+                                const cardAmenityKeys = listing.amenities || [];
+                                const cardAmenities = cardAmenityKeys
+                                    .map(key => ALL_AMENITIES[key])
+                                    .filter(Boolean);
+                            %>
+                            <% if (cardAmenities.length > 0) { %>
+                                <div class="card-amenities-wrap">
+                                    <div class="card-amenities-preview">
+                                        <% cardAmenities.slice(0, 3).forEach(am => { %>
+                                            <span class="card-amenity-tag"><i class="<%= am.icon %>"></i> <%= am.label %></span>
+                                        <% }) %>
+                                    </div>
+                                    <% if (cardAmenities.length > 3) { %>
+                                        <div class="card-amenities-extra" style="display:none;">
+                                            <% cardAmenities.slice(3).forEach(am => { %>
+                                                <span class="card-amenity-tag"><i class="<%= am.icon %>"></i> <%= am.label %></span>
+                                            <% }) %>
+                                        </div>
+                                        <button type="button" class="card-amenities-toggle" onclick="event.preventDefault(); event.stopPropagation(); toggleCardAmenities(this);">
+                                            <span>+<%= cardAmenities.length - 3 %> more</span>
+                                            <i class="fa-solid fa-chevron-down"></i>
+                                        </button>
+                                    <% } %>
                                 </div>
                             <% } %>
                         </div>
@@ -308,5 +388,18 @@ if (typeof currentSort !== 'undefined' && currentSort) params.set('sort', curren
         setTimeout(() => activeFilter.scrollIntoView({ inline: 'center', behavior: 'smooth', block: 'nearest' }), 100);
     }
 })();
+</script>
+<script>
+function toggleCardAmenities(btn) {
+    const wrap = btn.closest('.card-amenities-wrap');
+    const extra = wrap.querySelector('.card-amenities-extra');
+    const icon = btn.querySelector('i');
+    const label = btn.querySelector('span');
+    const isHidden = extra.style.display === 'none';
+
+    extra.style.display = isHidden ? 'flex' : 'none';
+    icon.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+    label.textContent = isHidden ? 'Show less' : `+${extra.children.length} more`;
+}
 </script>
 </div>

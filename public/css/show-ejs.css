@@ -46,21 +46,9 @@
 .section-label {
     color: var(--text-color);
     font-weight: 700;
-    margin-bottom: 1.5rem;
-    position: relative;
-    padding-bottom: 10px;
+    margin-bottom: 1.25rem;
+    font-size: 1.05rem;
 }
-
-.section-label::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 50px;
-    height: 4px;
-    background: var(--color-accent);
-}
-
 .reviews-avg {
     font-size: 0.95rem;
     font-weight: 700;
@@ -74,9 +62,9 @@
 
 /* --- Host info card --- */
 .host-info-card {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
+    background: var(--color-bg-light);
+    border: none;
+    border-radius: var(--radius-md);
 }
 
 .user-avatar {
@@ -109,16 +97,15 @@
 .amenity-item {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    background: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    color: var(--text-color);
+    gap: 0.6rem;
+    padding: 0.6rem 0.875rem;
+    background: var(--color-bg-light);
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.84rem;
 }
-
 .amenity-item i {
     width: 36px;
     height: 36px;
@@ -139,19 +126,20 @@
 
 /* --- THE FLOATING BOOKING CARD --- */
 .booking-card {
-    border-radius: 24px;
-    padding: 2rem;
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
-    top: 6rem;
-    z-index: 10; /* keep below .main-nav (z-index: 1000) so it never covers the navbar while scrolling */
+    top: 5.5rem;
+    z-index: 10;
+    box-shadow: var(--shadow-card);
 }
 
 .price-header {
     padding-bottom: 0.5rem;
 }
 
-.price-big { font-size: 2rem; font-weight: 800; color: var(--color-secondary); }
+.price-big { font-size: 1.75rem; font-weight: 800; color: var(--color-secondary); line-height: 1; }
 
 .rating-badge {
     background: var(--color-primary);
@@ -481,10 +469,10 @@
 /* --- MAP --- */
 .map-premium {
     height: 100%;
-    min-height: 350px;
-    border-radius: 20px;
-    border: 6px solid var(--bg-surface);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    min-height: 340px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-card);
 }
 
 .leaflet-container img {
@@ -532,26 +520,30 @@
 }
 
 /* --- Image Gallery --- */
+/* Gallery — consolidated, no conflicts */
 .bento-gallery-wrapper {
-    width: 100%;
-    border-radius: 20px;
+    position: relative;
+    max-width: 1100px;
+    margin: 1.5rem auto 1.5rem;
+    border-radius: var(--radius-xl);
     overflow: hidden;
-    height: 450px;
-    margin-top: 2rem;
+    height: 460px;
+    box-shadow: var(--shadow-elevated);
 }
 
 .bento-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
-    gap: 10px;
+    gap: 3px;
     height: 100%;
+    cursor: pointer;
 }
 
 .side-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
-    gap: 10px;
+    gap: 3px;
 }
 
 .bento-item {
@@ -560,56 +552,92 @@
     background-color: var(--color-bg-light);
 }
 
+/* All images use cover — no more contain/white bars */
 .bento-item img {
     width: 100%;
     height: 100%;
-    object-fit: contain !important;
-    background-color: var(--bg-surface);
+    object-fit: cover;
+    transition: transform 0.35s ease;
 }
 
-.bento-item img:hover {
-    transform: scale(1.05);
+.bento-item:hover img {
+    transform: scale(1.04);
 }
 
+/* Placeholder for empty slots */
 .img-placeholder {
     height: 100%;
-    background-color: var(--color-bg-light);
+    background: var(--color-bg-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-muted);
+    font-size: 1.5rem;
 }
 
+/* +N photos overlay */
 .show-all-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    inset: 0;
+    background: rgba(14, 34, 69, 0.55);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-weight: 700;
-    pointer-events: none;
-}
-
-#mainDisplayImg {
-    transition: opacity 0.2s ease-in-out;
-    background-color: var(--bg-surface);
-}
-
-.clickable-thumb {
+    font-size: 1rem;
     cursor: pointer;
-    filter: brightness(0.9);
-    transition: all 0.3s ease;
+    pointer-events: all;
+    transition: background 0.2s ease;
 }
 
-.clickable-thumb:hover {
-    filter: brightness(1.1);
-    outline: 3px solid var(--color-secondary);
-    outline-offset: -3px;
+.show-all-overlay:hover {
+    background: rgba(14, 34, 69, 0.7);
 }
 
-.main-img {
-    border-right: 2px solid var(--bg-surface);
+/* Zoom hint on main image */
+.img-zoom-hint {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    background: rgba(14, 34, 69, 0.65);
+    color: white;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.82rem;
+    opacity: 0;
+    transition: opacity 0.18s ease;
+    backdrop-filter: blur(6px);
+}
+
+.bento-item.main-img:hover .img-zoom-hint {
+    opacity: 1;
+}
+
+/* "View all photos" pill */
+.view-all-photos-btn {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    background: rgba(255,255,255,0.92);
+    color: var(--color-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 0.45rem 1rem;
+    font-weight: 700;
+    font-size: 0.82rem;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    transition: background 0.15s ease;
+    z-index: 2;
+}
+
+.view-all-photos-btn:hover {
+    background: white;
 }
 
 /* --- Category badges (from earlier pass) --- */
@@ -639,7 +667,8 @@
 /* --- Responsive --- */
 @media (max-width: 991px) {
     .bento-gallery-wrapper {
-        height: 320px;
+        height: 300px;
+        border-radius: var(--radius-lg);
     }
     .booking-card {
         top: 0;
@@ -653,15 +682,18 @@
     .listing-show-title {
         font-size: 1.5rem;
     }
+    .bento-gallery-wrapper {
+        height: 240px;
+        border-radius: 0;
+        margin-left: -12px;
+        margin-right: -12px;
+        max-width: none;
+    }
     .bento-grid {
         grid-template-columns: 1fr;
-        height: auto;
     }
     .side-grid {
         display: none;
-    }
-    .bento-gallery-wrapper {
-        height: 260px;
     }
 }
 
@@ -995,4 +1027,161 @@
     border-color: var(--color-secondary);
     color: var(--color-secondary);
     background: rgba(10, 84, 96, 0.04);
+}
+/* =================== IMPROVED GALLERY =================== */
+
+
+/* =================== LIGHTBOX =================== */
+
+.lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 12, 18, 0.97);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease;
+}
+
+.lightbox-overlay.lightbox-active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.lightbox-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    color: white;
+    flex-shrink: 0;
+}
+
+.lightbox-counter {
+    font-size: 0.9rem;
+    font-weight: 600;
+    opacity: 0.85;
+}
+
+.lightbox-close {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+}
+
+.lightbox-close:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.lightbox-main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-height: 0;
+    padding: 0 1rem;
+}
+
+.lightbox-image-wrap {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox-image-wrap img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.lightbox-nav {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: white;
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, transform 0.15s;
+    flex-shrink: 0;
+    margin: 0 0.5rem;
+}
+
+.lightbox-nav:hover {
+    background: rgba(255,255,255,0.2);
+    transform: scale(1.08);
+}
+
+.lightbox-thumbstrip {
+    display: flex;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem 1.5rem;
+    overflow-x: auto;
+    flex-shrink: 0;
+    scrollbar-width: thin;
+}
+
+.lightbox-thumb {
+    width: 64px;
+    height: 48px;
+    min-width: 64px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    opacity: 0.45;
+    transition: opacity 0.2s, outline 0.2s;
+    outline: 2px solid transparent;
+    outline-offset: -2px;
+}
+
+.lightbox-thumb:hover {
+    opacity: 0.8;
+}
+
+.lightbox-thumb.active {
+    opacity: 1;
+    outline-color: white;
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+    .lightbox-nav {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        font-size: 1rem;
+    }
+    .lightbox-thumbstrip {
+        padding: 0.75rem 1rem 1rem;
+    }
+    .lightbox-thumb {
+        width: 50px;
+        height: 38px;
+        min-width: 50px;
+    }
+    .view-all-photos-btn {
+        bottom: 10px;
+        right: 10px;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.78rem;
+    }
 }

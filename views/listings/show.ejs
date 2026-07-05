@@ -7,37 +7,141 @@
         <a href="/listings" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to listings</a>
     </div>
 
+<% 
+        const hasImages = listing.image && listing.image.length > 0;
+        const galleryImages = hasImages 
+            ? listing.image.map(img => ({ thumb: smallThumb(img.url), full: detailImage(img.url) }))
+            : [{ thumb: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267', full: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267' }];
+    %>
+<div class="container px-0 px-md-3">
     <div class="bento-gallery-wrapper mb-4">
         <div class="bento-grid">
-            <div class="bento-item main-img">
-                <% if (listing.image && listing.image.length > 0) { %>
-                    <img src="<%= detailImage(listing.image[0].url) %>" id="mainDisplayImg" alt="Main Image">
-                <% } else { %>
-                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267" id="mainDisplayImg" alt="Default Image">
-                <% } %>
+            <div class="bento-item main-img" onclick="openLightbox(0)">
+                <img src="<%= galleryImages[0].full %>" id="mainDisplayImg" alt="Main Image">
+                <div class="img-zoom-hint"><i class="fa-solid fa-expand"></i></div>
             </div>
 
             <div class="side-grid">
                 <% for(let i = 1; i < 5; i++) { %>
                     <div class="bento-item small-img">
-                        <% if (listing.image && listing.image[i]) { %>
-                            <img src="<%= smallThumb(listing.image[i].url) %>" data-full="<%= detailImage(listing.image[i].url) %>" onclick="swapImage(this.dataset.full)" class="clickable-thumb" alt="Room View">
+                        <% if (galleryImages[i]) { %>
+                            <img src="<%= galleryImages[i].thumb %>" onclick="openLightbox(<%= i %>)" class="clickable-thumb" alt="Room View">
                         <% } else { %>
                             <div class="img-placeholder d-flex align-items-center justify-content-center">
                                 <i class="fa-solid fa-camera text-muted"></i>
                             </div>
                         <% } %>
 
-                        <% if (listing.image && i === 4 && listing.image.length > 5) { %>
-                            <div class="show-all-overlay">
-                                <span>+<%= listing.image.length - 5 %> Photos</span>
+                        <% if (galleryImages[i] && i === 4 && galleryImages.length > 5) { %>
+                            <div class="show-all-overlay" onclick="openLightbox(4)">
+                                <span>+<%= galleryImages.length - 5 %> Photos</span>
                             </div>
                         <% } %>
                     </div>
                 <% } %>
             </div>
         </div>
+
+        <% if (galleryImages.length > 1) { %>
+            <button type="button" class="view-all-photos-btn" onclick="openLightbox(0)">
+                <i class="fa-solid fa-images me-2"></i>View all <%= galleryImages.length %> photos
+            </button>
+        <% } %>
     </div>
+</div>
+ 
+
+    <!-- Lightbox -->
+    <!-- Lightbox -->
+    <div id="lightboxOverlay" class="lightbox-overlay">
+        <div class="lightbox-top-bar">
+            <span id="lightboxCounter" class="lightbox-counter">1 / <%= galleryImages.length %></span>
+            <button type="button" class="lightbox-close" onclick="closeLightbox()" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="lightbox-main">
+            <button type="button" class="lightbox-nav lightbox-prev" onclick="lightboxNav(-1)" aria-label="Previous">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            <div class="lightbox-image-wrap">
+                <img id="lightboxImage" src="" alt="Listing photo">
+            </div>
+
+            <button type="button" class="lightbox-nav lightbox-next" onclick="lightboxNav(1)" aria-label="Next">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <div class="lightbox-thumbstrip" id="lightboxThumbstrip"></div>
+    </div>
+
+    <script>
+        const GALLERY_IMAGES = <%- JSON.stringify(galleryImages) %>;
+        let lightboxIndex = 0;
+
+        function buildThumbstrip() {
+            const strip = document.getElementById('lightboxThumbstrip');
+            strip.innerHTML = GALLERY_IMAGES.map((img, i) =>
+                `<img src="${img.thumb}" data-idx="${i}" class="lightbox-thumb ${i === lightboxIndex ? 'active' : ''}" onclick="setLightboxImage(${i})">`
+            ).join('');
+        }
+
+        function setLightboxImage(idx) {
+            lightboxIndex = (idx + GALLERY_IMAGES.length) % GALLERY_IMAGES.length;
+            document.getElementById('lightboxImage').src = GALLERY_IMAGES[lightboxIndex].full;
+            document.getElementById('lightboxCounter').textContent = `${lightboxIndex + 1} / ${GALLERY_IMAGES.length}`;
+            document.querySelectorAll('.lightbox-thumb').forEach((t, i) => t.classList.toggle('active', i === lightboxIndex));
+
+            // Keep active thumb scrolled into view
+            const activeThumb = document.querySelector('.lightbox-thumb.active');
+            activeThumb?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+
+        function openLightbox(idx) {
+            lightboxIndex = idx;
+            buildThumbstrip();
+            setLightboxImage(idx);
+            document.getElementById('lightboxOverlay').classList.add('lightbox-active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightboxOverlay').classList.remove('lightbox-active');
+            document.body.style.overflow = '';
+        }
+
+        function lightboxNav(dir) {
+            setLightboxImage(lightboxIndex + dir);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            const overlay = document.getElementById('lightboxOverlay');
+            if (!overlay.classList.contains('lightbox-active')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') lightboxNav(-1);
+            if (e.key === 'ArrowRight') lightboxNav(1);
+        });
+
+        // Click outside image to close
+        document.getElementById('lightboxOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'lightboxOverlay' || e.target.classList.contains('lightbox-image-wrap')) {
+                closeLightbox();
+            }
+        });
+
+        // Swipe support for mobile
+        let touchStartX = 0;
+        const lightboxMain = document.querySelector('.lightbox-main');
+        lightboxMain?.addEventListener('touchstart', (e) => touchStartX = e.touches[0].clientX);
+        lightboxMain?.addEventListener('touchend', (e) => {
+            const diff = touchStartX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50) lightboxNav(diff > 0 ? 1 : -1);
+        });
+    </script>
 
     <div class="container mt-4">
 
@@ -555,15 +659,6 @@ async function toggleVote(btn) {
 </script>
 
 <script>
-function swapImage(newSrc) {
-    const mainImg = document.getElementById('mainDisplayImg');
-    if(!mainImg) return;
-    mainImg.style.opacity = '0.4';
-    setTimeout(() => {
-        mainImg.src = newSrc;
-        mainImg.style.opacity = '1';
-    }, 150);
-}
 
 // Booking form loading state
 document.querySelector('#bookingModal form')?.addEventListener('submit', function(e) {

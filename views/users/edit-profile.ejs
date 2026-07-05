@@ -9,7 +9,7 @@
         <div class="form-container">
             <form action="/profile?_method=PUT" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
 
-                <div class="mb-4 text-center">
+              <div class="mb-4 text-center">
                     <div class="profile-avatar-lg mx-auto mb-3" id="avatarPreviewWrap">
                         <% if (user.avatar && user.avatar.url) { %>
                             <img src="<%= user.avatar.url %>" id="avatarPreview" alt="">
@@ -20,7 +20,12 @@
                     <label for="avatarInput" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
                         <i class="fa-solid fa-camera me-1"></i> Change Photo
                     </label>
-                    <input type="file" name="user[avatar]" id="avatarInput" accept="image/png, image/jpeg" class="d-none">
+                    <!-- This input is for selecting a file only — never submitted directly -->
+                    <input type="file" id="avatarInput" accept="image/png, image/jpeg" class="d-none">
+                    <!-- This hidden input holds the CROPPED result and is what actually submits -->
+                    <input type="file" name="user[avatar]" id="avatarCroppedFile" class="d-none">
+                    <small class="text-muted d-block mt-2">JPG or PNG, 5 MB max.</small>
+                    <div id="avatarUploadError" class="upload-error-box mt-2" style="max-width:320px; margin:0 auto;"></div>
                 </div>
 
                 <div class="mb-3">
@@ -49,20 +54,33 @@
                     <button class="btn add-btn px-5 py-2" data-loading-text="Saving...">Save Changes</button>
                     <a href="/profile" class="btn btn-outline-secondary px-4 py-2">Cancel</a>
                 </div>
+
+                <!-- Avatar Crop Modal -->
+<div id="avatarCropModal" class="avatar-crop-modal">
+    <div class="avatar-crop-dialog">
+        <h5 class="avatar-crop-title">Adjust your photo</h5>
+        <p class="avatar-crop-hint">Drag to reposition &middot; Scroll or use the slider to zoom</p>
+
+        <div class="avatar-crop-canvas-wrap">
+            <canvas id="avatarCropCanvas"></canvas>
+        </div>
+
+        <div class="avatar-zoom-row">
+            <i class="fa-solid fa-magnifying-glass-minus"></i>
+            <input type="range" id="avatarZoomSlider" min="0" max="100" value="0">
+            <i class="fa-solid fa-magnifying-glass-plus"></i>
+        </div>
+
+        <div class="avatar-crop-actions">
+            <button type="button" class="btn btn-outline-secondary rounded-pill px-4" onclick="cancelAvatarCrop()">Cancel</button>
+            <button type="button" class="btn btn-teal-solid rounded-pill px-4" onclick="confirmAvatarCrop()">
+                <i class="fa-solid fa-check me-1"></i> Save Photo
+            </button>
+        </div>
+    </div>
+</div>
             </form>
         </div>
     </div>
 </div>
 
-<script>
-    document.getElementById('avatarInput').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-            const wrap = document.getElementById('avatarPreviewWrap');
-            wrap.innerHTML = `<img src="${ev.target.result}" id="avatarPreview" alt="">`;
-        };
-        reader.readAsDataURL(file);
-    });
-</script>

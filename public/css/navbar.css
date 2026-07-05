@@ -1,33 +1,25 @@
-/* --- Main Navigation Bar --- */
+/* ── Main bar ── */
 .main-nav {
-    height: 4.5rem;
+    height: 4rem;
     background-color: var(--bg-navbar) !important;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 2px 15px rgba(14, 34, 69, 0.08);
-    transition: all 0.3s ease;
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-subtle) !important;
+    box-shadow: none;
     z-index: 1000;
     display: flex;
     align-items: center;
+    transition: border-color 0.2s ease;
 }
 
-.brand-text {
-    color: var(--text-color);
-    font-weight: 700;
-}
-
-/* --- Brand / Logo Section --- */
+/* ── Brand ── */
 .brand-logo {
-    width: 38px;
-    height: 38px;
-    /* background: var(--color-secondary); */
-    color: var(--color-white);
-    border-radius: 10px;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.3s ease;
     overflow: hidden;
-    /* padding: 3px; */
 }
 
 .brand-logo img {
@@ -37,7 +29,14 @@
     display: block;
 }
 
-/* --- Centered Fluid Search Bar --- */
+.brand-text {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--text-color);
+    letter-spacing: -0.02em;
+}
+
+/* ── Search bar ── */
 .search-container {
     flex: 1;
     max-width: 800px;
@@ -49,198 +48,87 @@
     background: var(--color-bg-light);
     border: 1px solid var(--border-color);
     border-radius: 50px;
-    padding: 4px;
+    padding: 3px 3px 3px 4px;
     display: flex;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    align-items: center;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .search-form:focus-within {
     background: var(--bg-surface);
-    border-color: var(--color-accent);
-    box-shadow: 0 4px 12px rgba(202, 164, 94, 0.25);
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 3px rgba(10, 84, 96, 0.1);
 }
 
 .search-input {
     border: none !important;
     background: transparent !important;
     box-shadow: none !important;
-    padding: 0 1rem;
+    padding: 0.3rem 0.85rem;
     color: var(--text-color);
     font-weight: 500;
     width: 25rem !important;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
+}
+
+.search-input::placeholder {
+    color: var(--color-text-muted);
+    font-weight: 400;
 }
 
 .search-btn {
     background: var(--color-secondary) !important;
     color: var(--color-white) !important;
     border-radius: 50% !important;
-    width: 35px;
-    height: 35px;
-    min-width: 35px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s;
     border: none;
+    font-size: 0.78rem;
+    transition: background 0.18s ease;
 }
 
 .search-btn:hover {
-    background: var(--color-accent) !important;
+    background: var(--color-primary) !important;
 }
 
-/* --- Nav Links & Buttons --- */
+/* ── Nav links ── */
 .nav-link {
-    color: var(--text-color) !important;
+    color: var(--text-secondary) !important;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.84rem;
     padding: 0.4rem 0.6rem !important;
-    transition: color 0.2s;
+    border-radius: var(--radius-sm);
+    transition: color 0.15s ease, background 0.15s ease;
 }
 
 .nav-link:hover {
-    color: var(--color-accent) !important;
-}
-
-.add-listing-btn {
-    background: rgba(10, 84, 96, 0.1);
-    color: var(--color-secondary) !important;
-    border-radius: 50px;
-    padding: 0.4rem 1rem !important;
-    border: 1px solid transparent;
-    white-space: nowrap;
-    transition: background 0.2s, color 0.2s;
-}
-
-.add-listing-btn:hover {
-    background: var(--color-secondary);
-    color: var(--color-white) !important;
-}
-
-/* --- Dark Mode Toggle Button --- */
-.theme-toggle-btn {
-    background: transparent;
-    border: none;
-    font-size: 1rem;
-    cursor: pointer;
-    width: 2.2rem;
-    height: 2.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
-
-.theme-toggle-btn:hover {
+    color: var(--text-color) !important;
     background: var(--color-bg-light);
 }
 
-/* --- Responsive --- */
-@media (min-width: 992px) {
-    .search-container {
-        flex: 1;
-        max-width: 600px;
-    }
+/* ── Add Listing button ── */
+.add-listing-btn {
+    background: var(--color-secondary);
+    color: var(--color-white) !important;
+    border-radius: 50px;
+    padding: 0.4rem 1rem !important;
+    border: none;
+    font-weight: 600;
+    font-size: 0.84rem;
+    white-space: nowrap;
+    transition: background 0.18s ease;
 }
 
-@media (max-width: 991px) {
-    .brand-text {
-        font-size: 1.2rem;
-    }
-    .search-container {
-        max-width: 350px;
-        margin: 0 0.8rem;
-    }
-    .nav-link {
-        padding: 0.5rem 0.6rem !important;
-        font-size: 0.85rem;
-    }
+.add-listing-btn:hover {
+    background: var(--color-primary) !important;
+    color: var(--color-white) !important;
 }
 
-@media (max-width: 768px) {
-    .main-nav {
-        height: 3.8rem;
-        padding: 0.2rem 0;
-    }
-
-    .container-fluid {
-        padding-left: 0.5rem !important;
-        padding-right: 0.5rem !important;
-    }
-
-    .brand-logo {
-        width: 32px;
-        height: 32px;
-        /* padding: 2px; */
-        background-color: white;
-    }
-    .brand-text {
-        display: none;
-    }
-
-    .search-container {
-        margin: 0 0.4rem;
-        flex: 1;
-        min-width: 80px;
-    }
-    .search-form {
-        padding: 2px;
-    }
-    .search-input {
-        padding: 0 0.5rem;
-        font-size: 0.75rem;
-    }
-    .search-input::placeholder {
-        color: transparent;
-    }
-    .search-btn {
-        width: 30px;
-        height: 30px;
-        min-width: 30px;
-    }
-
-    .nav-link {
-        padding: 0.2rem 0.4rem !important;
-        font-size: 0.75rem;
-    }
-
-    .add-listing-btn {
-        padding: 0.3rem 0.6rem !important;
-    }
-
-    .auth-link-bold span,
-    .add-listing-btn span,
-    .user-profile-toggle span {
-        display: none !important;
-    }
-
-    .fa-plus-circle,
-    .fa-right-to-bracket,
-    .fa-circle-user,
-    .theme-toggle-btn {
-        font-size: 1.1rem;
-        margin: 0 !important;
-    }
-
-    .nav-divider {
-        display: none;
-    }
-}
-
-@media (max-width: 400px) {
-    .search-container {
-        margin: 0 0.2rem;
-        min-width: 0;
-    }
-    .nav-link {
-        padding: 0.1rem 0.3rem !important;
-    }
-    .search-input {
-        width: 100% !important;
-        min-width: 0;
-    }
-}
-/* --- Notification bell --- */
+/* ── Notification bell ── */
 .notif-bell-link {
     position: relative;
     padding: 0.4rem 0.6rem !important;
@@ -248,31 +136,35 @@
 
 .notif-badge {
     position: absolute;
-    top: 0;
-    right: 0;
-    background: #ff385c;
+    top: 2px;
+    right: 2px;
+    background: #e74c3c;
     color: white;
-    font-size: 0.62rem;
+    font-size: 0.58rem;
     font-weight: 700;
-    min-width: 16px;
-    height: 16px;
+    min-width: 15px;
+    height: 15px;
     border-radius: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 3px;
+    padding: 0 2.5px;
+    border: 1.5px solid var(--bg-surface);
 }
 
 .notif-dropdown-menu {
     width: 280px;
     padding: 0.5rem 0;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--shadow-elevated) !important;
 }
 
 .notif-dropdown-menu .dropdown-header {
     font-weight: 700;
     color: var(--text-color);
-    font-size: 0.9rem;
-    padding: 0.5rem 1rem;
+    font-size: 0.88rem;
+    padding: 0.6rem 1rem;
 }
 
 .see-all-link {
@@ -282,11 +174,82 @@
     text-decoration: none;
 }
 
-/* --- Avatar thumbnail in navbar --- */
+/* ── Avatar ── */
 .navbar-avatar-thumb {
     width: 26px;
     height: 26px;
     border-radius: 50%;
     object-fit: cover;
     vertical-align: middle;
+    border: 1.5px solid var(--border-color);
+}
+
+/* ── Dropdown menus ── */
+.dropdown-menu {
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--shadow-elevated) !important;
+    padding: 0.4rem;
+}
+
+.dropdown-item {
+    border-radius: var(--radius-sm);
+    font-size: 0.86rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    padding: 0.5rem 0.75rem;
+    transition: background 0.12s ease;
+}
+
+.dropdown-item:hover {
+    background: var(--color-bg-light);
+    color: var(--text-color);
+}
+
+.dropdown-divider {
+    border-color: var(--border-subtle) !important;
+    margin: 0.3rem 0;
+}
+
+/* ── Responsive ── */
+@media (min-width: 992px) {
+    .search-container { max-width: 600px; }
+}
+
+@media (max-width: 991px) {
+    .brand-text { font-size: 1rem; }
+    .search-container { max-width: 350px; margin: 0 0.75rem; }
+}
+
+@media (max-width: 768px) {
+    .main-nav { height: 3.6rem; }
+
+    .container-fluid {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+    .brand-logo { width: 30px; height: 30px; }
+    .brand-text { display: none; }
+
+    .search-container { margin: 0 0.35rem; flex: 1; min-width: 60px; }
+    .search-form { padding: 2px; }
+    .search-input { padding: 0 0.5rem; font-size: 0.78rem; }
+    .search-input::placeholder { color: transparent; }
+    .search-btn { width: 28px; height: 28px; min-width: 28px; }
+
+    .nav-link { padding: 0.25rem 0.4rem !important; font-size: 0.78rem; }
+    .add-listing-btn { padding: 0.3rem 0.65rem !important; }
+
+    .auth-link-bold span,
+    .add-listing-btn span,
+    .user-profile-toggle span { display: none !important; }
+
+    .nav-divider { display: none; }
+}
+
+@media (max-width: 400px) {
+    .search-container { margin: 0 0.2rem; min-width: 0; }
+    .nav-link { padding: 0.1rem 0.25rem !important; }
+    .search-input { width: 100% !important; min-width: 0; }
 }

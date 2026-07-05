@@ -9,8 +9,8 @@
     gap: 1.25rem;
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
-    border-left: 5px solid var(--color-text-muted);
-    border-radius: 16px;
+    border-left: 4px solid var(--border-color);
+    border-radius: var(--radius-lg);
     padding: 1.25rem;
     align-items: center;
 }
@@ -198,5 +198,143 @@
     .btn-approve, .btn-reject, .btn-cancel-booking {
         padding: 0.35rem 0.75rem;
         font-size: 0.75rem;
+    }
+}
+/* =================== MOBILE POLISH — BOOKINGS PAGE =================== */
+
+@media (max-width: 576px) {
+    .booking-list {
+        gap: 0.75rem;
+    }
+
+    .booking-card-row {
+        flex-wrap: wrap;
+        padding: 0.9rem;
+        gap: 0.75rem;
+        border-radius: 14px;
+    }
+
+    .booking-img {
+        width: 64px;
+        height: 64px;
+        min-width: 64px;
+    }
+
+    .booking-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .booking-title {
+        font-size: 0.92rem;
+        white-space: normal;
+        line-height: 1.3;
+    }
+
+    .booking-meta {
+        font-size: 0.76rem;
+        line-height: 1.5;
+    }
+
+    .booking-message {
+        font-size: 0.78rem;
+    }
+
+    .booking-price {
+        font-size: 0.95rem;
+    }
+
+    /* Status + actions: full width row below the main content on mobile */
+    .booking-status-actions {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        min-width: unset;
+        padding-top: 0.6rem;
+        border-top: 1px solid var(--border-color);
+        margin-top: 0.4rem;
+    }
+
+    .status-badge {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.65rem;
+    }
+
+    /* Action buttons: bigger tap targets on mobile, side by side */
+    .btn-approve, .btn-reject, .btn-cancel-booking {
+        font-size: 0.78rem;
+        padding: 0.45rem 0.9rem;
+        min-height: 36px;
+    }
+
+    .booking-status-actions > div {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-contact-tenant {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.8rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .booking-card-row {
+        padding: 0.75rem;
+    }
+
+    .booking-img {
+        width: 56px;
+        height: 56px;
+        min-width: 56px;
+    }
+
+    .booking-title {
+        font-size: 0.85rem;
+    }
+
+    .booking-meta {
+        font-size: 0.72rem;
+    }
+
+    /* Stack action buttons vertically only on very narrow screens */
+    .booking-status-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    .booking-status-actions > div {
+        width: 100%;
+    }
+
+    .booking-status-actions > div > form,
+    .booking-status-actions form {
+        flex: 1;
+        width: 100%;
+    }
+
+    .btn-approve, .btn-reject, .btn-cancel-booking {
+        width: 100%;
+        justify-content: center;
+        display: flex;
+    }
+}
+
+/* Page heading + empty state on mobile */
+@media (max-width: 576px) {
+    .page-heading {
+        font-size: 1.2rem;
+        padding-left: 12px;
+        border-left-width: 4px;
+    }
+
+    .empty-state {
+        padding: 2.5rem 1rem;
+    }
+
+    .empty-state i {
+        font-size: 2.5rem;
     }
 }

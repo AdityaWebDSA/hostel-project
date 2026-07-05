@@ -128,25 +128,26 @@ app.use("/", staticRouter);
 // --- ERROR HANDLING ---
 
 // app.all("*") catches everything that didn't match the routes above
-app.all(/(.*)/, (req, res, next) => {
-    next(new ExpressError(404, "Page not Found!"));
-});
-// 404 handler — must be AFTER all routes, BEFORE the error handler
-app.use((req, res, next) => {
+// Line 131 — change to:
+app.all(/(.*)/, (req, res) => {
     res.status(404).render("error.ejs", {
         statusCode: 404,
         message: "The page you're looking for doesn't exist or has been moved."
     });
 });
+// Catch Multer file-size errors with a friendly message instead of a raw crash
+app.use((err, req, res, next) => {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+        req.flash("error", "One of your images is too large. Maximum file size is 8 MB.");
+        return res.redirect("back");
+    }
+    next(err);
+});
+app.use((err, req, res, next) => {
+    let { statusCode = 500, message = "Something went wrong!" } = err;
+    res.status(statusCode).render("error.ejs", { message, statusCode });
+});
 
-app.use((err, req, res, next) => {
-    let { statusCode = 500, message = "Something went wrong!" } = err;
-    res.status(statusCode).render("error.ejs", { message, statusCode });
-});
-app.use((err, req, res, next) => {
-    let { statusCode = 500, message = "Something went wrong!" } = err;
-    res.status(statusCode).render("error.ejs", { message, statusCode });
-});
 
 const port = process.env.PORT || 8080;
 

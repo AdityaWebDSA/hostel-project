@@ -1,28 +1,39 @@
 :root {
-  /* Brand colors - constant across themes */
+  /* ── Brand palette ── */
   --color-primary:   #0e2245;
   --color-secondary: #0a5460;
   --color-accent:    #caa45e;
   --color-tertiary:  #156d6d;
   --color-white:     #ffffff;
 
-  /* Theme-aware tokens - LIGHT MODE (default) */
-  --bg-page:        #ffffff;
-  --bg-surface:     #ffffff;
-  --bg-navbar:      rgba(255, 255, 255, 0.95);
-  --color-bg-light: #f4f6f8;
-  --text-color:     #0e2245;
-  --color-text-muted: #5a6b7d;
-  --border-color:   rgba(14, 34, 69, 0.1);
+  /* ── Page surfaces ── */
+  --bg-page:         #f7f8fa;   /* off-white — easier on eyes than pure white */
+  --bg-surface:      #ffffff;   /* cards, modals, inputs */
+  --bg-navbar:       rgba(255, 255, 255, 0.96);
+  --color-bg-light:  #f0f2f5;   /* subtle fills, hover states */
+
+  /* ── Typography ── */
+  --text-color:       #0e2245;
+  --text-secondary:   #3d4f6b;  /* sub-headings, labels */
+  --color-text-muted: #6b7a90;  /* timestamps, secondary info */
+
+  /* ── Borders ── */
+  --border-color:    #e4e8ef;   /* card borders, dividers — slightly more visible */
+  --border-subtle:   #eef0f4;   /* very light separators */
+
+  /* ── Shadows (minimal — used sparingly) ── */
+  --shadow-card:     0 1px 3px rgba(14, 34, 69, 0.06), 0 4px 12px rgba(14, 34, 69, 0.04);
+  --shadow-elevated: 0 4px 16px rgba(14, 34, 69, 0.10);
+
+  /* ── Spacing scale ── */
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  16px;
+  --radius-xl:  20px;
+  --radius-2xl: 24px;
 }
 
-
-/* Smooth transition when switching themes */
-body, .main-nav, .card, .f-info {
-  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
-}
-
-/* Make Bootstrap cards respect our theme */
+/* Bootstrap card override */
 .card {
   --bs-card-bg: var(--bg-surface);
   --bs-card-color: var(--text-color);

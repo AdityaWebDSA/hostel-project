@@ -153,10 +153,18 @@ let filter = category ? { category: category } : {};
   if (page > totalPages) page = totalPages;
   const skip = (page - 1) * PAGE_SIZE;
 
- const sortStage = getSortStage(sort);
+const sortStage = getSortStage(sort);
   let query = Listing.find(filter).skip(skip).limit(PAGE_SIZE);
   if (sortStage) query = query.sort(sortStage);
   const allListings = await query;
+
+  // If zero results, fetch a few popular listings as suggestions instead of a dead end
+  let suggestions = [];
+  if (allListings.length === 0) {
+      suggestions = await Listing.find({})
+          .sort({ avgRating: -1, reviewCount: -1 })
+          .limit(4);
+  }
 
   let savedIds = [];
   if (req.user) {
@@ -164,12 +172,13 @@ let filter = category ? { category: category } : {};
     const saved = await SavedListing.find({ user: req.user._id }).select("listing");
     savedIds = saved.map(s => s.listing.toString());
   }
-
-const { PRICE_PLANS } = require("../utils/pricePlans");
+const { PRICE_PLANS } = require("../utils/pricePlans");   // ADD THIS (line 176)
+const { ALL_AMENITIES } = require("../utils/amenities");  // existing (line 177)
   res.render("listings/index.ejs", {
       allListings,
       CATEGORIES,
-    PRICE_PLANS,
+      PRICE_PLANS,
+      ALL_AMENITIES,
       currentGender: req.query.gender || null,
       currentCategory: category || null,
       savedIds,
@@ -180,6 +189,7 @@ const { PRICE_PLANS } = require("../utils/pricePlans");
       totalPages,
       totalCount,
       cardThumb,
+      suggestions,
   });
 };
 
@@ -260,13 +270,23 @@ const genderFilter = req.query.gender ? { genderPolicy: req.query.gender } : {};
     if (!page || page < 1) page = 1;
     if (page > totalPages) page = totalPages;
     const skip = (page - 1) * PAGE_SIZE;
-    const pagedListings = allListings.slice(skip, skip + PAGE_SIZE);
+const pagedListings = allListings.slice(skip, skip + PAGE_SIZE);
+
+    // If the search returned nothing, suggest popular listings instead of a dead end
+    let suggestions = [];
+    if (pagedListings.length === 0) {
+        suggestions = await Listing.find({})
+            .sort({ avgRating: -1, reviewCount: -1 })
+            .limit(4);
+    }
 
 const { PRICE_PLANS } = require("../utils/pricePlans");
+const { ALL_AMENITIES } = require("../utils/amenities");
     res.render("listings/index.ejs", {
         allListings: pagedListings,
         CATEGORIES,
         PRICE_PLANS,
+        ALL_AMENITIES,
         currentCategory: null,
         currentGender: req.query.gender || null,
         searchQuery: query,
@@ -279,6 +299,7 @@ const { PRICE_PLANS } = require("../utils/pricePlans");
         totalPages,
         totalCount,
         cardThumb,
+        suggestions,
     });
 };
 

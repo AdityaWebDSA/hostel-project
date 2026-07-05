@@ -13,7 +13,7 @@
     padding: 2.5rem 2rem;
     width: 100%;
     max-width: 440px;
-    box-shadow: 0 8px 40px rgba(14, 34, 69, 0.08);
+    box-shadow: var(--shadow-card);
 }
 
 .auth-header {
@@ -109,20 +109,18 @@
 
 /* Auth button */
 .auth-btn {
-    background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
+    background: var(--color-secondary);
     color: white !important;
     border: none;
-    border-radius: 12px;
-    padding: 0.8rem;
+    border-radius: var(--radius-md);
+    padding: 0.75rem;
     font-weight: 700;
-    font-size: 1rem;
-    letter-spacing: 0.3px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    font-size: 0.95rem;
+    transition: background 0.18s ease;
 }
 
 .auth-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(10, 84, 96, 0.3);
+    background: var(--color-primary);
     color: white !important;
 }
 

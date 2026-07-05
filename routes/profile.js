@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const wrapAsync = require("../utils/wrapAsync.js");
-const { isLoggedIn } = require("../express-middleware.js");
+const { isLoggedIn } = require("../middleware.js");
 const profileController = require("../controllers/profile.js");
 
 const multer = require('multer');

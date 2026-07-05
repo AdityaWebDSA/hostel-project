@@ -66,10 +66,17 @@
                 </div>
 
                 <!-- Images -->
-                <div class="mb-3">
-                    <label class="form-label">Upload Photos</label>
-                    <input name="listing[image]" type="file" class="form-control custom-input" multiple required>
-                    <div class="invalid-feedback">Please upload at least one photo</div>
+               <div class="mb-3">
+                    <label for="image" class="form-label">Upload Listing Images</label>
+                    <input name="listing[image]" id="imageInput" type="file" class="form-control custom-input" multiple required
+                        accept="image/png, image/jpeg"
+                        data-validate-images
+                        data-error-target="imageUploadErrors"
+                        data-preview-target="imageUploadPreview">
+                    <div class="invalid-feedback">A listing needs at least one photo</div>
+                    <small class="text-muted d-block mt-1">Up to 5 images, JPG/PNG, 8 MB max each.</small>
+                    <div id="imageUploadErrors" class="upload-error-box"></div>
+                    <div id="imageUploadPreview" class="upload-preview-row"></div>
                 </div>
 
                 <!-- Price + Plan inline -->

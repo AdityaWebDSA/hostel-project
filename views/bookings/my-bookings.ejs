@@ -74,18 +74,18 @@
                             <div class="d-flex gap-2">
                                 <form action="/bookings/<%= b._id %>/respond" method="POST">
                                     <input type="hidden" name="action" value="confirm">
-                                    <button type="submit" class="btn-approve">Approve</button>
+                          <button type="submit" class="btn-approve" data-loading-text="Approving...">Approve</button>
                                 </form>
                                 <form action="/bookings/<%= b._id %>/respond" method="POST">
                                     <input type="hidden" name="action" value="reject">
-                                    <button type="submit" class="btn-reject">Decline</button>
+                                  <button type="submit" class="btn-reject" data-loading-text="Declining...">Decline</button>
                                 </form>
                             </div>
                         <% } %>
 
                         <% if (role === "tenant" && (b.status === "pending" || b.status === "confirmed")) { %>
                             <form action="/bookings/<%= b._id %>/cancel" method="POST" onsubmit="return confirm('Cancel this booking request?');">
-                                <button type="submit" class="btn-cancel-booking">Cancel</button>
+                               <button type="submit" class="btn-cancel-booking" data-loading-text="Cancelling...">Cancel</button>
                             </form>
                         <% } %>
 

@@ -86,8 +86,15 @@
                             <% }) %>
                         <% } %>
                     </div>
-                    <label class="form-label">Add More Images</label>
-                    <input name="listing[image]" type="file" class="form-control custom-input" multiple>
+                   <label for="image" class="form-label">Add More Images</label>
+                    <input name="listing[image]" id="imageInput" type="file" class="form-control custom-input" multiple
+                        accept="image/png, image/jpeg"
+                        data-validate-images
+                        data-error-target="imageUploadErrors"
+                        data-preview-target="imageUploadPreview">
+                    <small class="text-muted d-block">Click the trash icon above to mark an existing image for removal. Up to 5 new images, JPG/PNG, 8 MB max each.</small>
+                    <div id="imageUploadErrors" class="upload-error-box"></div>
+                    <div id="imageUploadPreview" class="upload-preview-row"></div>
                 </div>
 
                 <!-- Price + Plan inline -->
