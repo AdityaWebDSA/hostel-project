@@ -24,7 +24,7 @@
 .auth-logo {
     width: 56px;
     height: 56px;
-    background: var(--color-secondary);
+    /* background: var(--color-secondary); */
     border-radius: 14px;
     display: flex;
     align-items: center;
@@ -184,4 +184,94 @@
     input:focus {
         scroll-margin-top: 100px;
     }
+}
+.forgot-link {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-secondary);
+    text-decoration: none;
+}
+
+.forgot-link:hover {
+    color: var(--color-primary);
+}
+/* ── Google OAuth button ── */
+.google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    background: var(--bg-surface);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 0.7rem;
+    font-weight: 600;
+    font-size: 0.92rem;
+    text-decoration: none;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.google-btn:hover {
+    background: var(--color-bg-light);
+    border-color: #4285f4;
+    color: var(--text-color);
+}
+
+/* ── Or divider ── */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.75rem 0;
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-color);
+}
+
+/* ── Forgot link ── */
+.forgot-link {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-secondary);
+    text-decoration: none;
+}
+
+.forgot-link:hover { color: var(--color-primary); }
+
+/* ── Verify banner (in boilerplate, above content) ── */
+.verify-banner {
+    background: #fffbeb;
+    color: #78560a;
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 0.5rem 1.25rem;
+    text-align: center;
+    border-bottom: 1px solid #fde68a;
+}
+
+.verify-banner i { color: var(--color-accent); margin-right: 0.3rem; }
+
+.verify-banner-btn {
+    background: none;
+    border: 1px solid var(--color-accent);
+    border-radius: 50px;
+    padding: 0.15rem 0.7rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #78560a;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.verify-banner-btn:hover {
+    background: var(--color-accent);
+    color: white;
 }

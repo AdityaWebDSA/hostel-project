@@ -6,7 +6,7 @@ const userSchema = new Schema({
     email: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
     },
     bio: {
         type: String,
@@ -20,14 +20,36 @@ const userSchema = new Schema({
         default: "",
     },
     avatar: {
-        url: {
-            type: String,
-            default: "",
-        },
-        filename: {
-            type: String,
-            default: "",
-        },
+        url:      { type: String, default: "" },
+        filename: { type: String, default: "" },
+        googleId: {
+        type: String,
+        default: null,
+    },
+    },
+
+    // ── Email verification ──
+    isVerified: {
+        type: Boolean,
+        default: false,
+    },
+    verificationToken: {
+        type: String,
+        default: null,
+    },
+    verificationTokenExpires: {
+        type: Date,
+        default: null,
+    },
+
+    // ── Password reset ──
+    resetPasswordToken: {
+        type: String,
+        default: null,
+    },
+    resetPasswordExpires: {
+        type: Date,
+        default: null,
     },
 });
 

@@ -13,6 +13,7 @@ const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 // Models & Utils
 const User = require("./models/user.js");
@@ -88,7 +89,52 @@ passport.use(new LocalStrategy(User.authenticate()));
 
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "http://localhost:8080/auth/google/callback",
+}, async (accessToken, refreshToken, profile, done) => {
+    try {
+        // Check if user already exists with this Google ID
+        let user = await User.findOne({ googleId: profile.id });
+        if (user) return done(null, user);
 
+        // Check if email already registered (local account)
+        const email = profile.emails?.[0]?.value || "";
+        user = await User.findOne({ email });
+        if (user) {
+            // Link Google to existing account
+            user.googleId = profile.id;
+            if (!user.avatar?.url && profile.photos?.[0]?.value) {
+                user.avatar = { url: profile.photos[0].value, filename: "google" };
+            }
+            user.isVerified = true; // Google already verified the email
+            await user.save();
+            return done(null, user);
+        }
+
+        // Create new user from Google profile
+        const username = profile.displayName.replace(/\s+/g, "").toLowerCase()
+            + Math.floor(Math.random() * 1000);
+
+        const newUser = new User({
+            email,
+            username,
+            googleId: profile.id,
+            isVerified: true, // Google accounts are pre-verified
+            avatar: profile.photos?.[0]?.value
+                ? { url: profile.photos[0].value, filename: "google" }
+                : { url: "", filename: "" },
+        });
+
+        // Register without a password (Google handles auth)
+        await newUser.save();
+        return done(null, newUser);
+
+    } catch (err) {
+        return done(err, null);
+    }
+}));
 // Global Locals Middleware
 app.use(async (req, res, next) => {
     res.locals.success = req.flash("success");

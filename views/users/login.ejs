@@ -11,6 +11,14 @@
             <p>Log in to your UniNest account</p>
         </div>
 
+        <!-- Google Login -->
+        <a href="/auth/google" class="btn google-btn w-100 mb-3">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="18">
+            Continue with Google
+        </a>
+
+        <div class="auth-divider"><span>or</span></div>
+
         <form action="/login" method="POST" class="needs-validation" novalidate>
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
@@ -22,7 +30,7 @@
                 <div class="invalid-feedback">Please enter your username</div>
             </div>
 
-            <div class="mb-4">
+            <div class="mb-2">
                 <label for="password" class="form-label">Password</label>
                 <div class="input-group-custom">
                     <i class="fa-solid fa-lock"></i>
@@ -35,7 +43,12 @@
                 <div class="invalid-feedback">Please enter your password</div>
             </div>
 
-        <button type="submit" class="btn auth-btn w-100" data-loading-text="Logging in...">Log In</button>
+            <div class="text-end mb-3">
+                <a href="/forgot-password" class="forgot-link">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="btn auth-btn w-100"
+                data-loading-text="Logging in...">Log In</button>
         </form>
 
         <div class="auth-footer">
@@ -48,12 +61,7 @@
 function togglePassword(inputId, btn) {
     const input = document.getElementById(inputId);
     const icon = btn.querySelector('i');
-    if (input.type === 'password') {
-        input.type = 'text';
-        icon.className = 'fa-solid fa-eye-slash';
-    } else {
-        input.type = 'password';
-        icon.className = 'fa-solid fa-eye';
-    }
+    input.type = input.type === 'password' ? 'text' : 'password';
+    icon.className = input.type === 'password' ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
 }
 </script>

@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="/css/navbar.css">
 <nav class="navbar navbar-expand border-bottom sticky-top main-nav">
+
   <div class="container-fluid px-2 px-md-5 d-flex align-items-center">
 
    <a class="navbar-brand d-flex align-items-center me-2 me-md-4" href="/listings">
@@ -24,6 +25,13 @@
             <li><a class="dropdown-item py-2" href="/bookings"><i class="fa-solid fa-clipboard-list me-2"></i> My Requests</a></li>
             <li><a class="dropdown-item py-2" href="/bookings/received"><i class="fa-solid fa-inbox me-2"></i> Requests Received</a></li>
           </ul>
+          <% if (currUser && !currUser.isVerified) { %>
+    <a href="#" onclick="event.preventDefault();"
+       title="Email not verified — check your inbox"
+       class="nav-link px-1 ms-1 verify-dot-link">
+        <i class="fa-solid fa-circle-exclamation" style="color:#caa45e;font-size:0.9rem;"></i>
+    </a>
+<% } %>
         </div>
 
         <a class="nav-link custom-nav-link" href="/saved">

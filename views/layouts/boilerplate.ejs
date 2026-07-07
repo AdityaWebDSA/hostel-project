@@ -24,6 +24,15 @@
 </head>
 <body>
     <%- include("../includes/navbar.ejs") %>
+    <% if (typeof currUser !== 'undefined' && currUser && !currUser.isVerified) { %>
+    <div class="verify-banner">
+        <i class="fa-solid fa-envelope"></i>
+        Verify your email to keep your account secure.
+        <form action="/resend-verification" method="POST" class="d-inline ms-2">
+            <button type="submit" class="verify-banner-btn">Resend verification</button>
+        </form>
+    </div>
+    <% } %>
     
     <div class="container mt-3">
         <%- include("../includes/flash.ejs") %>
@@ -43,7 +52,8 @@
     <script src="/js/avatarCropper.js"></script>
   <script src="/js/notifications.js"></script>
     <script src="/js/search-map.js"></script>   ← ADD here (after notifications.js)
+    
 </body>
 
-</body>
+
 </html>
