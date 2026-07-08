@@ -1,45 +1,99 @@
-<% layout("/layouts/boilerplate")%>
-<link rel="stylesheet" href="/css/bookings.css">
+<% layout("/layouts/boilerplate") %>
 <link rel="stylesheet" href="/css/notifications.css">
 
-<div class="index-container">
-    <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
-        <h3 class="page-heading mb-0">Notifications</h3>
-        <% if (notifications.some(n => !n.read)) { %>
-            <form action="/notifications/mark-all-read" method="POST">
-                <button type="submit" class="btn btn-outline-secondary btn-sm rounded-pill px-3">Mark all as read</button>
-            </form>
-        <% } %>
-    </div>
+<%
+    const unreadCount = notifications.filter(n => !n.read).length;
+    const formatTime = (date) => {
+        const value = new Date(date);
+        const diffMs = Date.now() - value.getTime();
+        const minute = 60 * 1000;
+        const hour = 60 * minute;
+        const day = 24 * hour;
 
-    <% if (notifications.length === 0) { %>
-        <div class="empty-state">
-            <i class="fa-regular fa-bell"></i>
-            <h5>No notifications yet</h5>
-            <p class="mb-0">You'll see updates about reviews and bookings here.</p>
-        </div>
-    <% } else { %>
-        <div class="notification-list">
-            <% notifications.forEach(n => { %>
-                <form action="/notifications/<%= n._id %>/read" method="POST" class="notification-form">
-                    <button type="submit" class="notification-item <%= n.read ? '' : 'unread' %>">
-                        <div class="notification-icon">
-                            <% if (n.type === 'new_review') { %>
-                                <i class="fa-solid fa-star"></i>
-                            <% } else if (n.type === 'booking_request') { %>
-                                <i class="fa-solid fa-calendar-plus"></i>
-                            <% } else { %>
-                                <i class="fa-solid fa-calendar-check"></i>
-                            <% } %>
-                        </div>
-                        <div class="notification-text">
-                            <p><%= n.message %></p>
-                            <small><%= n.createdAt.toLocaleString() %></small>
-                        </div>
-                        <% if (!n.read) { %><span class="unread-dot"></span><% } %>
+        if (diffMs < minute) return "Just now";
+        if (diffMs < hour) return `${Math.floor(diffMs / minute)}m ago`;
+        if (diffMs < day) return `${Math.floor(diffMs / hour)}h ago`;
+        if (diffMs < 7 * day) return `${Math.floor(diffMs / day)}d ago`;
+        return value.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+    };
+
+    const typeMeta = {
+        new_review: {
+            icon: "fa-star",
+            label: "Review",
+            className: "notif-review",
+        },
+        booking_request: {
+            icon: "fa-calendar-plus",
+            label: "Booking request",
+            className: "notif-request",
+        },
+        booking_status: {
+            icon: "fa-calendar-check",
+            label: "Booking update",
+            className: "notif-status",
+        },
+    };
+%>
+
+<section class="notifications-page">
+    <div class="notifications-shell">
+        <header class="notifications-header">
+            <div>
+                <p class="notifications-kicker">Inbox</p>
+                <h1>Notifications</h1>
+                <p class="notifications-summary">
+                    <%= unreadCount %> unread <%= unreadCount === 1 ? "update" : "updates" %>
+                </p>
+            </div>
+
+            <% if (unreadCount > 0) { %>
+                <form action="/notifications/mark-all-read" method="POST">
+                    <button type="submit" class="mark-all-btn">
+                        <i class="fa-solid fa-check-double"></i>
+                        <span>Mark all read</span>
                     </button>
                 </form>
-            <% }) %>
-        </div>
-    <% } %>
-</div>
+            <% } %>
+        </header>
+
+        <% if (notifications.length === 0) { %>
+            <div class="notifications-empty">
+                <div class="notifications-empty-icon">
+                    <i class="fa-regular fa-bell"></i>
+                </div>
+                <h2>No notifications yet</h2>
+                <p>Updates about reviews, bookings, and listing activity will appear here.</p>
+            </div>
+        <% } else { %>
+            <div class="notification-list" aria-label="Notifications">
+                <% notifications.forEach(n => {
+                    const meta = typeMeta[n.type] || typeMeta.booking_status;
+                %>
+                    <form action="/notifications/<%= n._id %>/read" method="POST" class="notification-form">
+                        <button type="submit" class="notification-item <%= n.read ? 'is-read' : 'is-unread' %> <%= meta.className %>">
+                            <span class="notification-status-bar" aria-hidden="true"></span>
+
+                            <span class="notification-icon" aria-hidden="true">
+                                <i class="fa-solid <%= meta.icon %>"></i>
+                            </span>
+
+                            <span class="notification-content">
+                                <span class="notification-row-top">
+                                    <span class="notification-label"><%= meta.label %></span>
+                                    <span class="notification-time"><%= formatTime(n.createdAt) %></span>
+                                </span>
+                                <span class="notification-message"><%= n.message %></span>
+                            </span>
+
+                            <span class="notification-action" aria-hidden="true">
+                                <% if (!n.read) { %><span class="unread-dot"></span><% } %>
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </span>
+                        </button>
+                    </form>
+                <% }) %>
+            </div>
+        <% } %>
+    </div>
+</section>

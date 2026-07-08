@@ -20,6 +20,8 @@ module.exports.signup = async (req, res, next) => {
     try {
         let { username, email, password } = req.body;
         username = username.trim();
+// Store usernames in lowercase to prevent duplicate Aditya/aditya accounts
+// Display name can differ but login is case-insensitive
         email = email.trim().toLowerCase();
 
         if (username.length < 3) {
@@ -37,26 +39,18 @@ module.exports.signup = async (req, res, next) => {
             return res.redirect("/signup");
         }
 
-        const token = generateToken();
         const newUser = new User({
             email,
             username,
-            isVerified: false,
-            verificationToken: token,
-            verificationTokenExpires: Date.now() + 24 * 60 * 60 * 1000, // 24h
+            isVerified: true,
         });
 
         const registeredUser = await User.register(newUser, password);
 
         // Send verification email (non-blocking — don't fail signup if email fails)
-        const verifyUrl = `${siteUrl(req)}/verify-email/${token}`;
-        sendVerificationEmail(email, username, verifyUrl).catch(err =>
-            console.error("Verification email failed:", err)
-        );
-
         req.login(registeredUser, (err) => {
             if (err) return next(err);
-            req.flash("success", `Welcome to UniNest, ${username}! Check your email to verify your account.`);
+            req.flash("success", `Welcome to UniNest, ${username}!`);
             res.redirect("/listings");
         });
 
@@ -131,19 +125,28 @@ module.exports.sendResetEmail = async (req, res) => {
     // Always show the same message whether the email exists or not
     // This prevents user enumeration attacks
     const user = await User.findOne({ email });
-    if (user) {
-        const token = generateToken();
-        user.resetPasswordToken = token;
-        user.resetPasswordExpires = Date.now() + 60 * 60 * 1000; // 1 hour
-        await user.save();
-
-        const resetUrl = `${siteUrl(req)}/reset-password/${token}`;
-        sendPasswordResetEmail(email, user.username, resetUrl).catch(err =>
-            console.error("Password reset email failed:", err)
-        );
+    if (!user) {
+        req.flash("success", "If that email is registered, a reset link has been sent. Check your inbox.");
+        return res.redirect("/forgot-password");
     }
 
-    req.flash("success", "If that email is registered, a reset link has been sent. Check your inbox.");
+    const token = generateToken();
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = Date.now() + 60 * 60 * 1000; // 1 hour
+    await user.save();
+
+    try {
+        const resetUrl = `${siteUrl(req)}/reset-password/${token}`;
+        await sendPasswordResetEmail(user.email, user.username, resetUrl);
+        req.flash("success", "Password reset link sent to your registered email address.");
+    } catch (err) {
+        console.error("Password reset email failed:", err.message);
+        user.resetPasswordToken = null;
+        user.resetPasswordExpires = null;
+        await user.save();
+        req.flash("error", "We could not send the reset email right now. Please check the email service settings and try again.");
+    }
+
     res.redirect("/forgot-password");
 };
 

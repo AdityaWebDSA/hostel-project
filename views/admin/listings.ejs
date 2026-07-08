@@ -1,0 +1,80 @@
+<% layout("/layouts/boilerplate") %>
+<link rel="stylesheet" href="/css/admin.css">
+
+<div class="admin-wrapper">
+    <div class="admin-sidebar">
+        <div class="admin-brand">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Admin Panel</span>
+        </div>
+        <nav class="admin-nav">
+            <a href="/admin" class="admin-nav-item">
+                <i class="fa-solid fa-gauge"></i> Dashboard
+            </a>
+            <a href="/admin/listings" class="admin-nav-item active">
+                <i class="fa-solid fa-list-ul"></i> Listings
+            </a>
+            <a href="/admin/users" class="admin-nav-item">
+                <i class="fa-solid fa-users"></i> Users
+            </a>
+            <a href="/listings" class="admin-nav-item">
+                <i class="fa-solid fa-arrow-left"></i> Back to Site
+            </a>
+        </nav>
+    </div>
+
+    <div class="admin-content">
+        <div class="admin-page-header">
+            <h1>Listings <span class="admin-count">(<%= total %>)</span></h1>
+        </div>
+
+        <form method="GET" action="/admin/listings" class="admin-search-form">
+            <input type="text" name="search" value="<%= search %>"
+                placeholder="Search by title or location..." class="admin-search-input">
+            <button type="submit" class="admin-search-btn">Search</button>
+            <% if (search) { %><a href="/admin/listings" class="admin-clear-btn">Clear</a><% } %>
+        </form>
+
+        <div class="admin-table-card">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Location</th>
+                        <th>Owner</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% listings.forEach(l => { %>
+                    <tr>
+                        <td><a href="/listings/<%= l._id %>" target="_blank"><%= l.title %></a></td>
+                        <td><%= l.location %></td>
+                        <td><%= l.owner ? l.owner.username : '—' %></td>
+                        <td>₹<%= l.price ? l.price.toLocaleString('en-IN') : '—' %></td>
+                        <td>
+                            <div class="admin-actions">
+                                <a href="/listings/<%= l._id %>" target="_blank" class="admin-btn-view">View</a>
+                                <form method="POST" action="/admin/listings/<%= l._id %>?_method=DELETE"
+                                    onsubmit="return confirm('Delete this listing permanently?')">
+                                    <button type="submit" class="admin-btn-delete">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+
+        <% if (totalPages > 1) { %>
+        <div class="admin-pagination">
+            <% for (let p = 1; p <= totalPages; p++) { %>
+                <a href="/admin/listings?page=<%= p %>&search=<%= search %>"
+                    class="admin-page-btn <%= p === page ? 'active' : '' %>"><%= p %></a>
+            <% } %>
+        </div>
+        <% } %>
+    </div>
+</div>

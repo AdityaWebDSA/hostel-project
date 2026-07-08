@@ -11,7 +11,17 @@ module.exports.isLoggedIn = (req, res, next) => {
     } 
     next();
 };
-
+module.exports.isAdmin = (req, res, next) => {
+    if (!req.isAuthenticated()) {
+        req.flash("error", "You must be logged in.");
+        return res.redirect("/login");
+    }
+    if (!req.user.isAdmin) {
+        req.flash("error", "Access denied.");
+        return res.redirect("/listings");
+    }
+    next();
+};
 module.exports.saveRedirectUrl = (req, res, next) => {
     if(req.session.redirectUrl){
         res.locals.redirectUrl = req.session.redirectUrl;

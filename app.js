@@ -141,6 +141,15 @@ app.use(async (req, res, next) => {
     res.locals.error = req.flash("error");
     res.locals.currUser = req.user || null;
 
+    // Block banned users immediately
+    if (req.user?.isBanned) {
+        req.logOut((err) => {
+            req.flash("error", "Your account has been suspended.");
+            res.redirect("/login");
+        });
+        return;
+    }
+
     if (req.user) {
         const Notification = require("./models/notification.js");
         res.locals.unreadNotifCount = await Notification.countDocuments({ user: req.user._id, read: false });
@@ -158,6 +167,8 @@ app.get("/", (req, res) => {
 });
 
 // 2. Resource Routes
+const adminRouter = require("./routes/admin.js");
+app.use("/admin", adminRouter);
 app.use("/listings", listingRouter);
 const savedRouter = require("./routes/saved.js");
 app.use("/saved", savedRouter);
@@ -171,6 +182,7 @@ const notificationRouter = require("./routes/notifications.js");
 app.use("/notifications", notificationRouter);
 const staticRouter = require("./routes/static.js");
 app.use("/", staticRouter);
+
 // --- ERROR HANDLING ---
 
 // app.all("*") catches everything that didn't match the routes above

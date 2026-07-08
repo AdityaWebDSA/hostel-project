@@ -20,12 +20,20 @@ const userSchema = new Schema({
         default: "",
     },
     avatar: {
-        url:      { type: String, default: "" },
+        url: { type: String, default: "" },
         filename: { type: String, default: "" },
-        googleId: {
+    },
+    googleId: {
         type: String,
         default: null,
     },
+    isAdmin: {
+        type: Boolean,
+        default: false,
+    },
+    isBanned: {
+        type: Boolean,
+        default: false,
     },
 
     // ── Email verification ──
@@ -53,6 +61,11 @@ const userSchema = new Schema({
     },
 });
 
-userSchema.plugin(passportLocalMongoose);
+userSchema.plugin(passportLocalMongoose, {
+    usernameUnique: true,
+    usernameField: "username",
+    // Lowercase before saving/comparing so Aditya and aditya are the same person
+    usernameLowerCase: true,
+});
 
 module.exports = mongoose.model("User", userSchema);

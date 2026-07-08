@@ -1,13 +1,16 @@
 <link rel="stylesheet" href="/css/navbar.css">
+<%
+  const navUser = typeof currUser !== "undefined" ? currUser : null;
+  const navUnreadNotifCount = typeof unreadNotifCount !== "undefined" ? unreadNotifCount : 0;
+%>
 <nav class="navbar navbar-expand border-bottom sticky-top main-nav">
-
   <div class="container-fluid px-2 px-md-5 d-flex align-items-center">
-
-   <a class="navbar-brand d-flex align-items-center me-2 me-md-4" href="/listings">
-    <div class="brand-logo">
+    <a class="navbar-brand d-flex align-items-center me-2 me-md-4" href="/listings">
+      <div class="brand-logo">
         <img src="/ui_material/main_logo.png" alt="Logo">
-    </div>
-    <span class="brand-text d-none d-lg-inline ms-2">UniNest</span></a>
+      </div>
+      <span class="brand-text d-none d-lg-inline ms-2">UniNest</span>
+    </a>
 
     <div class="d-flex align-items-center me-auto primary-links">
       <a class="nav-link custom-nav-link" href="/listings">
@@ -15,7 +18,7 @@
         <span class="ms-1 d-none d-md-inline">Home</span>
       </a>
 
-      <% if(currUser) { %>
+      <% if (navUser) { %>
         <div class="nav-item dropdown">
           <a class="nav-link custom-nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="fa-solid fa-calendar-days"></i>
@@ -25,13 +28,6 @@
             <li><a class="dropdown-item py-2" href="/bookings"><i class="fa-solid fa-clipboard-list me-2"></i> My Requests</a></li>
             <li><a class="dropdown-item py-2" href="/bookings/received"><i class="fa-solid fa-inbox me-2"></i> Requests Received</a></li>
           </ul>
-          <% if (currUser && !currUser.isVerified) { %>
-    <a href="#" onclick="event.preventDefault();"
-       title="Email not verified — check your inbox"
-       class="nav-link px-1 ms-1 verify-dot-link">
-        <i class="fa-solid fa-circle-exclamation" style="color:#caa45e;font-size:0.9rem;"></i>
-    </a>
-<% } %>
         </div>
 
         <a class="nav-link custom-nav-link" href="/saved">
@@ -45,14 +41,13 @@
       <form class="d-flex search-form" role="search" action="/listings/search" method="GET">
         <input name="q" class="form-control search-input" type="search" placeholder="Search your area..." aria-label="Search">
         <button class="btn search-btn" type="submit" id="searchSubmitBtn">
-            <i class="fa-solid fa-magnifying-glass" id="searchBtnIcon"></i>
+          <i class="fa-solid fa-magnifying-glass" id="searchBtnIcon"></i>
         </button>
       </form>
     </div>
 
     <div class="navbar-nav ms-auto align-items-center flex-row">
-
-      <% if(currUser) { %>
+      <% if (navUser) { %>
         <a class="nav-link add-listing-btn me-2 me-md-3" href="/listings/new">
           <i class="fa-solid fa-plus-circle"></i>
           <span class="ms-1 d-none d-sm-inline">Add Listing</span>
@@ -61,8 +56,8 @@
         <div class="nav-item dropdown me-1">
           <a class="nav-link notif-bell-link" href="#" role="button" data-bs-toggle="dropdown" id="notifBellToggle">
             <i class="fa-solid fa-bell"></i>
-            <% if (unreadNotifCount > 0) { %>
-              <span class="notif-badge" id="notifBadge"><%= unreadNotifCount > 9 ? '9+' : unreadNotifCount %></span>
+            <% if (navUnreadNotifCount > 0) { %>
+              <span class="notif-badge" id="notifBadge"><%= navUnreadNotifCount > 9 ? "9+" : navUnreadNotifCount %></span>
             <% } %>
           </a>
           <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 notif-dropdown-menu">
@@ -80,7 +75,7 @@
 
       <div class="nav-divider d-none d-md-block"></div>
 
-      <% if(!currUser) { %>
+      <% if (!navUser) { %>
         <a class="nav-link auth-link d-none d-sm-inline ms-1" href="/signup">Sign up</a>
         <a class="nav-link auth-link-bold ms-1 p-1 p-md-2" href="/login">
           <span class="d-none d-sm-inline">Log in</span>
@@ -88,15 +83,15 @@
         </a>
       <% } %>
 
-      <% if(currUser) { %>
+      <% if (navUser) { %>
         <div class="nav-item dropdown ms-1">
           <a class="nav-link dropdown-toggle user-profile-toggle p-1 p-md-2" href="#" role="button" data-bs-toggle="dropdown">
-             <% if (currUser.avatar && currUser.avatar.url) { %>
-                <img src="<%= currUser.avatar.url %>" class="navbar-avatar-thumb" alt="">
-             <% } else { %>
-                <i class="fa-regular fa-circle-user"></i>
-             <% } %>
-             <span class="d-none d-lg-inline ms-1"><%= currUser.username %></span>
+            <% if (navUser.avatar && navUser.avatar.url) { %>
+              <img src="<%= navUser.avatar.url %>" class="navbar-avatar-thumb" alt="">
+            <% } else { %>
+              <i class="fa-regular fa-circle-user"></i>
+            <% } %>
+            <span class="d-none d-lg-inline ms-1"><%= navUser.username %></span>
           </a>
           <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
             <li><a class="dropdown-item py-2" href="/profile"><i class="fa-solid fa-user me-2"></i> Profile</a></li>
@@ -111,6 +106,7 @@
       <% } %>
     </div>
   </div>
+
   <script>
 document.querySelector('.search-form')?.addEventListener('submit', function() {
     const btn = document.getElementById('searchSubmitBtn');
@@ -120,5 +116,5 @@ document.querySelector('.search-form')?.addEventListener('submit', function() {
     btn.disabled = true;
     btn.style.opacity = '0.8';
 });
-</script>
+  </script>
 </nav>

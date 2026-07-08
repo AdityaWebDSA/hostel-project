@@ -1,9 +1,14 @@
-<% if (success && success.length) { %>
+<%
+    const flashSuccess = typeof success !== "undefined" ? success : [];
+    const flashError = typeof error !== "undefined" ? error : [];
+%>
+
+<% if (flashSuccess && flashSuccess.length) { %>
     <div class="flash-toast flash-success" role="alert" id="flashToast">
         <div class="flash-icon"><i class="fa-solid fa-circle-check"></i></div>
         <div class="flash-body">
             <div class="flash-title">Success</div>
-            <div class="flash-message"><%= success %></div>
+            <div class="flash-message"><%= Array.isArray(flashSuccess) ? flashSuccess.join(", ") : flashSuccess %></div>
         </div>
         <button class="flash-close" onclick="dismissFlash(this)" aria-label="Close">
             <i class="fa-solid fa-xmark"></i>
@@ -12,12 +17,12 @@
     </div>
 <% } %>
 
-<% if (error && error.length) { %>
+<% if (flashError && flashError.length) { %>
     <div class="flash-toast flash-error" role="alert" id="flashToast">
         <div class="flash-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
         <div class="flash-body">
             <div class="flash-title">Something went wrong</div>
-            <div class="flash-message"><%= error %></div>
+            <div class="flash-message"><%= Array.isArray(flashError) ? flashError.join(", ") : flashError %></div>
         </div>
         <button class="flash-close" onclick="dismissFlash(this)" aria-label="Close">
             <i class="fa-solid fa-xmark"></i>

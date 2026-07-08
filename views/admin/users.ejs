@@ -1,0 +1,87 @@
+<% layout("/layouts/boilerplate") %>
+<link rel="stylesheet" href="/css/admin.css">
+
+<div class="admin-wrapper">
+    <div class="admin-sidebar">
+        <div class="admin-brand">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Admin Panel</span>
+        </div>
+        <nav class="admin-nav">
+            <a href="/admin" class="admin-nav-item">
+                <i class="fa-solid fa-gauge"></i> Dashboard
+            </a>
+            <a href="/admin/listings" class="admin-nav-item">
+                <i class="fa-solid fa-list-ul"></i> Listings
+            </a>
+            <a href="/admin/users" class="admin-nav-item active">
+                <i class="fa-solid fa-users"></i> Users
+            </a>
+            <a href="/listings" class="admin-nav-item">
+                <i class="fa-solid fa-arrow-left"></i> Back to Site
+            </a>
+        </nav>
+    </div>
+
+    <div class="admin-content">
+        <div class="admin-page-header">
+            <h1>Users <span class="admin-count">(<%= total %>)</span></h1>
+        </div>
+
+        <form method="GET" action="/admin/users" class="admin-search-form">
+            <input type="text" name="search" value="<%= search %>"
+                placeholder="Search by username or email..." class="admin-search-input">
+            <button type="submit" class="admin-search-btn">Search</button>
+            <% if (search) { %><a href="/admin/users" class="admin-clear-btn">Clear</a><% } %>
+        </form>
+
+        <div class="admin-table-card">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Verified</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% users.forEach(u => { %>
+                    <tr class="<%= u.isBanned ? 'banned-row' : '' %>">
+                        <td><%= u.username %> <% if (u.isAdmin) { %><span class="admin-badge badge-admin">Admin</span><% } %></td>
+                        <td><%= u.email %></td>
+                        <td><span class="admin-badge <%= u.isVerified ? 'badge-success' : 'badge-warn' %>"><%= u.isVerified ? 'Yes' : 'No' %></span></td>
+                        <td><span class="admin-badge <%= u.isBanned ? 'badge-danger' : 'badge-success' %>"><%= u.isBanned ? 'Banned' : 'Active' %></span></td>
+                        <td>
+                            <div class="admin-actions">
+                                <% if (!u.isAdmin) { %>
+                                    <% if (u.isBanned) { %>
+                                        <form method="POST" action="/admin/users/<%= u._id %>/unban">
+                                            <button type="submit" class="admin-btn-view">Unban</button>
+                                        </form>
+                                    <% } else { %>
+                                        <form method="POST" action="/admin/users/<%= u._id %>/ban"
+                                            onsubmit="return confirm('Ban <%= u.username %>?')">
+                                            <button type="submit" class="admin-btn-delete">Ban</button>
+                                        </form>
+                                    <% } %>
+                                <% } %>
+                            </div>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+
+        <% if (totalPages > 1) { %>
+        <div class="admin-pagination">
+            <% for (let p = 1; p <= totalPages; p++) { %>
+                <a href="/admin/users?page=<%= p %>&search=<%= search %>"
+                    class="admin-page-btn <%= p === page ? 'active' : '' %>"><%= p %></a>
+            <% } %>
+        </div>
+        <% } %>
+    </div>
+</div>
