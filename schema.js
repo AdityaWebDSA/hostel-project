@@ -33,3 +33,17 @@ module.exports.reviewSchema = Joi.object({
         comment: Joi.string().required()
     }).required()
 });
+
+module.exports.userSignupSchema = Joi.object({
+    username: Joi.string()
+        .pattern(/^[a-zA-Z0-9]+$/)
+        .min(3)
+        .required(),
+    email: Joi.string()
+        .email({ minDomainSegments: 2, tlds: { allow: true } })
+        .required(),
+    password: Joi.string()
+        .min(6)
+        .pattern(new RegExp('^(?=.*[0-9])(?=.*[!@#$%^&*])'))
+        .required()
+});

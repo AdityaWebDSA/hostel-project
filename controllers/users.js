@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const User = require("../models/user.js");
 const { sendVerificationEmail, sendPasswordResetEmail } = require("../utils/mailer.js");
+const { userSignupSchema } = require("../schema.js");
 
 // ── Helpers ──
 function generateToken() {
@@ -18,24 +19,31 @@ module.exports.renderSignupForm = (req, res) => {
 
 module.exports.signup = async (req, res, next) => {
     try {
-        let { username, email, password } = req.body;
-        username = username.trim();
-// Store usernames in lowercase to prevent duplicate Aditya/aditya accounts
-// Display name can differ but login is case-insensitive
-        email = email.trim().toLowerCase();
-
-        if (username.length < 3) {
-            req.flash("error", "Username must be at least 3 characters.");
+        const { error } = userSignupSchema.validate(req.body, { abortEarly: false });
+        if (error) {
+            const message = error.details.map((detail) => detail.message).join(". ");
+            req.flash("error", message);
             return res.redirect("/signup");
         }
-        if (password.length < 6) {
-            req.flash("error", "Password must be at least 6 characters.");
+
+        let { username, email, password } = req.body;
+        username = username.trim();
+        email = email.trim().toLowerCase();
+
+        if (username.length < 3 || !/^[a-zA-Z0-9]+$/.test(username)) {
+            req.flash("error", "Username must be at least 3 characters and contain only letters/numbers.");
             return res.redirect("/signup");
         }
 
         const existingEmail = await User.findOne({ email });
         if (existingEmail) {
             req.flash("error", "An account with that email already exists.");
+            return res.redirect("/signup");
+        }
+
+        const existingUsername = await User.findOne({ username });
+        if (existingUsername) {
+            req.flash("error", "That username is already taken. Please choose another.");
             return res.redirect("/signup");
         }
 

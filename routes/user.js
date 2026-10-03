@@ -4,11 +4,22 @@ const wrapAsync = require("../utils/wrapAsync.js");
 const passport = require("passport");
 const { saveRedirectUrl, isLoggedIn } = require("../middleware.js");
 const userController = require("../controllers/users.js");
+const { userSignupSchema } = require("../schema.js");
+
+const validateUserSignup = (req, res, next) => {
+    const { error } = userSignupSchema.validate(req.body, { abortEarly: false });
+    if (error) {
+        const message = error.details.map((detail) => detail.message).join(". ");
+        req.flash("error", message);
+        return res.redirect("/signup");
+    }
+    next();
+};
 
 // Signup
 router.route("/signup")
     .get(userController.renderSignupForm)
-    .post(wrapAsync(userController.signup));
+    .post(validateUserSignup, wrapAsync(userController.signup));
 
 // Login
 router.route("/login")

@@ -88,64 +88,63 @@ if (typeof currentSort !== 'undefined' && currentSort) params.set('sort', curren
             <a href="/listings" class="ms-2 clear-filter-link"><i class="fa-solid fa-xmark"></i> Clear</a>
         </div>
     <% } %>
-<div class="near-me-bar mb-3">
-        <button id="nearMeBtn" type="button" class="btn near-me-btn">
-            <i class="fa-solid fa-location-crosshairs"></i>
-            <span>Show listings near me</span>
-        </button>
-        <span id="nearMeStatus" class="near-me-status"></span>
-    </div>
-    <div class="result-info d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3 px-1">
-        <h6 class="text-muted fw-normal mb-0">
+    <div class="listing-toolbar">
+        <div class="near-me-bar">
+            <button id="nearMeBtn" type="button" class="btn near-me-btn">
+                <i class="fa-solid fa-location-crosshairs"></i>
+                <span>Show listings near me</span>
+            </button>
+            <span id="nearMeStatus" class="near-me-status"></span>
+        </div>
+        <div class="result-info">
+            <span>
             Showing <%= allListings.length %> available place<%= allListings.length === 1 ? '' : 's' %>
             <% if (currentCategory) {
                 const activeCat = CATEGORIES.find(c => c.key === currentCategory);
             %>
                 for "<%= activeCat ? activeCat.label : currentCategory %>"
             <% } %>
-            <% if (currentCategory || minPrice || maxPrice) { %>
+            <% if (currentCategory || minPrice || maxPrice || currentGender) { %>
                 <a href="<%= (typeof searchQuery !== 'undefined' && searchQuery) ? '/listings/search?q=' + encodeURIComponent(searchQuery) : '/listings' %>" class="ms-2 clear-filter-link"><i class="fa-solid fa-xmark"></i> Clear filters</a>
             <% } %>
-        </h6>
+            </span>
+        </div>
 
-        <div class="d-flex align-items-center gap-2">
-            <form method="GET" action="<%= (typeof searchQuery !== 'undefined' && searchQuery) ? '/listings/search' : '/listings' %>" class="price-range-form d-flex align-items-center gap-1">
+        <div class="gender-filter-bar">
+            <span class="gender-filter-label">Gender</span>
+            <a href="<%= buildUrl({ gender: null, page: null }) %>" class="gender-pill <%= !currentGender ? 'active' : '' %>">All</a>
+            <a href="<%= buildUrl({ gender: 'boys', page: null }) %>" class="gender-pill <%= currentGender === 'boys' ? 'active' : '' %>">
+                <i class="fa-solid fa-mars"></i> Boys
+            </a>
+            <a href="<%= buildUrl({ gender: 'girls', page: null }) %>" class="gender-pill <%= currentGender === 'girls' ? 'active' : '' %>">
+                <i class="fa-solid fa-venus"></i> Girls
+            </a>
+            <a href="<%= buildUrl({ gender: 'coed', page: null }) %>" class="gender-pill <%= currentGender === 'coed' ? 'active' : '' %>">
+                <i class="fa-solid fa-venus-mars"></i> Co-ed
+            </a>
+        </div>
+
+        <form method="GET" action="<%= (typeof searchQuery !== 'undefined' && searchQuery) ? '/listings/search' : '/listings' %>" class="price-range-form">
                 <% if (typeof searchQuery !== 'undefined' && searchQuery) { %><input type="hidden" name="q" value="<%= searchQuery %>"><% } %>
                 <% if (currentCategory) { %><input type="hidden" name="category" value="<%= currentCategory %>"><% } %>
                 <% if (currentSort) { %><input type="hidden" name="sort" value="<%= currentSort %>"><% } %>
+                <% if (currentGender) { %><input type="hidden" name="gender" value="<%= currentGender %>"><% } %>
                 <input type="number" name="minPrice" value="<%= minPrice %>" placeholder="Min ₹" class="price-input" min="0">
                 <span class="text-muted small">–</span>
                 <input type="number" name="maxPrice" value="<%= maxPrice %>" placeholder="Max ₹" class="price-input" min="0">
                 <button type="submit" class="btn btn-sm price-apply-btn">Go</button>
-            </form>
+        </form>
 
-            <div class="dropdown">
-                <button class="btn btn-sm btn-outline-secondary dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown">
-                    Sort by: <%= sortLabels[activeSort] %>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <% Object.keys(sortLabels).forEach(key => { %>
-                        <li><a class="dropdown-item <%= activeSort === key ? 'active' : '' %>" href="<%= buildUrl({ sort: key === 'recommended' ? null : key, page: null }) %>"><%= sortLabels[key] %></a></li>
-                    <% }) %>
-                </ul>
-            </div>
+        <div class="dropdown sort-control">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                Sort by: <%= sortLabels[activeSort] %>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <% Object.keys(sortLabels).forEach(key => { %>
+                    <li><a class="dropdown-item <%= activeSort === key ? 'active' : '' %>" href="<%= buildUrl({ sort: key === 'recommended' ? null : key, page: null }) %>"><%= sortLabels[key] %></a></li>
+                <% }) %>
+            </ul>
         </div>
-    </div>
-<!-- Gender filter pills -->
-    <div class="gender-filter-bar mb-2">
-        <span class="gender-filter-label">Filter:</span>
-        <a href="<%= buildUrl({ gender: null, page: null }) %>" class="gender-pill <%= !currentGender ? 'active' : '' %>">
-            All
-        </a>
-        <a href="<%= buildUrl({ gender: 'boys', page: null }) %>" class="gender-pill boys <%= currentGender === 'boys' ? 'active' : '' %>">
-            <i class="fa-solid fa-mars"></i> Boys
-        </a>
-        <a href="<%= buildUrl({ gender: 'girls', page: null }) %>" class="gender-pill girls <%= currentGender === 'girls' ? 'active' : '' %>">
-            <i class="fa-solid fa-venus"></i> Girls
-        </a>
-        <a href="<%= buildUrl({ gender: 'coed', page: null }) %>" class="gender-pill coed <%= currentGender === 'coed' ? 'active' : '' %>">
-            <i class="fa-solid fa-venus-mars"></i> Co-ed
-        </a>
     </div>
    <% if (allListings.length === 0) { %>
         <div class="no-results-page">

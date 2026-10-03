@@ -90,6 +90,27 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+async function generateUniqueGoogleUsername(profile) {
+    const email = profile.emails?.[0]?.value || "";
+    const base = (profile.displayName || email.split("@")[0] || "googleuser")
+        .replace(/\s+/g, "")
+        .replace(/[^a-zA-Z0-9]/g, "")
+        .toLowerCase();
+
+    let username = base || "googleuser";
+    let attempt = 0;
+
+    while (await User.findOne({ username })) {
+        username = `${base}_${Math.floor(1000 + Math.random() * 9000)}`;
+        attempt += 1;
+        if (attempt > 20) {
+            username = `${base}_${Date.now().toString().slice(-5)}`;
+        }
+    }
+
+    return username;
+}
+
 const googleCallbackURL = process.env.GOOGLE_CALLBACK_URL || "http://localhost:8080/auth/google/callback";
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -97,39 +118,34 @@ passport.use(new GoogleStrategy({
     callbackURL: googleCallbackURL,
 }, async (accessToken, refreshToken, profile, done) => {
     try {
-        // Check if user already exists with this Google ID
+        const email = profile.emails?.[0]?.value || "";
+
         let user = await User.findOne({ googleId: profile.id });
         if (user) return done(null, user);
 
-        // Check if email already registered (local account)
-        const email = profile.emails?.[0]?.value || "";
         user = await User.findOne({ email });
         if (user) {
-            // Link Google to existing account
             user.googleId = profile.id;
             if (!user.avatar?.url && profile.photos?.[0]?.value) {
                 user.avatar = { url: profile.photos[0].value, filename: "google" };
             }
-            user.isVerified = true; // Google already verified the email
+            user.isVerified = true;
             await user.save();
             return done(null, user);
         }
 
-        // Create new user from Google profile
-        const username = profile.displayName.replace(/\s+/g, "").toLowerCase()
-            + Math.floor(Math.random() * 1000);
+        const username = await generateUniqueGoogleUsername(profile);
 
         const newUser = new User({
             email,
             username,
             googleId: profile.id,
-            isVerified: true, // Google accounts are pre-verified
+            isVerified: true,
             avatar: profile.photos?.[0]?.value
                 ? { url: profile.photos[0].value, filename: "google" }
                 : { url: "", filename: "" },
         });
 
-        // Register without a password (Google handles auth)
         await newUser.save();
         return done(null, newUser);
 

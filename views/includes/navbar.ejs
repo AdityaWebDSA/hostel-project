@@ -3,8 +3,8 @@
   const navUser = typeof currUser !== "undefined" ? currUser : null;
   const navUnreadNotifCount = typeof unreadNotifCount !== "undefined" ? unreadNotifCount : 0;
 %>
-<nav class="navbar navbar-expand border-bottom sticky-top main-nav">
-  <div class="container-fluid px-2 px-md-5 d-flex align-items-center">
+<nav class="navbar navbar-expand border-bottom sticky-top main-nav solid-sticky-header">
+  <div class="container-fluid px-2 px-md-4 d-flex align-items-center">
     <a class="navbar-brand d-flex align-items-center me-2 me-md-4" href="/listings">
       <div class="brand-logo">
         <img src="/ui_material/main_logo.png" alt="Logo">
@@ -37,8 +37,8 @@
       <% } %>
     </div>
 
-    <div class="navbar-nav mx-auto search-container">
-      <form class="d-flex search-form" role="search" action="/listings/search" method="GET">
+    <div class="navbar-nav search-container">
+      <form class="d-flex search-form" role="search" aria-label="Listing search" action="/listings/search" method="GET">
         <input name="q" class="form-control search-input" type="search" placeholder="Search your area..." aria-label="Search">
         <button class="btn search-btn" type="submit" id="searchSubmitBtn">
           <i class="fa-solid fa-magnifying-glass" id="searchBtnIcon"></i>
