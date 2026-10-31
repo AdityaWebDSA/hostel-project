@@ -235,9 +235,16 @@ if (typeof currentSort !== 'undefined' && currentSort) params.set('sort', curren
                 <i class="<%= (typeof savedIds !== 'undefined' && savedIds.includes(listing._id.toString())) ? 'fa-solid fa-heart saved' : 'fa-regular fa-heart' %>"></i>
             </button>
         <% } else { %>
-            <a href="/login" class="wishlist-icon" onclick="event.stopPropagation();">
+            <span
+                class="wishlist-icon"
+                role="button"
+                tabindex="0"
+                aria-label="Login to save listing"
+                onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/login';"
+                onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); event.stopPropagation(); window.location.href='/login'; }"
+            >
                 <i class="fa-regular fa-heart"></i>
-            </a>
+            </span>
         <% } %>
     </div>
 </div>
@@ -293,7 +300,7 @@ if (typeof currentSort !== 'undefined' && currentSort) params.set('sort', curren
                                             <% }) %>
                                         </div>
                                         <button type="button" class="card-amenities-toggle" onclick="event.preventDefault(); event.stopPropagation(); toggleCardAmenities(this);">
-                                            <span>+<%= cardAmenities.length - 3 %> more</span>
+                                           <span>+<%= cardAmenities.length - 3 %> more</span>
                                             <i class="fa-solid fa-chevron-down"></i>
                                         </button>
                                     <% } %>
@@ -326,7 +333,7 @@ if (typeof currentSort !== 'undefined' && currentSort) params.set('sort', curren
                 %>
                 <% let lastShown = 0; %>
                 <% pages.forEach(p => { %>
-                    <% if (p - lastShown > 1) { %>
+                 <% if (p - lastShown > 1) { %>
                         <li class="page-item disabled"><span class="page-link">…</span></li>
                     <% } %>
                     <li class="page-item <%= p === currentPage ? 'active' : '' %>">

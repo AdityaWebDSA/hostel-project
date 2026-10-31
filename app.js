@@ -1,5 +1,6 @@
-if (process.env.NODE_ENV != "production") {
-    require("dotenv").config();
+// Load environment variables in development
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
 }
 
 const express = require("express");
@@ -9,7 +10,7 @@ const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const session = require("express-session");
-const MongoStore = require("connect-mongo"); 
+const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -17,217 +18,291 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 // Models & Utils
 const User = require("./models/user.js");
+const Notification = require("./models/notification.js");
 const ExpressError = require("./utils/ExpressError.js");
-const wrapAsync = require("./utils/wrapAsync.js");
 
 // Routes
 const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
+const adminRouter = require("./routes/admin.js");
+const savedRouter = require("./routes/saved.js");
+const bookingRouter = require("./routes/bookings.js");
+const profileRouter = require("./routes/profile.js");
+const notificationRouter = require("./routes/notifications.js");
+const staticRouter = require("./routes/static.js");
 
+// Environment Variables
 const dbUrl = process.env.ATLASDB_URL;
-console.log("Database URL Check:", dbUrl ? "URL Found" : "URL MISSING!");
+const secret = process.env.SECRET;
+const port = process.env.PORT || 8080;
+const isProduction = process.env.NODE_ENV === "production";
 
-// Database Connection
-main()
-    .then(() => {
-        console.log("Connected to DB");
-    })
-    .catch((err) => {
-        console.log("DB Connection Error:", err);
-    });
-
-async function main() {
-    if (!dbUrl) {
-        throw new Error("ATLASDB_URL is not defined in .env file");
-    }
-    await mongoose.connect(dbUrl);
+// Validate Environment Variables
+if (!dbUrl) {
+  throw new Error("ATLASDB_URL is missing in environment variables.");
 }
 
-// View Engine & Middleware
+if (!secret) {
+  throw new Error("SECRET is missing in environment variables.");
+}
+
+// Trust Proxy for Vercel/Render HTTPS session cookies
+if (isProduction) {
+  app.set("trust proxy", 1);
+}
+
+// Connect to MongoDB
+mongoose
+  .connect(dbUrl)
+  .then(() => console.log("Connected to MongoDB successfully."))
+  .catch((err) => console.error("MongoDB Connection Error:", err));
+
+// View Engine Configuration
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+
+// General Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
-app.use(express.static(path.join(__dirname, "/public")));
+app.use(express.static(path.join(__dirname, "public")));
 
-// Mongo Session Store
+// MongoDB Session Store
 const store = MongoStore.create({
-    mongoUrl: dbUrl,
-    crypto: {
-        secret: process.env.SECRET,
-    },
-    touchAfter: 24 * 3600,
+  mongoUrl: dbUrl,
+  crypto: { secret },
+  touchAfter: 24 * 3600,
 });
+
 store.on("error", (err) => {
-    console.log("ERROR in MONGO SESSION STORE", err);
+  console.error("MongoDB Session Store Error:", err);
 });
 
 // Session Configuration
 const sessionOptions = {
-    store,
-    secret: process.env.SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-        expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        // Added: Ensures cookies work over HTTPS on Render
-        secure: process.env.NODE_ENV === "production", 
-    },
+  store,
+  secret,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: "lax",
+  },
 };
 
-// Passport & Session Middleware
+// Session & Flash Middleware
 app.use(session(sessionOptions));
 app.use(flash());
 
+// Passport Configuration
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
 
+passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+// Google Username Generator
 async function generateUniqueGoogleUsername(profile) {
-    const email = profile.emails?.[0]?.value || "";
-    const base = (profile.displayName || email.split("@")[0] || "googleuser")
-        .replace(/\s+/g, "")
-        .replace(/[^a-zA-Z0-9]/g, "")
-        .toLowerCase();
+  const email = profile.emails?.[0]?.value || "";
 
-    let username = base || "googleuser";
-    let attempt = 0;
+  const base =
+    (profile.displayName || email.split("@")[0] || "googleuser")
+      .replace(/\s+/g, "")
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .toLowerCase() || "googleuser";
 
-    while (await User.findOne({ username })) {
-        username = `${base}_${Math.floor(1000 + Math.random() * 9000)}`;
-        attempt += 1;
-        if (attempt > 20) {
-            username = `${base}_${Date.now().toString().slice(-5)}`;
-        }
-    }
+  let username = base;
+  let attempt = 0;
 
-    return username;
+  while (await User.findOne({ username })) {
+    attempt++;
+    username = `${base}_${attempt}`;
+  }
+
+  return username;
 }
 
-const googleCallbackURL = process.env.GOOGLE_CALLBACK_URL || "http://localhost:8080/auth/google/callback";
-passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: googleCallbackURL,
-}, async (accessToken, refreshToken, profile, done) => {
-    try {
-        const email = profile.emails?.[0]?.value || "";
+// Google OAuth Configuration
+const googleCallbackURL =
+  process.env.GOOGLE_CALLBACK_URL ||
+  "http://localhost:8080/auth/google/callback";
 
-        let user = await User.findOne({ googleId: profile.id });
-        if (user) return done(null, user);
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: googleCallbackURL,
+      },
+      async (accessToken, refreshToken, profile, done) => {
+        try {
+          const email = profile.emails?.[0]?.value?.toLowerCase();
 
-        user = await User.findOne({ email });
-        if (user) {
+          if (!email) {
+            return done(
+              new Error("Google account does not provide an email address."),
+            );
+          }
+
+          let user = await User.findOne({ googleId: profile.id });
+
+          if (user) return done(null, user);
+
+          user = await User.findOne({ email });
+
+          if (user) {
             user.googleId = profile.id;
+
             if (!user.avatar?.url && profile.photos?.[0]?.value) {
-                user.avatar = { url: profile.photos[0].value, filename: "google" };
+              user.avatar = {
+                url: profile.photos[0].value,
+                filename: "google",
+              };
             }
+
             user.isVerified = true;
             await user.save();
+
             return done(null, user);
-        }
+          }
 
-        const username = await generateUniqueGoogleUsername(profile);
+          const username = await generateUniqueGoogleUsername(profile);
 
-        const newUser = new User({
+          const newUser = new User({
             email,
             username,
             googleId: profile.id,
             isVerified: true,
             avatar: profile.photos?.[0]?.value
-                ? { url: profile.photos[0].value, filename: "google" }
-                : { url: "", filename: "" },
-        });
+              ? {
+                  url: profile.photos[0].value,
+                  filename: "google",
+                }
+              : {
+                  url: "",
+                  filename: "",
+                },
+          });
 
-        await newUser.save();
-        return done(null, newUser);
+          await newUser.save();
 
-    } catch (err) {
-        return done(err, null);
-    }
-}));
+          return done(null, newUser);
+        } catch (err) {
+          return done(err);
+        }
+      },
+    ),
+  );
+} else {
+  console.warn(
+    "Google OAuth disabled: GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET is missing.",
+  );
+}
+
 // Global Locals Middleware
 app.use(async (req, res, next) => {
-    res.locals.success = req.flash("success");
-    res.locals.error = req.flash("error");
-    res.locals.currUser = req.user || null;
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
+  res.locals.currUser = req.user || null;
 
-    // Block banned users immediately
-    if (req.user?.isBanned) {
-        req.logOut((err) => {
-            req.flash("error", "Your account has been suspended.");
-            res.redirect("/login");
-        });
-        return;
-    }
+  if (req.user?.isBanned) {
+    return req.logOut((err) => {
+      if (err) return next(err);
 
+      req.flash("error", "Your account has been suspended.");
+
+      return res.redirect("/login");
+    });
+  }
+
+  try {
     if (req.user) {
-        const Notification = require("./models/notification.js");
-        res.locals.unreadNotifCount = await Notification.countDocuments({ user: req.user._id, read: false });
+      res.locals.unreadNotifCount = await Notification.countDocuments({
+        user: req.user._id,
+        read: false,
+      });
     } else {
-        res.locals.unreadNotifCount = 0;
+      res.locals.unreadNotifCount = 0;
     }
+
     next();
+  } catch (err) {
+    next(err);
+  }
 });
 
-// --- ROUTES ---
+// ========================================
+// ROUTES
+// ========================================
 
-// 1. Root Route Redirect - (Place this ABOVE other routes)
 app.get("/", (req, res) => {
-    res.redirect("/listings");
+  res.redirect("/listings");
 });
 
-// 2. Resource Routes
-const adminRouter = require("./routes/admin.js");
 app.use("/admin", adminRouter);
 app.use("/listings", listingRouter);
-const savedRouter = require("./routes/saved.js");
 app.use("/saved", savedRouter);
-const bookingRouter = require("./routes/bookings.js");
 app.use("/bookings", bookingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
-const profileRouter = require("./routes/profile.js");
 app.use("/profile", profileRouter);
-const notificationRouter = require("./routes/notifications.js");
 app.use("/notifications", notificationRouter);
-const staticRouter = require("./routes/static.js");
 app.use("/", staticRouter);
 
-// --- ERROR HANDLING ---
+// ========================================
+// ERROR HANDLING
+// ========================================
 
-// app.all("*") catches everything that didn't match the routes above
-// Line 131 — change to:
-app.all(/(.*)/, (req, res) => {
-    res.status(404).render("error.ejs", {
-        statusCode: 404,
-        message: "The page you're looking for doesn't exist or has been moved."
-    });
+// Express 5 compatible wildcard route
+app.all("/{*splat}", (req, res, next) => {
+  next(
+    new ExpressError(
+      404,
+      "The page you're looking for doesn't exist or has been moved.",
+    ),
+  );
 });
-// Catch Multer file-size errors with a friendly message instead of a raw crash
+
+// Multer File Size Error Handler
 app.use((err, req, res, next) => {
-    if (err.code === 'LIMIT_FILE_SIZE') {
-        req.flash("error", "One of your images is too large. Maximum file size is 8 MB.");
-        return res.redirect("back");
-    }
-    next(err);
-});
-app.use((err, req, res, next) => {
-    let { statusCode = 500, message = "Something went wrong!" } = err;
-    res.status(statusCode).render("error.ejs", { message, statusCode });
+  if (err.code === "LIMIT_FILE_SIZE") {
+    req.flash(
+      "error",
+      "One of your images is too large. Maximum file size is 8 MB.",
+    );
+
+    return res.redirect("back");
+  }
+
+  next(err);
 });
 
+// Final Error Handler
+app.use((err, req, res, _next) => {
+  void _next;
 
-const port = process.env.PORT || 8080;
+  let { statusCode = 500, message = "Something went wrong!" } = err;
 
-app.listen(port, () => {
-    console.log(`Server is listening on port ${port}`);
+  if (statusCode === 500) {
+    message = "Something went wrong! Please try again later.";
+  }
+
+  res.status(statusCode).render("error.ejs", {
+    message,
+    statusCode,
+  });
 });
+
+// Standard local listener
+if (process.env.NODE_ENV !== "production") {
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
+}
+
 module.exports = app;
